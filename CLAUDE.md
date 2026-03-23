@@ -56,13 +56,13 @@ GET  /admin/status          → Return ingestion/index status
 ## Build Phases
 - [x] Phase 0: Scaffolding + CLAUDE.md setup
 - [x] Phase 1: Backend core (upload, parse, chunk, embed, Chroma index, /chat endpoint)
-- [ ] Phase 2: Structured profile (profile generation, candidate_profile.json, site_content.json)
+- [x] Phase 2: Structured profile (profile generation, candidate_profile.json, site_content.json)
 - [ ] Phase 3: Frontend shell (Home, About, Projects, chat integration)
 - [ ] Phase 4: Admin + rebuild flow (upload page, rebuild button, status)
 - [ ] Phase 5: Evaluation layer (live scoring, batch test set, diagnostics page)
 
 ## Current Phase
-Phase 1 complete — ready for Phase 2
+Phase 2 complete — ready for Phase 3
 
 ## Run Command
 Always run uvicorn from the `backend/` directory (not repo root):
@@ -95,4 +95,14 @@ Completed: Phase 0 scaffolding + Phase 1 backend core.
 - Phase 1: ingestion service (PDF/txt/md), chunking (tiktoken, cl100k_base, size by doc_type), embedding+indexing (Chroma via langchain-chroma), retrieval, generation (GPT-4o), LangGraph ingestion and chat workflows, /upload + /ingest/rebuild + /chat endpoints
 - All Phase 1 smoke tests passed: upload → ingest → chat returning grounded answers
 - Run server from backend/ dir: `cd backend && ../.venv/Scripts/python -m uvicorn main:app --reload`
-Next: Phase 2 — Structured profile (profile_builder, content_generator, /profile/generate, candidate_profile.json, site_content.json)
+### Session 2 — 2026-03-23
+Completed: Phase 2 — Structured profile.
+- Extended models/profile.py with SiteContent and ProjectCard schemas
+- services/profile_builder.py — GPT-4o extracts CandidateProfile from Chroma chunks, writes candidate_profile.json
+- services/content_generator.py — GPT-4o generates UI copy (hero, about, project cards, suggested prompts), writes site_content.json
+- workflows/profile_graph.py — LangGraph: retrieve_all → build_profile → generate_content
+- api/profile.py — POST /profile/generate, GET /profile
+- api/about.py — GET /about-content
+- api/projects.py — GET /projects
+- All Phase 2 smoke tests passed
+Next: Phase 3 — Frontend shell (Next.js App Router, Tailwind, shadcn/ui, Home/About/Projects pages)
