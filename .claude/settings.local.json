@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(cd:*)",
-      "Bash(echo:*)"
+      "Bash(echo:*)",
+      "Bash(find /c/Users/chase/Documents/career-intelligence-agent -maxdepth 2 -name *.json -o -name *.js -o -name *.ts)",
+      "Bash(grep -E \"\\\\.\\(json|js|ts|md\\)$\")"
     ]
   }
 }

@@ -57,12 +57,12 @@ GET  /admin/status          → Return ingestion/index status
 - [x] Phase 0: Scaffolding + CLAUDE.md setup
 - [x] Phase 1: Backend core (upload, parse, chunk, embed, Chroma index, /chat endpoint)
 - [x] Phase 2: Structured profile (profile generation, candidate_profile.json, site_content.json)
-- [ ] Phase 3: Frontend shell (Home, About, Projects, chat integration)
+- [x] Phase 3: Frontend shell (Home, About, Projects, chat integration)
 - [ ] Phase 4: Admin + rebuild flow (upload page, rebuild button, status)
 - [ ] Phase 5: Evaluation layer (live scoring, batch test set, diagnostics page)
 
 ## Current Phase
-Phase 2 complete — ready for Phase 3
+Phase 3 complete — ready for Phase 4
 
 ## Run Command
 Always run uvicorn from the `backend/` directory (not repo root):
@@ -106,3 +106,16 @@ Completed: Phase 2 — Structured profile.
 - api/projects.py — GET /projects
 - All Phase 2 smoke tests passed
 Next: Phase 3 — Frontend shell (Next.js App Router, Tailwind, shadcn/ui, Home/About/Projects pages)
+### Session 3 — 2026-03-23
+Completed: Phase 3 — Frontend shell.
+- Scaffolded Next.js 14 App Router project (package.json, tsconfig, tailwind.config, postcss, globals.css, layout)
+- tailwind.config.ts: full design system color palette + font families (Inter, JetBrains Mono, Space Grotesk) from DESIGN.md
+- lib/types.ts: TypeScript types mirroring all backend Pydantic models (ChatRequest/Response, EvaluationScores, CandidateProfile, AboutContent, ProjectCard)
+- lib/api.ts: typed API client — chat(), getProfile(), getAboutContent(), getProjects() via NEXT_PUBLIC_API_URL
+- components/Sidebar.tsx: shared left nav with active-route highlighting (usePathname)
+- components/TopNav.tsx: shared header with hasRightPanel prop (right-80 vs right-0)
+- app/page.tsx: full chat interface — dynamic candidate name + suggested prompts, message history, loading state, POST /chat wired, right panel with live quality metrics + source evidence
+- app/about/page.tsx: Stitch-converted Deep-Dive page — profile.name/headline, skills/tools/certifications badges, experience timeline, education; wired to GET /profile + GET /about-content
+- app/projects/page.tsx: Stitch-converted Projects page — dynamic cards with name, summary, tech badges, impact bullets, link buttons; wired to GET /projects
+- Run frontend: `cd frontend && npm install && npm run dev` (requires NEXT_PUBLIC_API_URL in .env.local)
+Next: Phase 4 — Admin + rebuild flow (upload page, rebuild button, status panel)
