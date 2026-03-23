@@ -1,0 +1,23 @@
+[
+  {
+    "id": "q001",
+    "question": "Does the candidate have Python experience?",
+    "must_mention": ["Python"],
+    "should_mention": ["years", "projects"],
+    "source_types": ["resume", "project_doc"]
+  },
+  {
+    "id": "q002",
+    "question": "Have they built RAG systems before?",
+    "must_mention": ["RAG", "retrieval"],
+    "should_mention": ["embeddings", "vector", "Chroma"],
+    "source_types": ["resume", "project_doc"]
+  },
+  {
+    "id": "q003",
+    "question": "What evidence suggests leadership experience?",
+    "must_mention": ["led", "managed", "team"],
+    "should_mention": ["results", "impact"],
+    "source_types": ["resume"]
+  }
+]

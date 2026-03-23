@@ -1,0 +1,1 @@
+We are starting Phase $ARGUMENTS. Enter Plan Mode first. Read CLAUDE.md to confirm current state. Create a step-by-step implementation plan for this phase based on the project outline. Show the plan and wait for approval before writing any code.

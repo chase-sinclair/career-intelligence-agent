@@ -1,0 +1,1 @@
+Phase $ARGUMENTS is complete. Run the verification steps for this phase as defined in the project outline. Report pass/fail for each verification check. If all pass, update CLAUDE.md to mark this phase complete and set the current phase to the next one.

@@ -1,0 +1,43 @@
+# Environment secrets
+.env
+
+# Uploaded private documents — never commit
+backend/uploads/
+
+# Generated content files — contain resume content, gitignore if repo is public
+backend/data/*.json
+
+# Vector index — contains embedded resume content
+backend/data/chroma/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+frontend/.env.local
+frontend/.env.production
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+backend/backend/

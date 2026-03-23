@@ -1,0 +1,1 @@
+Add "$ARGUMENTS" to the gold evaluation test set in evals/recruiter_questions.json. Include expected answer points (must mention, should mention, source type). Ask me what the expected points should be before writing.
