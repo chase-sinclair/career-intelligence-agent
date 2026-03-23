@@ -76,3 +76,39 @@ export interface AboutContent {
   about_paragraphs: string[]
   suggested_prompts: string[]
 }
+
+// ── Admin ──────────────────────────────────────────────────────────────────────
+
+export type DocType = 'resume' | 'project_doc' | 'bio_notes' | 'case_study'
+
+export interface UploadResponse {
+  doc_id: string
+  filename: string
+  saved_path: string
+  doc_type: string
+  status: string
+}
+
+export interface IngestResponse {
+  processed: number
+  results: Record<string, unknown>[]
+  errors: string[]
+}
+
+export interface GenerateResponse {
+  status: string
+  profile_path: string | null
+  content_path: string | null
+  error: string | null
+}
+
+export interface AdminStatus {
+  upload_dir_exists: boolean
+  upload_file_count: number
+  uploaded_files: string[]
+  chroma_index_exists: boolean
+  profile_exists: boolean
+  site_content_exists: boolean
+  profile_last_modified: string | null
+  site_content_last_modified: string | null
+}

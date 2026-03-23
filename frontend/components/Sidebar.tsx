@@ -6,8 +6,9 @@ import { usePathname } from 'next/navigation'
 const NAV_ITEMS = [
   { href: '/',          label: 'Dashboard',  icon: 'dashboard'   },
   { href: '/about',     label: 'Deep-Dive',  icon: 'analytics'   },
-  { href: '/projects',  label: 'Projects',   icon: 'source'      },
-  { href: '/diagnostics', label: 'Evaluations', icon: 'fact_check' },
+  { href: '/projects',     label: 'Projects',    icon: 'source'               },
+  { href: '/admin',        label: 'Admin',       icon: 'admin_panel_settings' },
+  { href: '/diagnostics',  label: 'Evaluations', icon: 'fact_check'           },
 ]
 
 export default function Sidebar() {

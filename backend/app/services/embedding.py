@@ -27,6 +27,15 @@ def get_vectorstore() -> Chroma:
     return _vectorstore
 
 
+def clear_collection() -> None:
+    """Delete all documents from the Chroma collection. Called before a full rebuild."""
+    global _vectorstore
+    vs = get_vectorstore()
+    vs.delete_collection()
+    _vectorstore = None  # force re-initialisation on next get_vectorstore() call
+    logger.info("Chroma collection 'career_docs' cleared")
+
+
 def embed_and_index(chunks: list[Chunk]) -> int:
     """Embed chunks and upsert to Chroma. Returns count of indexed chunks."""
     if not chunks:

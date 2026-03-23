@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 from app.core.config import settings
 from app.core.logging import get_logger
+from app.services.embedding import clear_collection
 from app.workflows.ingestion_graph import run_ingestion
 
 logger = get_logger(__name__)
@@ -35,6 +36,9 @@ async def rebuild_index():
     files = [f for f in upload_dir.iterdir() if f.is_file() and f.suffix.lower() in _EXT_DOC_TYPE]
     if not files:
         raise HTTPException(status_code=400, detail="No supported files found in upload directory.")
+
+    clear_collection()
+    logger.info("Chroma collection cleared — starting fresh rebuild")
 
     results = []
     errors = []

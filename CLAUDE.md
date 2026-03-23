@@ -58,11 +58,11 @@ GET  /admin/status          → Return ingestion/index status
 - [x] Phase 1: Backend core (upload, parse, chunk, embed, Chroma index, /chat endpoint)
 - [x] Phase 2: Structured profile (profile generation, candidate_profile.json, site_content.json)
 - [x] Phase 3: Frontend shell (Home, About, Projects, chat integration)
-- [ ] Phase 4: Admin + rebuild flow (upload page, rebuild button, status)
+- [x] Phase 4: Admin + rebuild flow (upload page, rebuild button, status)
 - [ ] Phase 5: Evaluation layer (live scoring, batch test set, diagnostics page)
 
 ## Current Phase
-Phase 3 complete — ready for Phase 4
+Phase 4 complete — ready for Phase 5
 
 ## Run Command
 Always run uvicorn from the `backend/` directory (not repo root):
@@ -119,3 +119,12 @@ Completed: Phase 3 — Frontend shell.
 - app/projects/page.tsx: Stitch-converted Projects page — dynamic cards with name, summary, tech badges, impact bullets, link buttons; wired to GET /projects
 - Run frontend: `cd frontend && npm install && npm run dev` (requires NEXT_PUBLIC_API_URL in .env.local)
 Next: Phase 4 — Admin + rebuild flow (upload page, rebuild button, status panel)
+### Session 4 — 2026-03-23
+Completed: Phase 4 — Admin + rebuild flow.
+- backend/app/api/admin.py — GET /admin/status: upload dir exists/count/filenames, Chroma index exists, profile+site_content exists, ISO last-modified timestamps
+- backend/main.py — registered admin router
+- frontend/lib/types.ts — added DocType, UploadResponse, IngestResponse, GenerateResponse, AdminStatus
+- frontend/lib/api.ts — added getAdminStatus(), uploadFile() (FormData), rebuildIndex(), generateProfile()
+- frontend/components/Sidebar.tsx — added Admin nav item (admin_panel_settings icon)
+- frontend/app/admin/page.tsx — three sections: System Status (indicator dots, file list, timestamps, refresh), File Upload (drop zone, doc_type select, project_name input, result cards), Operations (Rebuild Index + Regenerate Profile buttons with loading state + inline results, auto-refresh status on success)
+Next: Phase 5 — Evaluation layer (live scoring, batch test set, diagnostics page)
