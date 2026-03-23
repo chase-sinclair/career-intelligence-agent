@@ -112,3 +112,26 @@ export interface AdminStatus {
   profile_last_modified: string | null
   site_content_last_modified: string | null
 }
+
+// ── Evaluation ────────────────────────────────────────────────────────────────
+
+export interface EvalQuestionResult {
+  id: string
+  question: string
+  answer: string
+  sources: string[]
+  scores: EvaluationScores
+  must_mention_pass: boolean
+}
+
+export interface EvalRunResult {
+  run_id: string
+  timestamp: string
+  total_questions: number
+  avg_groundedness: number
+  avg_completeness: number
+  avg_confidence: number
+  unsupported_claim_rate: number
+  must_mention_pass_rate: number
+  results: EvalQuestionResult[]
+}

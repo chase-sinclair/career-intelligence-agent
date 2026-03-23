@@ -59,10 +59,10 @@ GET  /admin/status          → Return ingestion/index status
 - [x] Phase 2: Structured profile (profile generation, candidate_profile.json, site_content.json)
 - [x] Phase 3: Frontend shell (Home, About, Projects, chat integration)
 - [x] Phase 4: Admin + rebuild flow (upload page, rebuild button, status)
-- [ ] Phase 5: Evaluation layer (live scoring, batch test set, diagnostics page)
+- [x] Phase 5: Evaluation layer (live scoring, batch test set, diagnostics page)
 
 ## Current Phase
-Phase 4 complete — ready for Phase 5
+Phase 5 complete — MVP complete
 
 ## Run Command
 Always run uvicorn from the `backend/` directory (not repo root):
@@ -128,3 +128,20 @@ Completed: Phase 4 — Admin + rebuild flow.
 - frontend/components/Sidebar.tsx — added Admin nav item (admin_panel_settings icon)
 - frontend/app/admin/page.tsx — three sections: System Status (indicator dots, file list, timestamps, refresh), File Upload (drop zone, doc_type select, project_name input, result cards), Operations (Rebuild Index + Regenerate Profile buttons with loading state + inline results, auto-refresh status on success)
 Next: Phase 5 — Evaluation layer (live scoring, batch test set, diagnostics page)
+### Session 5 — 2026-03-23
+Completed: Chroma stale-data bug fix.
+- backend/app/services/embedding.py — added clear_collection(): calls vectorstore.delete_collection() then resets _vectorstore singleton to None so next get_vectorstore() creates a fresh collection
+- backend/app/api/ingest.py — calls clear_collection() once before the file loop in POST /ingest/rebuild, ensuring stale chunks (e.g. Jane Doe sample resume) are wiped before reindexing current uploads
+Next: Phase 5 — Evaluation layer (live scoring, batch test set, diagnostics page)
+### Session 6 — 2026-03-23
+Completed: Phase 5 — Evaluation layer.
+- backend/app/services/evaluation.py — gpt-4o-mini LLM-as-judge: evaluate_answer(query, answer, chunks) → EvaluationScores; structured JSON output via response_format; safe defaults on failure
+- backend/app/workflows/eval_graph.py — LangGraph eval agent (EvalState TypedDict, single judge_node, run_evaluation() public entry point)
+- backend/app/workflows/chat_graph.py — removed _PLACEHOLDER_SCORES, added evaluate_node wired after generate_node (retrieve → generate → evaluate → END)
+- backend/app/evals/scoring.py — batch runner: EvalQuestionResult + EvalRunResult Pydantic models, run_batch_eval() loads recruiter_questions.json, calls run_chat() per question, checks must_mention keywords, persists to backend/data/eval_results.json
+- backend/app/api/eval.py — POST /eval/run + GET /eval/results (404 if not yet run)
+- backend/main.py — registered eval router
+- frontend/lib/types.ts — added EvalQuestionResult, EvalRunResult interfaces
+- frontend/lib/api.ts — added runEval() (POST /eval/run), getEvalResults() (GET /eval/results)
+- frontend/app/diagnostics/page.tsx — full diagnostics page: MetricBar + PassBadge helpers, aggregate metrics panel, run controls panel, per-question results table with line-clamp explanations
+MVP complete — all 5 phases done.

@@ -30,7 +30,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from app.api import upload, ingest, chat, profile, about, projects, admin  # noqa: E402
+from app.api import upload, ingest, chat, profile, about, projects, admin, eval  # noqa: E402
 app.include_router(upload.router)
 app.include_router(ingest.router)
 app.include_router(chat.router)
@@ -38,6 +38,7 @@ app.include_router(profile.router)
 app.include_router(about.router)
 app.include_router(projects.router)
 app.include_router(admin.router)
+app.include_router(eval.router)
 
 
 @app.get("/health")

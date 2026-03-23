@@ -9,6 +9,7 @@ import type {
   IngestResponse,
   GenerateResponse,
   AdminStatus,
+  EvalRunResult,
 } from './types'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000'
@@ -74,4 +75,14 @@ export function rebuildIndex(): Promise<IngestResponse> {
 
 export function generateProfile(): Promise<GenerateResponse> {
   return apiFetch<GenerateResponse>('/profile/generate', { method: 'POST' })
+}
+
+// ── Evaluation ────────────────────────────────────────────────────────────────
+
+export function runEval(): Promise<EvalRunResult> {
+  return apiFetch<EvalRunResult>('/eval/run', { method: 'POST' })
+}
+
+export function getEvalResults(): Promise<EvalRunResult> {
+  return apiFetch<EvalRunResult>('/eval/results')
 }
