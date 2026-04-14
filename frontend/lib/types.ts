@@ -113,6 +113,107 @@ export interface AdminStatus {
   site_content_last_modified: string | null
 }
 
+export interface JobPreferences {
+  target_titles: string[]
+  exclude_title_keywords: string[]
+  target_keywords: string[]
+  preferred_locations: string[]
+  remote_preference: string
+  salary_floor: number | null
+  target_seniority: string[]
+  preferred_industries: string[]
+  preferred_company_types: string[]
+  tech_focus_areas: string[]
+  public_sector_interest: string
+  work_authorization_notes: string
+  avoid_keywords: string[]
+  stretch_roles_allowed: boolean
+}
+
+export interface JobPosting {
+  id: string
+  source: string
+  source_label: string
+  title: string
+  company: string
+  location: string
+  posted_at: string | null
+  salary_text: string | null
+  description: string
+  employment_type: string | null
+  remote_type: string | null
+  normalized_tags: string[]
+  url: string | null
+  fetched_at: string | null
+  discovery_mode: string
+  priority_tier: number
+  liveness_status: string
+  liveness_note: string
+}
+
+export interface JobSourceConfig {
+  id: string
+  name: string
+  platform: string
+  identifier: string
+  discovery_mode: string
+  priority_tier: number
+  enabled: boolean
+  notes: string
+}
+
+export interface JobFitResult {
+  job: JobPosting
+  overall_score: number
+  profile_match_score: number
+  preference_match_score: number
+  strengths: string[]
+  risks: string[]
+  why_it_fits: string
+  likely_resume_angles: string[]
+  match_bucket: string
+  shortlist_status: string
+  shortlist_note: string
+}
+
+export interface JobShortlistEntry {
+  job_id: string
+  status: string
+  note: string
+  updated_at: string
+}
+
+export interface TopFitJobsResponse {
+  total_jobs: number
+  generated_for: string
+  live_jobs_count: number
+  uses_seed_fallback: boolean
+  brief_headline: string
+  brief_summary: string
+  new_since_refresh_count: number
+  best_fit_count: number
+  strong_consideration_count: number
+  stretch_count: number
+  ready_to_review_count: number
+  shortlisted_count: number
+  applied_count: number
+  top_matches: JobFitResult[]
+}
+
+export interface JobRefreshResponse {
+  fetched_jobs: number
+  enabled_sources: number
+  source_errors: string[]
+  used_seed_fallback: boolean
+  added_jobs: number
+  dropped_jobs: number
+  unchanged_jobs: number
+  added_previews: string[]
+  dropped_previews: string[]
+  verified_live_jobs: number
+  unverified_jobs: number
+}
+
 // ── Evaluation ────────────────────────────────────────────────────────────────
 
 export interface EvalQuestionResult {

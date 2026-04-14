@@ -4,11 +4,13 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const NAV_ITEMS = [
-  { href: '/',          label: 'Dashboard',  icon: 'dashboard'   },
-  { href: '/about',     label: 'Deep-Dive',  icon: 'analytics'   },
-  { href: '/projects',     label: 'Projects',    icon: 'source'               },
-  { href: '/admin',        label: 'Admin',       icon: 'admin_panel_settings' },
-  { href: '/diagnostics',  label: 'Evaluations', icon: 'fact_check'           },
+  { href: '/',               label: 'Overview',               icon: 'dashboard'  },
+  { href: '/about',          label: 'Architect Profile',      icon: 'badge'      },
+  { href: '/knowledge-base', label: 'Career Knowledge Base',  icon: 'forum'      },
+  { href: '/projects',       label: 'Projects',               icon: 'source'     },
+  { href: '/job-preferences', label: 'Job Preferences',       icon: 'tune'       },
+  { href: '/top-fit-jobs',   label: 'Top Fit Jobs',           icon: 'work'       },
+  { href: '/admin',          label: 'Demo Lab',               icon: 'experiment' },
 ]
 
 export default function Sidebar() {

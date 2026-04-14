@@ -1,0 +1,61 @@
+{
+  "target_titles": [
+    "Lead Data Scientist",
+    "Senior Data Scientist",
+    "Applied AI Strategist"
+  ],
+  "exclude_title_keywords": [
+    "account executive",
+    "account director",
+    "sales",
+    "customer success",
+    "marketing",
+    "creative strategist",
+    "product manager",
+    "recruiter"
+  ],
+  "target_keywords": [
+    "GenAI",
+    "RAG",
+    "analytics transformation",
+    "decision support",
+    "product analytics"
+  ],
+  "preferred_locations": [
+    "Remote",
+    "Washington, DC",
+    "Northern Virginia"
+  ],
+  "remote_preference": "remote_or_hybrid",
+  "salary_floor": 175000,
+  "target_seniority": [
+    "Senior",
+    "Lead",
+    "Staff"
+  ],
+  "preferred_industries": [
+    "AI",
+    "Enterprise SaaS",
+    "Public Sector",
+    "Analytics Platforms"
+  ],
+  "preferred_company_types": [
+    "Growth-stage startup",
+    "Established technology company",
+    "Consulting"
+  ],
+  "tech_focus_areas": [
+    "LLM applications",
+    "RAG systems",
+    "data platforms",
+    "decision intelligence"
+  ],
+  "public_sector_interest": "Open to federal and public-sector aligned roles, especially where AI and analytics can improve high-impact services.",
+  "work_authorization_notes": "",
+  "avoid_keywords": [
+    "on-site only",
+    "junior",
+    "commission-only"
+  ],
+  "stretch_roles_allowed": true
+}

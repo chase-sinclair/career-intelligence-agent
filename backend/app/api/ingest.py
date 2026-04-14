@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException
@@ -11,7 +12,7 @@ from app.workflows.ingestion_graph import run_ingestion
 logger = get_logger(__name__)
 router = APIRouter()
 
-# Map file extensions to default doc_type
+# Map file extensions to default doc_type when upload metadata is unavailable.
 _EXT_DOC_TYPE = {
     ".pdf": "resume",
     ".md": "project_doc",
@@ -26,6 +27,16 @@ class IngestResponse(BaseModel):
     errors: list[str]
 
 
+def _load_upload_metadata(file_path: Path) -> dict:
+    meta_path = file_path.with_suffix(".meta.json")
+    if meta_path.exists():
+        return json.loads(meta_path.read_text(encoding="utf-8"))
+    return {
+        "doc_type": _EXT_DOC_TYPE[file_path.suffix.lower()],
+        "project_name": None,
+    }
+
+
 @router.post("/ingest/rebuild", response_model=IngestResponse)
 async def rebuild_index():
     """Run the ingestion workflow on all files in the upload directory."""
@@ -38,14 +49,16 @@ async def rebuild_index():
         raise HTTPException(status_code=400, detail="No supported files found in upload directory.")
 
     clear_collection()
-    logger.info("Chroma collection cleared — starting fresh rebuild")
+    logger.info("Chroma collection cleared - starting fresh rebuild")
 
     results = []
     errors = []
 
     for file_path in files:
-        doc_type = _EXT_DOC_TYPE[file_path.suffix.lower()]
-        result = run_ingestion(str(file_path), doc_type)
+        upload_meta = _load_upload_metadata(file_path)
+        doc_type = upload_meta["doc_type"]
+        project_name = upload_meta.get("project_name")
+        result = run_ingestion(str(file_path), doc_type, project_name)
         results.append(result)
         if result.get("error"):
             errors.append(f"{file_path.name}: {result['error']}")

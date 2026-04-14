@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import TopNav from '@/components/TopNav'
 import { getProfile, getAboutContent } from '@/lib/api'
@@ -25,11 +26,11 @@ export default function AboutPage() {
   if (loading) {
     return (
       <>
-        <TopNav subtitle="Candidate Profile" />
+        <TopNav subtitle="Architect Profile" />
         <main className="ml-64 h-screen overflow-y-auto custom-scrollbar">
           <div className="p-10 flex items-center gap-2 text-on-surface-variant font-mono text-sm">
             <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            Loading profile...
+            Loading architect profile...
           </div>
         </main>
       </>
@@ -50,7 +51,7 @@ export default function AboutPage() {
 
   return (
     <>
-      <TopNav subtitle="Candidate Profile" />
+      <TopNav subtitle="Architect Profile" />
 
       <main className="ml-64 h-screen overflow-y-auto custom-scrollbar">
         <div className="p-10">
@@ -74,8 +75,21 @@ export default function AboutPage() {
               </div>
             </div>
 
-            <div className="col-span-12 lg:col-span-4 flex flex-col items-end">
-              <button className="group relative px-8 py-5 bg-surface-container-high border border-outline-variant/30 text-on-surface rounded-lg overflow-hidden transition-all hover:bg-surface-container-highest">
+            <div className="col-span-12 lg:col-span-4 flex flex-col items-end gap-4">
+              <Link
+                href="/knowledge-base"
+                className="group relative w-full max-w-[288px] px-8 py-5 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-lg overflow-hidden transition-all hover:opacity-90"
+              >
+                <div className="relative flex items-center justify-between gap-4">
+                  <div className="text-left">
+                    <span className="block font-bold text-lg">Ask My Career Knowledge Base</span>
+                  </div>
+                  <span className="material-symbols-outlined text-3xl transition-transform group-hover:translate-x-1">
+                    outbound
+                  </span>
+                </div>
+              </Link>
+              <button className="group relative w-full max-w-[288px] px-8 py-5 bg-surface-container-high border border-outline-variant/30 text-on-surface rounded-lg overflow-hidden transition-all hover:bg-surface-container-highest">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent" />
                 <div className="relative flex items-center gap-4">
                   <div className="text-right">

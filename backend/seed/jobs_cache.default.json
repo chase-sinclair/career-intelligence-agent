@@ -1,0 +1,86 @@
+[
+  {
+    "id": "seeded-001",
+    "source": "seeded_demo",
+    "source_label": "Seeded Research Target",
+    "title": "Lead Applied AI Strategist",
+    "company": "Example Intelligence Systems",
+    "location": "Remote",
+    "posted_at": "2026-04-10",
+    "salary_text": "$180,000 - $220,000",
+    "description": "Lead GenAI strategy programs for enterprise and public-sector clients. Build decision-support workflows, define analytics operating models, and shape RAG-driven products that improve executive visibility and customer experience.",
+    "employment_type": "Full-time",
+    "remote_type": "Remote",
+    "normalized_tags": [
+      "GenAI",
+      "RAG",
+      "analytics transformation",
+      "public sector",
+      "decision support"
+    ],
+    "url": null
+  },
+  {
+    "id": "seeded-002",
+    "source": "seeded_demo",
+    "source_label": "Seeded Research Target",
+    "title": "Senior Data Scientist, Product Analytics",
+    "company": "Northstar Platform Group",
+    "location": "Washington, DC",
+    "posted_at": "2026-04-12",
+    "salary_text": "$170,000 - $195,000",
+    "description": "Own KPI frameworks, product analytics, executive dashboards, experimentation strategy, and data storytelling for a large-scale digital platform. Experience with Python, SQL, stakeholder leadership, and instrumentation strategy required.",
+    "employment_type": "Full-time",
+    "remote_type": "Hybrid",
+    "normalized_tags": [
+      "product analytics",
+      "KPI",
+      "dashboards",
+      "Python",
+      "SQL"
+    ],
+    "url": null
+  },
+  {
+    "id": "seeded-003",
+    "source": "seeded_demo",
+    "source_label": "Seeded Research Target",
+    "title": "Staff Data Platform Scientist",
+    "company": "Signal Harbor AI",
+    "location": "Northern Virginia",
+    "posted_at": "2026-04-11",
+    "salary_text": "$190,000 - $235,000",
+    "description": "Design data pipelines, applied AI systems, and retrieval workflows that power customer-facing intelligence products. Looking for experience with ETL, cloud data platforms, LLM applications, and cross-functional product delivery.",
+    "employment_type": "Full-time",
+    "remote_type": "Hybrid",
+    "normalized_tags": [
+      "ETL",
+      "data platforms",
+      "LLM applications",
+      "RAG",
+      "product delivery"
+    ],
+    "url": null
+  },
+  {
+    "id": "seeded-004",
+    "source": "seeded_demo",
+    "source_label": "Seeded Research Target",
+    "title": "AI Solutions Consultant",
+    "company": "Civic Insight Labs",
+    "location": "Remote",
+    "posted_at": "2026-04-09",
+    "salary_text": "$165,000 - $185,000",
+    "description": "Partner with federal and enterprise clients to translate AI opportunities into roadmap decisions, implementation plans, and measurable analytics improvements. Strong communication, consulting, and generative AI fluency preferred.",
+    "employment_type": "Full-time",
+    "remote_type": "Remote",
+    "normalized_tags": [
+      "consulting",
+      "federal",
+      "generative AI",
+      "analytics",
+      "roadmapping"
+    ],
+    "url": null
+  }
+]

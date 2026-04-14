@@ -9,6 +9,11 @@ import type {
   IngestResponse,
   GenerateResponse,
   AdminStatus,
+  JobPreferences,
+  JobShortlistEntry,
+  JobSourceConfig,
+  JobRefreshResponse,
+  TopFitJobsResponse,
   EvalRunResult,
 } from './types'
 
@@ -75,6 +80,52 @@ export function rebuildIndex(): Promise<IngestResponse> {
 
 export function generateProfile(): Promise<GenerateResponse> {
   return apiFetch<GenerateResponse>('/profile/generate', { method: 'POST' })
+}
+
+export function getJobPreferences(): Promise<JobPreferences> {
+  return apiFetch<JobPreferences>('/job-preferences')
+}
+
+export function updateJobPreferences(preferences: JobPreferences): Promise<JobPreferences> {
+  return apiFetch<JobPreferences>('/job-preferences', {
+    method: 'PUT',
+    body: JSON.stringify(preferences),
+  })
+}
+
+export function getTopFitJobs(limit = 12, recentDays = 0, dedupe = true): Promise<TopFitJobsResponse> {
+  const recentParam = recentDays > 0 ? `&recent_days=${recentDays}` : ''
+  return apiFetch<TopFitJobsResponse>(`/jobs/top-fit?limit=${limit}${recentParam}&dedupe=${dedupe}`)
+}
+
+export function getJobSources(): Promise<JobSourceConfig[]> {
+  return apiFetch<JobSourceConfig[]>('/job-sources')
+}
+
+export function updateJobSources(sources: JobSourceConfig[]): Promise<JobSourceConfig[]> {
+  return apiFetch<JobSourceConfig[]>('/job-sources', {
+    method: 'PUT',
+    body: JSON.stringify(sources),
+  })
+}
+
+export function refreshJobs(): Promise<JobRefreshResponse> {
+  return apiFetch<JobRefreshResponse>('/jobs/refresh', { method: 'POST' })
+}
+
+export function getJobShortlist(): Promise<JobShortlistEntry[]> {
+  return apiFetch<JobShortlistEntry[]>('/jobs/shortlist')
+}
+
+export function updateJobShortlist(
+  jobId: string,
+  status: string,
+  note = '',
+): Promise<JobShortlistEntry> {
+  return apiFetch<JobShortlistEntry>(`/jobs/${encodeURIComponent(jobId)}/shortlist`, {
+    method: 'PUT',
+    body: JSON.stringify({ status, note }),
+  })
 }
 
 // ── Evaluation ────────────────────────────────────────────────────────────────

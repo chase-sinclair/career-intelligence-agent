@@ -1,0 +1,105 @@
+{
+  "hero_headline": "Data Scientist Building Decision-Ready AI and Analytics Systems",
+  "hero_subhead": "Chase Sinclair combines applied AI, analytics engineering, and executive-facing storytelling to turn complex data into practical decisions.",
+  "about_paragraphs": [
+    "Chase Sinclair is a Data Scientist focused on the intersection of analytics transformation, applied AI, and strategic decision support. His work spans federal and enterprise environments, where he has built KPI frameworks, automated pipelines, executive dashboards, and production-grade AI workflows for large-scale, public-facing systems.",
+    "His portfolio centers on translating technical depth into operational value. Across RAG systems, agentic workflows, analytics platforms, and GenAI applications, he consistently builds tools that reduce manual effort, improve visibility, and make complex information easier for decision-makers to use."
+  ],
+  "project_cards": [
+    {
+      "name": "Career Intelligence Agent",
+      "summary": "A recruiter-facing AI portfolio app that combines grounded retrieval, visible evidence, and live evaluation metrics so hiring teams can research a candidate through natural-language questions.",
+      "tech_stack": [
+        "Next.js",
+        "FastAPI",
+        "LangGraph",
+        "Chroma",
+        "OpenAI"
+      ],
+      "impact_bullets": [
+        "Built a full-stack recruiter research experience around a custom RAG pipeline.",
+        "Added LangGraph workflows for ingestion, profile generation, Q&A, and evaluation.",
+        "Exposed source evidence and answer quality metrics directly in the interface."
+      ],
+      "links": {
+        "github": "https://github.com/chase-sinclair/career-intelligence-agent"
+      }
+    },
+    {
+      "name": "SignalPulse AI",
+      "summary": "A B2B sales intelligence engine that detects software buying windows from hiring patterns, enriches signals with AI, and delivers a daily-updated dashboard for outbound prioritization.",
+      "tech_stack": [
+        "Next.js",
+        "Supabase",
+        "n8n",
+        "OpenAI GPT-4o-mini",
+        "SerpApi"
+      ],
+      "impact_bullets": [
+        "Automated daily ingestion and AI enrichment of job-posting data.",
+        "Designed the stack end-to-end across orchestration, enrichment, storage, and UI.",
+        "Demonstrated cost-aware MVP design by keeping ingestion within free-tier limits."
+      ],
+      "links": {
+        "github": "https://github.com/chase-sinclair/signalpulse",
+        "demo": "https://signalpulse-six.vercel.app"
+      }
+    },
+    {
+      "name": "OSS Dependency Risk Agent",
+      "summary": "An AI engineering system that ingests large-scale GitHub activity data, computes dependency health metrics, and uses an autonomous agent to generate structured risk recommendations.",
+      "tech_stack": [
+        "AWS S3",
+        "Databricks",
+        "dbt",
+        "LangGraph",
+        "Claude",
+        "Streamlit"
+      ],
+      "impact_bullets": [
+        "Modeled OSS project health across 200 repositories using six risk signals.",
+        "Built a five-node LangGraph agent for investigate-and-recommend workflows.",
+        "Connected lakehouse engineering, agent orchestration, and reporting in one system."
+      ],
+      "links": {
+        "github": "https://github.com/chase-sinclair/oss-dependency-risk-agent"
+      }
+    },
+    {
+      "name": "AI Use Case Evaluation & Prioritization Tool",
+      "summary": "An internal framework for evaluating AI opportunities across personas using structured criteria, scoring logic, and generative AI support.",
+      "tech_stack": [
+        "Generative AI",
+        "Decision frameworks",
+        "Scoring logic"
+      ],
+      "impact_bullets": [
+        "Created a repeatable method for AI opportunity triage.",
+        "Blended structured evaluation with AI-assisted synthesis for more consistent prioritization."
+      ],
+      "links": {}
+    },
+    {
+      "name": "Generative AI Consumer Recall Detection",
+      "summary": "A consumer-facing GenAI application that interprets live photos of grocery labels and returns FDA-grounded recall status with natural-language explanations.",
+      "tech_stack": [
+        "AWS Bedrock",
+        "LangChain",
+        "NLP similarity search"
+      ],
+      "impact_bullets": [
+        "Designed a photo-to-recall workflow backed by AI and retrieval.",
+        "Used grounded explanations to make recall results more actionable for end users."
+      ],
+      "links": {}
+    }
+  ],
+  "suggested_prompts": [
+    "What kinds of AI systems has Chase built end to end?",
+    "Which projects best demonstrate his RAG and agent orchestration experience?",
+    "How has Chase translated analytics into executive decision support?",
+    "What evidence shows experience with production-grade data pipelines?",
+    "How does his background connect AI strategy with hands-on delivery?",
+    "Which projects show the strongest blend of product thinking and technical execution?"
+  ]
+}

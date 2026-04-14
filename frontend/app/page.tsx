@@ -1,387 +1,224 @@
 'use client'
 
-import { useState, useEffect, useRef, KeyboardEvent } from 'react'
-import TopNav from '@/components/TopNav'
-import { chat as sendChat, getProfile, getAboutContent } from '@/lib/api'
-import type {
-  ChatResponse,
-  CandidateProfile,
-  AboutContent,
-  EvaluationScores,
-} from '@/lib/types'
+import Link from 'next/link'
 
-// ── Local types ───────────────────────────────────────────────────────────────
-
-interface Message {
-  role: 'user' | 'assistant'
-  content: string
-  sources?: string[]
-  evidence_snippets?: string[]
-  scores?: EvaluationScores
-  processingTime?: number
-}
-
-const PROMPT_ICONS = ['psychology', 'source', 'monitoring'] as const
-
-const DEFAULT_PROMPTS = [
-  "What is this candidate's experience with LangGraph?",
-  'Show me evidence of leadership in AI projects',
-  'Which projects demonstrate RAG pipeline experience?',
-]
-
-// ── Component ─────────────────────────────────────────────────────────────────
-
-export default function HomePage() {
-  const [messages, setMessages] = useState<Message[]>([])
-  const [input, setInput] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [lastResponse, setLastResponse] = useState<ChatResponse | null>(null)
-  const [profile, setProfile] = useState<CandidateProfile | null>(null)
-  const [siteContent, setSiteContent] = useState<AboutContent | null>(null)
-
-  const scrollRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    getProfile().then(setProfile).catch(() => {})
-    getAboutContent().then(setSiteContent).catch(() => {})
-  }, [])
-
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
-    }
-  }, [messages, isLoading])
-
-  async function handleSend(query?: string) {
-    const text = (query ?? input).trim()
-    if (!text || isLoading) return
-
-    setInput('')
-    const userMessage: Message = { role: 'user', content: text }
-    setMessages(prev => [...prev, userMessage])
-    setIsLoading(true)
-
-    const startTime = performance.now()
-    try {
-      const history = messages.map(m => ({ role: m.role, content: m.content }))
-      const response = await sendChat({ query: text, conversation_history: history })
-      const processingTime = (performance.now() - startTime) / 1000
-
-      const aiMessage: Message = {
-        role: 'assistant',
-        content: response.answer,
-        sources: response.sources,
-        evidence_snippets: response.evidence_snippets,
-        scores: response.scores,
-        processingTime,
-      }
-      setMessages(prev => [...prev, aiMessage])
-      setLastResponse(response)
-    } catch {
-      setMessages(prev => [
-        ...prev,
-        {
-          role: 'assistant',
-          content: 'Could not reach the backend. Make sure the API server is running.',
-        },
-      ])
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
-    if (e.key === 'Enter') handleSend()
-  }
-
-  const suggestedPrompts =
-    siteContent?.suggested_prompts.slice(0, 3) ?? DEFAULT_PROMPTS
-
-  const candidateName = profile?.name ?? 'Candidate'
-
-  // ── Render ──────────────────────────────────────────────────────────────────
+function LandingCard({
+  icon,
+  title,
+  body,
+  action,
+  href,
+  accent = 'primary',
+}: {
+  icon: string
+  title: string
+  body: string
+  action: string
+  href: string
+  accent?: 'primary' | 'secondary' | 'neutral'
+}) {
+  const accentClass =
+    accent === 'primary'
+      ? 'text-primary'
+      : accent === 'secondary'
+        ? 'text-secondary'
+        : 'text-on-surface'
 
   return (
+    <Link
+      href={href}
+      className="group rounded-[24px] border border-white/5 bg-surface-container-low p-6 transition-all hover:-translate-y-1 hover:border-primary/30 hover:bg-surface-container-high"
+    >
+      <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl border border-white/5 bg-surface-container-lowest">
+        <span className={`material-symbols-outlined ${accentClass}`}>{icon}</span>
+      </div>
+      <h3 className="mb-3 text-xl font-bold text-on-surface">{title}</h3>
+      <p className="mb-6 text-sm leading-relaxed text-on-surface-variant">{body}</p>
+      <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.25em] text-primary">
+        {action}
+        <span className="material-symbols-outlined text-sm transition-transform group-hover:translate-x-1">
+          arrow_outward
+        </span>
+      </div>
+    </Link>
+  )
+}
+
+export default function HomePage() {
+  return (
     <>
-      {/* ── Main Content ────────────────────────────────────────────────────── */}
-      <main className="ml-64 mr-80 flex flex-col h-screen relative bg-surface">
-        <TopNav hasRightPanel />
+      <main className="ml-64 min-h-screen overflow-y-auto custom-scrollbar bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.15),transparent_28%),radial-gradient(circle_at_top_right,rgba(68,226,205,0.08),transparent_24%),linear-gradient(180deg,#121315_0%,#141518_100%)]">
+        <div className="mx-auto max-w-6xl px-8 pb-16 pt-14">
+          <section className="relative overflow-hidden rounded-[32px] border border-white/5 bg-surface-container-low px-8 py-10 shadow-[0_24px_80px_rgba(0,0,0,0.28)] lg:px-10 lg:py-12">
+            <div className="absolute inset-0 bg-[linear-gradient(130deg,rgba(56,189,248,0.08),transparent_28%,rgba(68,226,205,0.06))]" />
+            <div className="relative grid gap-12 lg:grid-cols-[1.1fr_0.9fr]">
+              <div className="space-y-7">
+                <div className="inline-flex items-center gap-3 rounded-full border border-secondary/20 bg-secondary/10 px-4 py-2">
+                  <div className="h-2 w-2 rounded-full bg-secondary shadow-[0_0_10px_rgba(68,226,205,0.6)]" />
+                  <span className="font-mono text-[10px] uppercase tracking-[0.35em] text-secondary">
+                    Recruiter View Recommended
+                  </span>
+                </div>
 
-        {/* Central Chat Flow Area */}
-        <div className="pt-16 pb-24 flex-1 flex flex-col overflow-hidden">
-
-          {/* Status Header */}
-          <div className="px-8 py-3 bg-surface-container-low/50 flex items-center gap-3">
-            <div className="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_rgba(68,226,205,0.6)]" />
-            <span className="font-mono text-[11px] tracking-tight text-on-surface-variant uppercase">
-              AI GROUNDED IN CANDIDATE RESUME &amp; PROJECT DATA
-            </span>
-          </div>
-
-          {/* Chat Stream */}
-          <div
-            ref={scrollRef}
-            className="flex-1 overflow-y-auto custom-scrollbar px-8 py-8 space-y-10"
-          >
-            {/* Initial State: Greeting & Suggested Questions */}
-            {messages.length === 0 && (
-              <div className="max-w-3xl mx-auto space-y-8">
-                <div className="space-y-2">
-                  <h2 className="text-2xl font-bold tracking-tight text-on-surface">
-                    Career Intelligence: {candidateName}
-                  </h2>
-                  <p className="text-on-surface-variant text-sm">
-                    Answers grounded in resume and career artifacts.
+                <div className="space-y-4">
+                  <h1 className="max-w-4xl text-5xl font-black tracking-tight text-on-surface lg:text-6xl">
+                    Explore Chase Sinclair through an{' '}
+                    <span className="text-primary">Architect Profile</span> and an AI-powered{' '}
+                    <span className="text-secondary">Career Knowledge Base</span>.
+                  </h1>
+                  <p className="max-w-3xl text-lg leading-relaxed text-on-surface-variant">
+                    Career Architect is a recruiter-facing experience designed to make professional
+                    research faster and more interactive. Start with the Architect Profile for a
+                    structured overview, then move into the Career Knowledge Base to ask grounded
+                    questions about experience, projects, and impact.
                   </p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {suggestedPrompts.map((prompt, i) => (
-                    <button
-                      key={i}
-                      onClick={() => handleSend(prompt)}
-                      className="group bg-surface-container-low p-4 rounded-lg text-left border border-white/5 hover:bg-surface-container-high hover:border-primary/30 transition-all"
-                    >
-                      <span className="material-symbols-outlined text-primary text-xl mb-3 block">
-                        {PROMPT_ICONS[i]}
-                      </span>
-                      <span className="text-xs font-medium text-on-surface block leading-relaxed">
-                        {prompt}
-                      </span>
-                    </button>
-                  ))}
+
+                <div className="flex flex-wrap gap-4">
+                  <Link
+                    href="/about"
+                    className="inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-primary to-primary-container px-7 py-4 text-base font-bold text-on-primary transition-all hover:opacity-90"
+                  >
+                    View Chase&apos;s Architect Profile
+                    <span className="material-symbols-outlined text-lg">arrow_forward</span>
+                  </Link>
+                  <Link
+                    href="/admin"
+                    className="inline-flex items-center gap-3 rounded-2xl border border-white/10 bg-surface-container-lowest px-7 py-4 text-base font-semibold text-on-surface transition-colors hover:border-primary/30 hover:text-primary"
+                  >
+                    Try Demo Workflow
+                    <span className="material-symbols-outlined text-lg">science</span>
+                  </Link>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <div className="rounded-2xl border border-white/5 bg-surface-container-lowest/70 p-4">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-on-surface-variant/60">
+                      Start Here
+                    </p>
+                    <p className="mt-2 text-sm font-semibold text-on-surface">Architect Profile</p>
+                    <p className="mt-1 text-sm text-on-surface-variant">Best first stop for recruiters.</p>
+                  </div>
+                  <div className="rounded-2xl border border-white/5 bg-surface-container-lowest/70 p-4">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-on-surface-variant/60">
+                      Interactive Layer
+                    </p>
+                    <p className="mt-2 text-sm font-semibold text-on-surface">Career Knowledge Base</p>
+                    <p className="mt-1 text-sm text-on-surface-variant">Ask detailed questions with evidence.</p>
+                  </div>
+                  <div className="rounded-2xl border border-white/5 bg-surface-container-lowest/70 p-4">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-on-surface-variant/60">
+                      Capability Demo
+                    </p>
+                    <p className="mt-2 text-sm font-semibold text-on-surface">Create a New Profile</p>
+                    <p className="mt-1 text-sm text-on-surface-variant">Preview how the workflow generalizes.</p>
+                  </div>
                 </div>
               </div>
-            )}
 
-            {/* Message History */}
-            {messages.map((msg, i) => {
-              if (msg.role === 'user') {
-                return (
-                  <div key={i} className="max-w-3xl mx-auto flex justify-end">
-                    <div className="bg-surface-container-high px-5 py-3 rounded-lg max-w-xl text-sm text-on-surface">
-                      {msg.content}
+              <div className="grid gap-4">
+                <div className="rounded-[26px] border border-white/5 bg-[#101114]/90 p-6">
+                  <div className="mb-4 flex items-center justify-between">
+                    <div>
+                      <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-primary">
+                        Recommended Flow
+                      </p>
+                      <h2 className="mt-2 text-xl font-bold text-on-surface">How to use the app</h2>
                     </div>
+                    <span className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.25em] text-primary">
+                      Live
+                    </span>
                   </div>
-                )
-              }
 
-              return (
-                <div key={i} className="max-w-4xl mx-auto flex gap-6">
-                  <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
-                    <span className="material-symbols-outlined text-primary">auto_awesome</span>
-                  </div>
-                  <div className="flex-1 space-y-4">
-                    <div className="bg-surface-container-lowest p-6 rounded-lg border-l-2 border-primary relative">
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="text-[10px] font-mono text-primary uppercase tracking-widest font-bold">
-                          Answer
-                        </span>
-                        {msg.processingTime !== undefined && (
-                          <span className="text-[10px] font-mono text-on-surface-variant">
-                            {msg.processingTime.toFixed(4)}s Processing Time
+                  <div className="space-y-4">
+                    {[
+                      {
+                        step: '01',
+                        title: 'Open the Architect Profile',
+                        body: 'Read the structured profile, timeline, skills, and project context before going deeper.',
+                      },
+                      {
+                        step: '02',
+                        title: 'Open the Career Knowledge Base',
+                        body: 'Use natural-language questions to investigate technical depth, leadership, and evidence-backed experience.',
+                      },
+                      {
+                        step: '03',
+                        title: 'Review projects or try the demo',
+                        body: 'Explore featured work or preview how the same workflow can be used for other professionals.',
+                      },
+                    ].map(item => (
+                      <div
+                        key={item.step}
+                        className="rounded-2xl border border-white/5 bg-surface-container-lowest px-4 py-4"
+                      >
+                        <div className="mb-2 flex items-center gap-3">
+                          <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-secondary">
+                            {item.step}
                           </span>
-                        )}
+                          <h3 className="text-base font-bold text-on-surface">{item.title}</h3>
+                        </div>
+                        <p className="text-sm leading-relaxed text-on-surface-variant">{item.body}</p>
                       </div>
-                      <div className="space-y-4 text-sm leading-relaxed text-on-surface">
-                        <p>{msg.content}</p>
-                        {msg.evidence_snippets && msg.evidence_snippets.length > 0 && (
-                          <div className="bg-surface-container-low/50 p-4 rounded border border-white/5 font-mono text-[12px] text-on-surface-variant">
-                            <div className="flex items-center gap-2 mb-2 text-secondary">
-                              <span className="material-symbols-outlined text-xs">terminal</span>
-                              <span className="uppercase tracking-tighter">EVIDENCE SNIPPET</span>
-                            </div>
-                            <span className="block whitespace-pre-wrap">
-                              {msg.evidence_snippets[0]}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
-              )
-            })}
-
-            {/* Loading Indicator */}
-            {isLoading && (
-              <div className="max-w-4xl mx-auto flex gap-6">
-                <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
-                  <span className="material-symbols-outlined text-primary">auto_awesome</span>
-                </div>
-                <div className="flex-1">
-                  <div className="bg-surface-container-lowest p-6 rounded-lg border-l-2 border-primary">
-                    <div className="flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse [animation-delay:150ms]" />
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse [animation-delay:300ms]" />
-                      <span className="text-[10px] font-mono text-on-surface-variant ml-2 uppercase tracking-widest">
-                        Retrieving evidence...
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Chat Input Bar */}
-          <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-surface via-surface to-transparent">
-            <div className="max-w-4xl mx-auto">
-              <div className="bg-surface-container-high rounded-xl p-2 shadow-2xl flex items-center gap-2 border border-white/5 focus-within:border-primary/50 transition-colors">
-                <button className="p-2 text-on-surface-variant hover:text-primary transition-colors">
-                  <span className="material-symbols-outlined">query_stats</span>
-                </button>
-                <input
-                  value={input}
-                  onChange={e => setInput(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  disabled={isLoading}
-                  className="flex-1 bg-transparent border-none focus:ring-0 text-sm py-2 text-on-surface placeholder:text-on-surface-variant/50 disabled:opacity-50"
-                  placeholder="Ask a question about this candidate..."
-                  type="text"
-                />
-                <button className="p-2 text-on-surface-variant hover:text-primary transition-colors">
-                  <span className="material-symbols-outlined">attach_file</span>
-                </button>
-                <button
-                  onClick={() => handleSend()}
-                  disabled={isLoading || !input.trim()}
-                  className="bg-gradient-to-r from-primary to-primary-container text-on-primary px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 hover:opacity-90 transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
-                >
-                  SEND
-                  <span className="material-symbols-outlined text-sm">send</span>
-                </button>
               </div>
             </div>
-          </div>
+          </section>
+
+          <section className="mt-8 grid gap-6 lg:grid-cols-6">
+            <LandingCard
+              icon="badge"
+              title="Architect Profile"
+              body="A polished, recruiter-friendly view of Chase's background, experience, skills, and academic foundation."
+              action="Open Profile"
+              href="/about"
+              accent="primary"
+            />
+            <LandingCard
+              icon="forum"
+              title="Career Knowledge Base"
+              body="An interactive RAG interface that answers detailed questions using grounded source evidence and quality metrics."
+              action="Ask Questions"
+              href="/knowledge-base"
+              accent="secondary"
+            />
+            <LandingCard
+              icon="folder_open"
+              title="Projects"
+              body="A curated collection of technical work spanning AI systems, analytics platforms, and end-to-end product builds."
+              action="Browse Projects"
+              href="/projects"
+              accent="neutral"
+            />
+            <LandingCard
+              icon="tune"
+              title="Job Preferences"
+              body="The foundation for a stronger personal jobs agent that will learn role targets, preferences, and constraints before daily matching begins."
+              action="Set Preferences"
+              href="/job-preferences"
+              accent="secondary"
+            />
+            <LandingCard
+              icon="work"
+              title="Top Fit Jobs"
+              body="A scored scouting queue that ranks opportunities against your Architect Profile and saved preferences, with strengths, risks, and talking angles."
+              action="View Matches"
+              href="/top-fit-jobs"
+              accent="primary"
+            />
+            <LandingCard
+              icon="experiment"
+              title="Demo Lab"
+              body="A guided capability showcase for creating a new profile from uploaded career artifacts and supporting documents."
+              action="Launch Demo"
+              href="/admin"
+              accent="neutral"
+            />
+          </section>
         </div>
       </main>
-
-      {/* ── Right Sidebar: Data Panels ───────────────────────────────────────── */}
-      <aside className="fixed right-0 top-0 w-80 h-screen bg-surface-container-low border-l border-white/5 flex flex-col p-6 z-50 overflow-y-auto custom-scrollbar">
-
-        {/* Quality Metrics */}
-        <section className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">
-              Quality Metrics
-            </h3>
-            <span className="material-symbols-outlined text-on-surface-variant text-sm">info</span>
-          </div>
-
-          <div className="space-y-5">
-            {/* Groundedness */}
-            <div className="space-y-2">
-              <div className="flex justify-between items-end">
-                <span className="text-[10px] font-mono text-on-surface-variant/70">Groundedness</span>
-                <span className="text-sm font-mono text-secondary">
-                  {lastResponse ? lastResponse.scores.groundedness.toFixed(3) : '—'}
-                </span>
-              </div>
-              <div className="h-1 bg-surface-container-highest w-full overflow-hidden">
-                <div
-                  className="h-full bg-secondary shadow-[0_0_4px_rgba(68,226,205,0.4)] transition-all duration-500"
-                  style={{
-                    width: lastResponse
-                      ? `${Math.round(lastResponse.scores.groundedness * 100)}%`
-                      : '0%',
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Completeness */}
-            <div className="space-y-2">
-              <div className="flex justify-between items-end">
-                <span className="text-[10px] font-mono text-on-surface-variant/70">Completeness</span>
-                <span className="text-sm font-mono text-primary">
-                  {lastResponse ? lastResponse.scores.completeness.toFixed(3) : '—'}
-                </span>
-              </div>
-              <div className="h-1 bg-surface-container-highest w-full overflow-hidden">
-                <div
-                  className="h-full bg-primary shadow-[0_0_4px_rgba(142,213,255,0.4)] transition-all duration-500"
-                  style={{
-                    width: lastResponse
-                      ? `${Math.round(lastResponse.scores.completeness * 100)}%`
-                      : '0%',
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Unsupported Claim */}
-            <div className="flex justify-between items-center py-2">
-              <span className="text-[10px] font-mono text-on-surface-variant/70">Unsupported Claim</span>
-              {lastResponse ? (
-                <span
-                  className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
-                    lastResponse.scores.unsupported_claim
-                      ? 'bg-red-500/10 text-red-400 border-red-500/20'
-                      : 'bg-green-500/10 text-green-400 border-green-500/20'
-                  }`}
-                >
-                  {lastResponse.scores.unsupported_claim ? 'True' : 'False'}
-                </span>
-              ) : (
-                <span className="px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant text-[10px] font-bold border border-white/5">
-                  —
-                </span>
-              )}
-            </div>
-          </div>
-        </section>
-
-        {/* Separator */}
-        <div className="h-[1px] bg-surface-container-highest my-8" />
-
-        {/* Evidence & Sources */}
-        <section className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">
-              Source Evidence
-            </h3>
-            <span className="px-2 py-0.5 rounded-full bg-secondary/10 text-secondary text-[9px] font-bold border border-secondary/20">
-              {lastResponse ? `${lastResponse.sources.length} SOURCES` : '0 SOURCES'}
-            </span>
-          </div>
-
-          <div className="space-y-4">
-            {lastResponse?.sources.map((source, i) => (
-              <div
-                key={i}
-                className="bg-surface-container-lowest p-3 rounded border border-white/5 hover:bg-surface-container-highest transition-colors cursor-pointer group"
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="material-symbols-outlined text-sm text-on-surface-variant">
-                    description
-                  </span>
-                  <span className="text-[11px] font-bold text-on-surface truncate">{source}</span>
-                </div>
-                {lastResponse.evidence_snippets[i] && (
-                  <p className="font-mono text-[10px] text-on-surface-variant line-clamp-2 leading-relaxed">
-                    {lastResponse.evidence_snippets[i]}
-                  </p>
-                )}
-              </div>
-            ))}
-
-            {!lastResponse && (
-              <p className="text-[11px] font-mono text-on-surface-variant/50 text-center pt-4">
-                Ask a question to see source evidence
-              </p>
-            )}
-          </div>
-
-          {lastResponse && lastResponse.sources.length > 3 && (
-            <button className="w-full py-2 border border-outline-variant/30 text-[10px] font-mono uppercase tracking-widest text-on-surface-variant hover:bg-surface-container-highest transition-all mt-4">
-              VIEW ALL SOURCES
-            </button>
-          )}
-        </section>
-
-        <div className="mt-auto pt-10" />
-      </aside>
     </>
   )
 }

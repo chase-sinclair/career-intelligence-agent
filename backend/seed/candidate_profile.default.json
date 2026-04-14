@@ -1,0 +1,172 @@
+{
+  "name": "Chase Sinclair",
+  "headline": "Data Scientist | GenAI Strategy | Analytics Transformation",
+  "summary": "Data Scientist with 4+ years of experience building analytics and AI-enabled systems across federal and enterprise environments. Leads KPI design, data pipelines, dashboards, and applied AI use cases for large-scale public-facing platforms, pairing strong technical execution with a consulting mindset that turns complex data into practical decision support.",
+  "experience": [
+    {
+      "company": "Booz Allen Hamilton",
+      "title": "Lead Data Scientist",
+      "start_date": "Mar 2022",
+      "end_date": null,
+      "description": "Metrics Lead for DisasterAssistance.gov, a mission-critical federal platform serving up to 20M annual users and up to 80M annual site visits.",
+      "impact_bullets": [
+        "Defined KPI frameworks for 100+ daily measurement fields and automated ingestion pipelines to support real-time executive visibility during emergency response windows.",
+        "Deployed a production-grade RAG chatbot trained on complex website metrics, shifting requests to a self-service workflow and reducing manual response overhead.",
+        "Directed a migration from Excel-based grant tracking to an AWS and Snowflake pipeline that compressed a multi-hour manual process into a minutes-long workflow.",
+        "Built 20+ real-time Tableau dashboards for the DOL Office of Apprenticeship and led recurring strategy sessions with leadership to support program decisions."
+      ]
+    },
+    {
+      "company": "Lockheed Martin",
+      "title": "Data Scientist Intern",
+      "start_date": "May 2021",
+      "end_date": "Aug 2021",
+      "description": "Developed NLP and clustering solutions to improve semantic search across large document corpora.",
+      "impact_bullets": [
+        "Built automated topic-detection workflows for unstructured text.",
+        "Optimized machine learning clustering models to improve search relevance across enterprise documents."
+      ]
+    }
+  ],
+  "skills": [
+    "Python",
+    "SQL",
+    "Snowflake",
+    "ETL pipeline design",
+    "data modeling",
+    "RAG architecture",
+    "NLP",
+    "generative AI",
+    "prompt engineering",
+    "LLM evaluation",
+    "KPI framework development",
+    "A/B testing",
+    "product analytics",
+    "executive storytelling"
+  ],
+  "tools": [
+    "AWS Bedrock",
+    "Azure",
+    "BigQuery",
+    "Tableau",
+    "Looker",
+    "Streamlit",
+    "LangChain",
+    "LangGraph",
+    "FastAPI",
+    "Next.js",
+    "Chroma"
+  ],
+  "education": [
+    {
+      "institution": "Virginia Tech",
+      "degree": "Bachelor of Science in Computational Modeling & Data Analytics",
+      "year": "2021"
+    },
+    {
+      "institution": "Virginia Tech",
+      "degree": "Minor in Statistics",
+      "year": "2021"
+    }
+  ],
+  "certifications": [],
+  "projects": [
+    {
+      "name": "Career Intelligence Agent",
+      "summary": "Built a recruiter-facing AI application that answers questions about a candidate using grounded retrieval, visible source evidence, and live LLM-as-judge evaluation.",
+      "tech_stack": [
+        "Next.js",
+        "FastAPI",
+        "LangGraph",
+        "Chroma",
+        "OpenAI"
+      ],
+      "impact_bullets": [
+        "Combined a FastAPI backend and Next.js frontend into a portfolio-ready recruiter research experience.",
+        "Implemented LangGraph workflows for ingestion, profile synthesis, recruiter Q&A, and evaluation.",
+        "Exposed evidence snippets and quality metrics directly in the UI to make retrieval quality transparent."
+      ],
+      "links": {
+        "github": "https://github.com/chase-sinclair/career-intelligence-agent"
+      }
+    },
+    {
+      "name": "SignalPulse AI",
+      "summary": "Built a B2B sales intelligence platform that monitors hiring signals, enriches them with AI, and surfaces high-intent buying windows through a production-grade dashboard.",
+      "tech_stack": [
+        "Next.js",
+        "Supabase",
+        "n8n",
+        "OpenAI GPT-4o-mini",
+        "SerpApi"
+      ],
+      "impact_bullets": [
+        "Automated daily ingestion and enrichment of job-posting signals to identify software buying intent.",
+        "Designed a full-stack analytics workflow spanning orchestration, storage, enrichment, and dashboard delivery.",
+        "Kept the MVP ingestion budget on the free tier by constraining queries and filtering before AI processing."
+      ],
+      "links": {
+        "github": "https://github.com/chase-sinclair/signalpulse",
+        "demo": "https://signalpulse-six.vercel.app"
+      }
+    },
+    {
+      "name": "OSS Dependency Risk Agent",
+      "summary": "Built an end-to-end AI engineering system that monitors open-source projects for health deterioration and generates structured dependency-risk recommendations.",
+      "tech_stack": [
+        "AWS S3",
+        "Databricks",
+        "dbt",
+        "LangGraph",
+        "Claude",
+        "Streamlit"
+      ],
+      "impact_bullets": [
+        "Modeled health scores across 200 OSS projects using multi-layer data pipelines and six repository health signals.",
+        "Designed a five-node LangGraph agent that investigates deteriorating dependencies and recommends replace, upgrade, or monitor actions.",
+        "Connected lakehouse processing, agent orchestration, and a dashboard into a single portfolio-ready AI system."
+      ],
+      "links": {
+        "github": "https://github.com/chase-sinclair/oss-dependency-risk-agent"
+      }
+    },
+    {
+      "name": "AI Use Case Evaluation & Prioritization Tool",
+      "summary": "Developed an internal AI-enabled framework to evaluate and prioritize use cases across personas using structured inputs, scoring logic, and generative AI support.",
+      "tech_stack": [
+        "Generative AI",
+        "Decision frameworks",
+        "Scoring logic"
+      ],
+      "impact_bullets": [
+        "Created a repeatable framework for comparing AI investment opportunities.",
+        "Combined structured evaluation criteria with AI-assisted reasoning to support data-informed prioritization."
+      ],
+      "links": {}
+    },
+    {
+      "name": "Generative AI Consumer Recall Detection",
+      "summary": "Built a consumer-facing GenAI application that checks grocery product recall status from live photos and explains results using AI grounded in FDA recall data.",
+      "tech_stack": [
+        "AWS Bedrock",
+        "LangChain",
+        "NLP similarity search"
+      ],
+      "impact_bullets": [
+        "Designed a multimodal workflow that translates photos of product labels into recall lookups.",
+        "Used AI-generated grounded explanations to make recall results easier for users to understand."
+      ],
+      "links": {}
+    }
+  ],
+  "leadership_examples": [
+    "Served as Metrics Lead for a large-scale public-facing platform with executive-facing analytics responsibilities.",
+    "Led weekly strategy sessions with leadership stakeholders to accelerate decision-making.",
+    "Served as Lead Project Manager for a six-intern Summer Games cohort building an AI-enabled prototype."
+  ],
+  "quantified_impacts": [
+    "Supported a mission-critical platform serving up to 20M annual users and up to 80M annual site visits.",
+    "Defined KPI frameworks across 100+ daily measurement fields.",
+    "Built 20+ real-time Tableau dashboards for program leadership."
+  ]
+}

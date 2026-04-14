@@ -1,11 +1,22 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import { useEffect, useMemo, useState } from 'react'
 import TopNav from '@/components/TopNav'
-import { runEval, getEvalResults } from '@/lib/api'
-import type { EvalRunResult } from '@/lib/types'
+import type { EvaluationScores } from '@/lib/types'
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+interface SessionQualityEntry {
+  id: string
+  question: string
+  answer: string
+  sources: string[]
+  evidence_snippets: string[]
+  scores: EvaluationScores
+  processingTime: number
+  createdAt: string
+}
+
+const SESSION_STORAGE_KEY = 'career-architect-answer-quality-session'
 
 function MetricBar({
   label,
@@ -17,7 +28,10 @@ function MetricBar({
   color: 'secondary' | 'primary'
 }) {
   const pct = value !== null ? Math.round(value * 100) : 0
-  const barClass = color === 'secondary' ? 'bg-secondary shadow-[0_0_4px_rgba(68,226,205,0.4)]' : 'bg-primary shadow-[0_0_4px_rgba(142,213,255,0.4)]'
+  const barClass =
+    color === 'secondary'
+      ? 'bg-secondary shadow-[0_0_4px_rgba(68,226,205,0.4)]'
+      : 'bg-primary shadow-[0_0_4px_rgba(142,213,255,0.4)]'
   const valClass = color === 'secondary' ? 'text-secondary' : 'text-primary'
 
   return (
@@ -25,242 +39,243 @@ function MetricBar({
       <div className="flex justify-between items-end">
         <span className="text-[10px] font-mono text-on-surface-variant/70">{label}</span>
         <span className={`text-sm font-mono ${valClass}`}>
-          {value !== null ? value.toFixed(3) : '—'}
+          {value !== null ? value.toFixed(3) : '-'}
         </span>
       </div>
       <div className="h-1 bg-surface-container-highest w-full overflow-hidden">
-        <div
-          className={`h-full ${barClass} transition-all duration-500`}
-          style={{ width: `${pct}%` }}
-        />
+        <div className={`h-full ${barClass} transition-all duration-500`} style={{ width: `${pct}%` }} />
       </div>
     </div>
   )
 }
 
-function PassBadge({ pass }: { pass: boolean }) {
-  return (
-    <span
-      className={`px-2 py-0.5 rounded-full text-[9px] font-bold border ${
-        pass
-          ? 'bg-green-500/10 text-green-400 border-green-500/20'
-          : 'bg-red-500/10 text-red-400 border-red-500/20'
-      }`}
-    >
-      {pass ? 'PASS' : 'FAIL'}
-    </span>
-  )
-}
-
-// ── Component ─────────────────────────────────────────────────────────────────
-
-export default function DiagnosticsPage() {
-  const [results, setResults] = useState<EvalRunResult | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [running, setRunning] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+export default function AnswerQualityCheckPage() {
+  const [entries, setEntries] = useState<SessionQualityEntry[]>([])
 
   useEffect(() => {
-    getEvalResults()
-      .then(setResults)
-      .catch(() => {}) // 404 = no prior run, show empty state
-      .finally(() => setLoading(false))
+    if (typeof window === 'undefined') return
+    const raw = window.sessionStorage.getItem(SESSION_STORAGE_KEY)
+    setEntries(raw ? JSON.parse(raw) : [])
   }, [])
 
-  async function handleRunEval() {
-    if (running) return
-    setRunning(true)
-    setError(null)
-    try {
-      setResults(await runEval())
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Evaluation run failed')
-    } finally {
-      setRunning(false)
+  const aggregates = useMemo(() => {
+    if (entries.length === 0) {
+      return {
+        avgGroundedness: null,
+        avgCompleteness: null,
+        avgConfidence: null,
+        unsupportedRate: null,
+        avgSources: null,
+      }
     }
-  }
 
-  // ── Render ──────────────────────────────────────────────────────────────────
+    return {
+      avgGroundedness:
+        entries.reduce((sum, entry) => sum + entry.scores.groundedness, 0) / entries.length,
+      avgCompleteness:
+        entries.reduce((sum, entry) => sum + entry.scores.completeness, 0) / entries.length,
+      avgConfidence:
+        entries.reduce((sum, entry) => sum + entry.scores.confidence, 0) / entries.length,
+      unsupportedRate:
+        entries.filter(entry => entry.scores.unsupported_claim).length / entries.length,
+      avgSources:
+        entries.reduce((sum, entry) => sum + entry.sources.length, 0) / entries.length,
+    }
+  }, [entries])
+
+  function clearSession() {
+    if (typeof window === 'undefined') return
+    window.sessionStorage.removeItem(SESSION_STORAGE_KEY)
+    setEntries([])
+  }
 
   return (
     <>
-      <TopNav subtitle="Evaluations" />
+      <TopNav subtitle="Answer Quality Check" />
 
       <main className="ml-64 h-screen overflow-y-auto custom-scrollbar">
         <div className="p-10 space-y-10 max-w-6xl">
-
-          {/* ── Page Header ──────────────────────────────────────────────────── */}
           <header>
             <h2 className="text-4xl font-extrabold tracking-tight text-on-surface mb-2">
-              Evaluation Diagnostics
+              Answer Quality Check
             </h2>
-            <p className="text-on-surface-variant text-lg font-body">
-              LLM-as-judge scoring against the gold recruiter question set.
+            <p className="text-on-surface-variant text-lg font-body max-w-3xl">
+              Review the quality of answers generated in the current Career Knowledge Base session.
+              This page summarizes groundedness, completeness, confidence, and source coverage for
+              the questions you actually asked.
             </p>
+            <div className="mt-5">
+              <Link
+                href="/knowledge-base"
+                className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-surface-container-low px-4 py-3 font-mono text-[11px] uppercase tracking-[0.2em] text-on-surface-variant transition-colors hover:border-primary/30 hover:text-primary"
+              >
+                Return to Career Knowledge Base
+                <span className="material-symbols-outlined text-sm">arrow_outward</span>
+              </Link>
+            </div>
           </header>
 
-          {/* ── Section A + B: Metrics + Run Controls (side by side) ─────────── */}
           <div className="grid grid-cols-12 gap-8">
-
-            {/* Aggregate Metrics */}
-            <div className="col-span-12 lg:col-span-7 bg-surface-container-low p-8 rounded-xl relative overflow-hidden">
+            <section className="col-span-12 lg:col-span-7 bg-surface-container-low p-8 rounded-xl relative overflow-hidden">
               <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
-              <h3 className="text-xs font-mono font-bold uppercase tracking-[0.4em] text-on-surface-variant mb-8 flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary text-sm">analytics</span>
-                Aggregate Metrics
-              </h3>
+              <div className="flex items-center justify-between mb-8">
+                <h3 className="text-xs font-mono font-bold uppercase tracking-[0.4em] text-on-surface-variant flex items-center gap-2">
+                  <span className="material-symbols-outlined text-primary text-sm">analytics</span>
+                  Session Metrics
+                </h3>
+                <span className="px-3 py-1 rounded-full border border-secondary/20 bg-secondary/10 text-secondary font-mono text-[10px] uppercase tracking-[0.25em]">
+                  {entries.length} Answers
+                </span>
+              </div>
 
-              {loading ? (
-                <p className="font-mono text-xs text-on-surface-variant/50">Loading...</p>
+              {entries.length === 0 ? (
+                <p className="font-mono text-sm text-on-surface-variant/50">
+                  Ask questions in the Career Knowledge Base to populate this check.
+                </p>
               ) : (
                 <div className="space-y-5">
-                  <MetricBar label="Avg Groundedness"       value={results?.avg_groundedness       ?? null} color="secondary" />
-                  <MetricBar label="Avg Completeness"       value={results?.avg_completeness       ?? null} color="primary"   />
-                  <MetricBar label="Avg Confidence"         value={results?.avg_confidence         ?? null} color="primary"   />
-                  <MetricBar label="Must-Mention Pass Rate" value={results?.must_mention_pass_rate ?? null} color="secondary" />
+                  <MetricBar label="Avg Groundedness" value={aggregates.avgGroundedness} color="secondary" />
+                  <MetricBar label="Avg Completeness" value={aggregates.avgCompleteness} color="primary" />
+                  <MetricBar label="Avg Confidence" value={aggregates.avgConfidence} color="primary" />
 
-                  <div className="flex justify-between items-center pt-2">
-                    <span className="text-[10px] font-mono text-on-surface-variant/70">
-                      Unsupported Claim Rate
-                    </span>
-                    {results ? (
-                      <span
-                        className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
-                          results.unsupported_claim_rate > 0
-                            ? 'bg-red-500/10 text-red-400 border-red-500/20'
-                            : 'bg-green-500/10 text-green-400 border-green-500/20'
-                        }`}
-                      >
-                        {(results.unsupported_claim_rate * 100).toFixed(0)}%
-                      </span>
-                    ) : (
-                      <span className="px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant text-[10px] font-bold border border-white/5">
-                        —
-                      </span>
-                    )}
+                  <div className="grid grid-cols-2 gap-4 pt-3">
+                    <div className="rounded-xl border border-white/5 bg-surface-container-lowest p-4">
+                      <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-on-surface-variant/60">
+                        Unsupported Claim Rate
+                      </p>
+                      <p className="mt-3 text-2xl font-bold text-on-surface">
+                        {aggregates.unsupportedRate !== null
+                          ? `${Math.round(aggregates.unsupportedRate * 100)}%`
+                          : '-'}
+                      </p>
+                    </div>
+                    <div className="rounded-xl border border-white/5 bg-surface-container-lowest p-4">
+                      <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-on-surface-variant/60">
+                        Avg Sources Per Answer
+                      </p>
+                      <p className="mt-3 text-2xl font-bold text-on-surface">
+                        {aggregates.avgSources !== null ? aggregates.avgSources.toFixed(1) : '-'}
+                      </p>
+                    </div>
                   </div>
                 </div>
               )}
-            </div>
+            </section>
 
-            {/* Run Controls */}
-            <div className="col-span-12 lg:col-span-5 bg-surface-container-low p-8 rounded-xl relative overflow-hidden">
+            <section className="col-span-12 lg:col-span-5 bg-surface-container-low p-8 rounded-xl relative overflow-hidden">
               <div className="absolute top-0 left-0 w-1 h-full bg-secondary" />
               <h3 className="text-xs font-mono font-bold uppercase tracking-[0.4em] text-on-surface-variant mb-8 flex items-center gap-2">
-                <span className="material-symbols-outlined text-secondary text-sm">play_circle</span>
-                Run Evaluation
+                <span className="material-symbols-outlined text-secondary text-sm">visibility</span>
+                What This Means
               </h3>
 
-              <div className="space-y-6">
-                <div className="space-y-1">
-                  <p className="text-xs text-on-surface-variant font-body leading-relaxed">
-                    Runs the full chat pipeline on each gold question and scores every answer with the gpt-4o-mini judge.
-                  </p>
-                  {results && (
-                    <p className="font-mono text-[10px] text-on-surface-variant/50 pt-2">
-                      Last run: {new Date(results.timestamp).toLocaleString()} &nbsp;·&nbsp; {results.total_questions} questions
-                    </p>
-                  )}
-                </div>
-
+              <div className="space-y-5 text-sm leading-relaxed text-on-surface-variant">
+                <p>
+                  This view is session-based. It is not using the old benchmark prompt set anymore.
+                  It only reflects answers generated from your current browser session in the Career
+                  Knowledge Base.
+                </p>
+                <p>
+                  Groundedness and completeness come from the existing LLM-as-judge scoring already
+                  returned with each answer. Source counts help indicate how much retrieval support
+                  the answer had.
+                </p>
                 <button
-                  onClick={handleRunEval}
-                  disabled={running}
-                  className="bg-gradient-to-r from-primary to-primary-container text-on-primary px-6 py-2.5 rounded-lg text-xs font-bold flex items-center gap-2 hover:opacity-90 transition-all active:scale-95 disabled:opacity-40 disabled:pointer-events-none"
+                  onClick={clearSession}
+                  className="mt-2 flex items-center gap-2 rounded-xl border border-white/10 bg-surface-container-lowest px-4 py-3 font-mono text-[11px] uppercase tracking-[0.2em] text-on-surface-variant transition-colors hover:border-primary/30 hover:text-primary"
                 >
-                  {running ? (
-                    <span className="material-symbols-outlined text-sm animate-spin">refresh</span>
-                  ) : (
-                    <span className="material-symbols-outlined text-sm">play_arrow</span>
-                  )}
-                  {running ? 'RUNNING...' : 'RUN EVALUATION'}
+                  <span className="material-symbols-outlined text-sm">delete</span>
+                  Clear Session Check
                 </button>
-
-                {error && (
-                  <div className="bg-surface-container-lowest p-4 rounded-lg border-l-2 border-red-500/50">
-                    <p className="font-mono text-xs text-red-400">{error}</p>
-                  </div>
-                )}
               </div>
-            </div>
+            </section>
           </div>
 
-          {/* ── Section C: Per-Question Results Table ─────────────────────────── */}
           <section className="bg-surface-container-low p-8 rounded-xl relative overflow-hidden">
             <div className="absolute top-0 left-0 w-1 h-full bg-tertiary" />
             <h3 className="text-xs font-mono font-bold uppercase tracking-[0.4em] text-on-surface-variant mb-8 flex items-center gap-2">
               <span className="material-symbols-outlined text-tertiary text-sm">fact_check</span>
-              Per-Question Results
-              {results && (
-                <span className="ml-2 px-2 py-0.5 rounded-full bg-secondary/10 text-secondary text-[9px] font-bold border border-secondary/20">
-                  {results.total_questions} QUESTIONS
-                </span>
-              )}
+              Session Answers
             </h3>
 
-            {!results ? (
-              /* Empty state */
+            {entries.length === 0 ? (
               <div className="py-16 flex flex-col items-center gap-4 text-center">
                 <span className="material-symbols-outlined text-4xl text-on-surface-variant/30">
-                  folder_open
+                  forum
                 </span>
                 <p className="font-mono text-sm text-on-surface-variant/50">
-                  No evaluation results yet. Click Run Evaluation to begin.
+                  No current-session answers yet. Start in the Career Knowledge Base first.
                 </p>
               </div>
             ) : (
-              /* Results table */
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-surface-container-highest">
-                      {['ID', 'Question', 'Gnd', 'Cmp', 'Unsupported', 'Must-Mention', 'Explanation'].map(h => (
-                        <th
-                          key={h}
-                          className="text-left font-mono text-[9px] uppercase tracking-widest text-on-surface-variant/60 pb-3 pr-4"
-                        >
-                          {h}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-surface-container-highest">
-                    {results.results.map(r => (
-                      <tr
-                        key={r.id}
-                        className="hover:bg-surface-container-highest/30 transition-colors"
-                      >
-                        <td className="py-3 pr-4 font-mono text-[10px] text-on-surface-variant/60">
-                          {r.id}
-                        </td>
-                        <td className="py-3 pr-4 font-mono text-[11px] text-on-surface max-w-[200px]">
-                          <span className="line-clamp-2" title={r.question}>{r.question}</span>
-                        </td>
-                        <td className="py-3 pr-4 font-mono text-[11px] text-secondary">
-                          {r.scores.groundedness.toFixed(3)}
-                        </td>
-                        <td className="py-3 pr-4 font-mono text-[11px] text-primary">
-                          {r.scores.completeness.toFixed(3)}
-                        </td>
-                        <td className="py-3 pr-4">
-                          <PassBadge pass={!r.scores.unsupported_claim} />
-                        </td>
-                        <td className="py-3 pr-4">
-                          <PassBadge pass={r.must_mention_pass} />
-                        </td>
-                        <td className="py-3 font-mono text-[10px] text-on-surface-variant/70 max-w-[240px]">
-                          <span className="line-clamp-2" title={r.scores.explanation}>
-                            {r.scores.explanation}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="space-y-5">
+                {entries
+                  .slice()
+                  .reverse()
+                  .map(entry => (
+                    <div
+                      key={entry.id}
+                      className="rounded-2xl border border-white/5 bg-surface-container-lowest p-5"
+                    >
+                      <div className="mb-3 flex items-center justify-between gap-4">
+                        <p className="text-sm font-semibold text-on-surface">{entry.question}</p>
+                        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-on-surface-variant/60 shrink-0">
+                          {new Date(entry.createdAt).toLocaleTimeString()}
+                        </span>
+                      </div>
+
+                      <p className="text-sm leading-relaxed text-on-surface-variant mb-4">
+                        {entry.answer}
+                      </p>
+
+                      <div className="grid gap-3 md:grid-cols-4">
+                        <div className="rounded-xl border border-white/5 bg-surface-container-highest/40 p-3">
+                          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-on-surface-variant/60">
+                            Groundedness
+                          </p>
+                          <p className="mt-2 text-lg font-bold text-secondary">
+                            {entry.scores.groundedness.toFixed(3)}
+                          </p>
+                        </div>
+                        <div className="rounded-xl border border-white/5 bg-surface-container-highest/40 p-3">
+                          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-on-surface-variant/60">
+                            Completeness
+                          </p>
+                          <p className="mt-2 text-lg font-bold text-primary">
+                            {entry.scores.completeness.toFixed(3)}
+                          </p>
+                        </div>
+                        <div className="rounded-xl border border-white/5 bg-surface-container-highest/40 p-3">
+                          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-on-surface-variant/60">
+                            Sources
+                          </p>
+                          <p className="mt-2 text-lg font-bold text-on-surface">
+                            {entry.sources.length}
+                          </p>
+                        </div>
+                        <div className="rounded-xl border border-white/5 bg-surface-container-highest/40 p-3">
+                          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-on-surface-variant/60">
+                            Unsupported
+                          </p>
+                          <p className={`mt-2 text-lg font-bold ${entry.scores.unsupported_claim ? 'text-red-400' : 'text-green-400'}`}>
+                            {entry.scores.unsupported_claim ? 'Flagged' : 'Clear'}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 rounded-xl border border-white/5 bg-[#101114] p-4">
+                        <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-on-surface-variant/60 mb-2">
+                          Judge Explanation
+                        </p>
+                        <p className="text-sm leading-relaxed text-on-surface-variant">
+                          {entry.scores.explanation}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
               </div>
             )}
           </section>
-
         </div>
       </main>
     </>

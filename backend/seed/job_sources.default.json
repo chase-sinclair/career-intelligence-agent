@@ -1,0 +1,42 @@
+[
+  {
+    "id": "portpro-lever",
+    "name": "PortPro",
+    "platform": "lever",
+    "identifier": "portpro",
+    "discovery_mode": "ats_api",
+    "priority_tier": 1,
+    "enabled": true,
+    "notes": "NYC-based logistics platform with a current Data Scientist opening."
+  },
+  {
+    "id": "usmobile-lever",
+    "name": "US Mobile",
+    "platform": "lever",
+    "identifier": "USMobile",
+    "discovery_mode": "ats_api",
+    "priority_tier": 1,
+    "enabled": true,
+    "notes": "NYC hybrid board with product data science and analytics engineering roles."
+  },
+  {
+    "id": "compstak-lever",
+    "name": "CompStak",
+    "platform": "lever",
+    "identifier": "compstak",
+    "discovery_mode": "ats_api",
+    "priority_tier": 1,
+    "enabled": true,
+    "notes": "NYC hybrid board with applied data science and econometrics roles."
+  },
+  {
+    "id": "voleon-lever",
+    "name": "The Voleon Group",
+    "platform": "lever",
+    "identifier": "voleon",
+    "discovery_mode": "ats_api",
+    "priority_tier": 1,
+    "enabled": true,
+    "notes": "NYC quant and research-heavy board with technical lead and research roles."
+  }
+]

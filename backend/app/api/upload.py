@@ -1,9 +1,10 @@
+import json
 import shutil
 import uuid
 from pathlib import Path
 from typing import Literal
 
-from fastapi import APIRouter, File, Form, UploadFile, HTTPException
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel
 
 from app.core.config import settings
@@ -43,11 +44,26 @@ async def upload_file(
     doc_id = str(uuid.uuid4())
     safe_name = f"{doc_id}{suffix}"
     dest = upload_dir / safe_name
+    meta_path = upload_dir / f"{doc_id}.meta.json"
 
     with dest.open("wb") as f:
         shutil.copyfileobj(file.file, f)
 
-    logger.info(f"Uploaded {file.filename!r} → {dest} (doc_type={doc_type})")
+    meta_path.write_text(
+        json.dumps(
+            {
+                "doc_id": doc_id,
+                "original_filename": file.filename,
+                "stored_filename": safe_name,
+                "doc_type": doc_type,
+                "project_name": project_name,
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+    logger.info(f"Uploaded {file.filename!r} -> {dest} (doc_type={doc_type})")
     return UploadResponse(
         doc_id=doc_id,
         filename=file.filename,
