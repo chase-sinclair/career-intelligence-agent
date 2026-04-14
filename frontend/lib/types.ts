@@ -170,6 +170,18 @@ export interface JobSourcePack {
   sources: JobSourceConfig[]
 }
 
+export interface RankedCount {
+  label: string
+  count: number
+}
+
+export interface JobSourcePackRecommendation {
+  pack_id: string
+  pack_name: string
+  reason: string
+  match_score: number
+}
+
 export interface JobFitResult {
   job: JobPosting
   overall_score: number
@@ -196,6 +208,7 @@ export interface TopFitJobsResponse {
   generated_for: string
   live_jobs_count: number
   uses_seed_fallback: boolean
+  display_company_cap: number
   brief_headline: string
   brief_summary: string
   new_since_refresh_count: number
@@ -205,6 +218,9 @@ export interface TopFitJobsResponse {
   ready_to_review_count: number
   shortlisted_count: number
   applied_count: number
+  recommended_pack: JobSourcePackRecommendation
+  top_companies: RankedCount[]
+  top_titles: RankedCount[]
   top_matches: JobFitResult[]
 }
 

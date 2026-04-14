@@ -63,9 +63,12 @@ GET  /admin/status          -> Return ingestion/index status
 - [x] Phase 6: Job Agent Foundations (preferences capture, job schemas/storage, ingestion scaffolding, fit scoring surfaces)
 - [x] Phase 7: Efficient Job Discovery Pipeline (career-ops-inspired source tiers, scan history, refresh deltas, liveness-aware discovery, shortlist-first evaluation)
 - [x] Phase 8: Broad Discovery Expansion (multi-board ATS source packs, wider AI/company coverage, preference-responsive search universe, career-ops-style discovery breadth)
+- [x] Phase 9: Top Fit Jobs Diversification + UX Simplification (company-cap display logic, smarter pack recommendations, direct-board expansion, cleaner 2-column jobs view)
+- [x] Phase 10: Project Deep-Dive Routing Foundation (animated project detail template, OSS Dependency Risk Agent first deep dive, reusable project-detail pattern)
+- [ ] Phase 11: Recruiter-Facing AI Architect Profile Finish (finalize Chase-facing profile, RAG accuracy, project deep dives, and public/private platform boundaries before resuming full multi-user platform work)
 
 ## Current Phase
-Phase 8 complete - Broad Discovery Expansion
+Phase 11 in progress - Recruiter-Facing AI Architect Profile Finish
 
 ## Run Command
 Always run uvicorn from the `backend/` directory (not repo root):
@@ -508,3 +511,91 @@ Next: The next likely build track is a delivery and intelligence layer on top of
 - morning brief generation from refresh deltas + shortlist state
 - smarter preference-to-pack recommendations
 - deeper search expansion beyond ATS boards when needed
+
+### Session 25 - 2026-04-14
+Completed: Closed Phase 9 - Top Fit Jobs Diversification + UX Simplification.
+- backend/app/models/jobs.py - expanded the jobs response contract to support:
+  - ranked company/title rollups
+  - recommended discovery-pack metadata
+  - explicit visible company-cap metadata for the top list
+- backend/app/services/jobs.py - upgraded ranking output behavior:
+  - top displayed roles are now diversified with a hard cap of `2` roles per company
+  - added smarter pack recommendations based on saved target titles, keywords, and focus areas
+  - added ranked-pool summaries for top companies and top title families
+  - improved the title-rollup logic so the trend panel groups similar role families instead of just showing unique one-off titles
+- backend/app/services/job_sources.py - added the first deeper non-ATS expansion path:
+  - new `direct` platform support for direct-board career pages
+  - direct-board parsing of JSON-LD `JobPosting` entries when available
+  - non-ATS pages still route through liveness verification before they influence the queue
+- frontend/lib/types.ts - extended the UI contracts to render:
+  - pack recommendations
+  - top company/title rollups
+  - visible company-cap messaging
+- frontend/app/top-fit-jobs/page.tsx - redesigned the page to be much less vertical and easier to scan:
+  - simplified the hero copy and metric explanations
+  - clarified what each top-level number means (`Roles Passing Filters`, `Live Openings Scanned`, `Best-Fit Roles in Pool`, `Display Rule`)
+  - made `Apply Pack` immediately refresh the new source universe instead of only swapping configs
+  - surfaced the recommended pack clearly in the UI
+  - added visual ranked-pool summaries for top companies and top job-title families
+  - switched the top job list to a 2-column grid on wider screens
+  - updated advanced source tuning to explain direct-board usage and allow a `Direct Board` platform with full URL identifiers
+- Validation:
+  - backend compile passed with `python -m compileall app`
+  - frontend build passed with `npm run build`
+  - `get_top_fit_jobs()` now returns:
+    - `display_company_cap: 2`
+    - recommended pack metadata
+    - top companies/title-family summaries
+    - diversified visible top matches instead of a single-company wall
+Next: The next likely build track is the delivery layer:
+- true morning-brief generation from refresh deltas and shortlist changes
+- application-tailoring flows for shortlisted roles
+- deeper broad-search provider coverage beyond ATS and direct-board pages
+
+### Session 26 - 2026-04-14
+Completed: Closed Phase 10 - Project Deep-Dive Routing Foundation.
+- frontend/components/AnimatedReveal.tsx - added a reusable scroll-reveal wrapper using `IntersectionObserver`, so project sections animate into view without introducing a new animation dependency
+- frontend/lib/project-details.ts - added the first reusable project-detail content model plus the initial structured deep-dive dataset for `OSS Dependency Risk Agent`
+- frontend/app/projects/[slug]/page.tsx - added a native Next.js project-detail route that recreates the long-form showcase style from the provided mockup:
+  - animated section reveals while scrolling
+  - sticky back navigation
+  - modular sections for problem, workflow, pipeline, health signals, agent design, sample output, semantic search, technical highlights, metrics, lessons learned, and roadmap
+- frontend/app/projects/page.tsx - updated the project cards so supported projects can open internal deep-dive pages through a `View Deep Dive` CTA instead of only linking outward
+- Validation:
+  - frontend build passed with `npm run build`
+  - the app now exposes a dynamic project-detail route at `/projects/[slug]`
+  - `OSS Dependency Risk Agent` is the first reusable case-study page in the portfolio
+Next: Continue the project-page track by:
+- polishing the OSS detail page visuals and adding richer visuals/media if needed
+- expanding the `project-details` dataset as more projects get their own deep-dive pages
+- optionally introducing richer project-specific media sections (screenshots, diagrams, short demo videos) inside the same reusable template
+
+### Session 27 - 2026-04-14
+Completed: Reframed the product roadmap around a recruiter-first public experience plus a future private platform layer.
+- Clarified the `Future State` product direction:
+  - users eventually upload career artifacts and the platform automatically builds:
+    - an Architect Profile
+    - a Career Knowledge Base / RAG layer
+    - project highlights
+    - personalized job matching
+  - user-only workflow pages such as job matching remain private/internal
+  - recruiter/public users only see the polished public-facing outputs
+- Locked the `Current Objective` for the next build track:
+  - fully build out Chase Sinclair's AI Architect Profile first
+  - refine and finalize the visible public profile experience before resuming platform expansion
+- Defined Phase 11 as the next explicit execution track:
+  - gather and incorporate more of Chase's career experience data
+  - finalize the Architect Profile page and what it should surface
+  - tighten RAG retrieval / grounding quality so the knowledge base is reliable and recruiter-ready
+  - continue building dedicated deep-dive pages for each highlighted project
+  - formalize public vs private platform boundaries so recruiter visitors do not see internal-only workflow tools
+- Product framing for the landing page going forward:
+  - explain what the platform is today
+  - explain what the platform is becoming
+  - keep the current recruiter-facing version as the polished portfolio layer, while the broader self-serve platform remains an intentional future-state story
+Next: Start Phase 11 execution by prioritizing:
+- source-of-truth career data intake from Chase
+- Architect Profile refinements
+- RAG quality tuning
+- additional project deep dives
+- public/private page access strategy

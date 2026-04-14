@@ -164,6 +164,8 @@ def _fetch_source(source: JobSourceConfig) -> list[JobPosting]:
             return _fetch_lever_jobs(client, source)
         if source.platform == "ashby":
             return _fetch_ashby_jobs(client, source)
+        if source.platform == "direct":
+            return _fetch_direct_board_jobs(client, source)
     raise ValueError(f"Unsupported source platform: {source.platform}")
 
 
@@ -347,13 +349,151 @@ def _fetch_ashby_jobs(client: httpx.Client, source: JobSourceConfig) -> list[Job
     return jobs
 
 
+def _fetch_direct_board_jobs(client: httpx.Client, source: JobSourceConfig) -> list[JobPosting]:
+    url = source.identifier.strip()
+    if not url.startswith("http://") and not url.startswith("https://"):
+        raise ValueError("Direct board sources must use a full URL identifier.")
+
+    response = client.get(url)
+    response.raise_for_status()
+    page_html = response.text
+    json_ld_items = _extract_json_ld_job_postings(page_html)
+    fetched_at = _now_iso()
+
+    jobs: list[JobPosting] = []
+    for index, item in enumerate(json_ld_items):
+        title = item.get("title") or item.get("name") or f"{source.name} role {index + 1}"
+        location = _extract_direct_location(item) or "Unknown"
+        description = _strip_html(item.get("description", ""))
+        hosted_url = item.get("url") or url
+
+        job = JobPosting(
+            id=f"{source.platform}:{source.id}:{index}",
+            source=source.platform,
+            source_label=source.name,
+            title=title,
+            company=source.name,
+            location=location,
+            posted_at=item.get("datePosted"),
+            salary_text=_extract_salary_text(item),
+            description=description or title,
+            employment_type=item.get("employmentType"),
+            remote_type=_detect_remote_type(location=location, description=description),
+            normalized_tags=[],
+            url=hosted_url,
+            fetched_at=fetched_at,
+            discovery_mode=source.discovery_mode,
+            priority_tier=source.priority_tier,
+            liveness_status="unverified",
+            liveness_note="Discovered from a direct careers page and awaiting liveness verification.",
+            liveness_checked_at=fetched_at,
+        )
+        jobs.append(_verify_job_liveness(client, job))
+
+    if jobs:
+        return jobs
+
+    fallback_job = JobPosting(
+        id=f"{source.platform}:{source.id}:page",
+        source=source.platform,
+        source_label=source.name,
+        title=f"{source.name} careers page",
+        company=source.name,
+        location="Unknown",
+        posted_at=None,
+        salary_text=None,
+        description=_strip_html(page_html)[:1200],
+        employment_type=None,
+        remote_type=None,
+        normalized_tags=[],
+        url=url,
+        fetched_at=fetched_at,
+        discovery_mode=source.discovery_mode,
+        priority_tier=source.priority_tier,
+        liveness_status="unverified",
+        liveness_note="Direct careers page discovered without structured job metadata.",
+        liveness_checked_at=fetched_at,
+    )
+    return [_verify_job_liveness(client, fallback_job)]
+
+
 def _write_jobs_cache(jobs: list[JobPosting]) -> None:
     path = get_jobs_cache_path()
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         json.dumps([job.model_dump() for job in jobs], indent=2),
         encoding="utf-8",
+    ) 
+
+
+def _extract_json_ld_job_postings(page_html: str) -> list[dict]:
+    scripts = re.findall(
+        r'<script[^>]*type=["\']application/ld\+json["\'][^>]*>(.*?)</script>',
+        page_html,
+        flags=re.IGNORECASE | re.DOTALL,
     )
+    postings: list[dict] = []
+    for script in scripts:
+        try:
+            payload = json.loads(script.strip())
+        except json.JSONDecodeError:
+            continue
+        postings.extend(_flatten_job_postings(payload))
+    return postings
+
+
+def _flatten_job_postings(payload: object) -> list[dict]:
+    if isinstance(payload, list):
+        results: list[dict] = []
+        for item in payload:
+            results.extend(_flatten_job_postings(item))
+        return results
+
+    if not isinstance(payload, dict):
+        return []
+
+    payload_type = payload.get("@type")
+    if payload_type == "JobPosting":
+        return [payload]
+    if payload_type == "ItemList":
+        return _flatten_job_postings(payload.get("itemListElement"))
+    if "@graph" in payload:
+        return _flatten_job_postings(payload["@graph"])
+    return []
+
+
+def _extract_direct_location(item: dict) -> str | None:
+    location = item.get("jobLocation")
+    if isinstance(location, list):
+        names = [_extract_direct_location({"jobLocation": loc}) for loc in location]
+        names = [name for name in names if name]
+        return ", ".join(names) if names else None
+    if isinstance(location, dict):
+        address = location.get("address")
+        if isinstance(address, dict):
+            pieces = [
+                address.get("addressLocality"),
+                address.get("addressRegion"),
+                address.get("addressCountry"),
+            ]
+            return ", ".join(piece for piece in pieces if piece)
+    return None
+
+
+def _extract_salary_text(item: dict) -> str | None:
+    salary = item.get("baseSalary")
+    if not isinstance(salary, dict):
+        return None
+    value = salary.get("value")
+    if isinstance(value, dict):
+        min_value = value.get("minValue")
+        max_value = value.get("maxValue")
+        currency = salary.get("currency", "USD")
+        if min_value or max_value:
+            if min_value and max_value:
+                return f"{currency} {min_value}-{max_value}"
+            return f"{currency} {min_value or max_value}"
+    return None
 
 
 def _strip_html(value: object) -> str:

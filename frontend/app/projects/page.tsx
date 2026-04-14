@@ -1,8 +1,10 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import TopNav from '@/components/TopNav'
 import { getProjects } from '@/lib/api'
+import { hasProjectDetail, projectSlugFromName } from '@/lib/project-details'
 import type { ProjectCard } from '@/lib/types'
 
 // ── Decorative icon set — cycles by card index ────────────────────────────────
@@ -87,6 +89,8 @@ export default function ProjectsPage() {
               const cardIcon   = CARD_ICONS[i % CARD_ICONS.length]
               const codeLink   = githubUrl(project.links)
               const liveLink   = demoUrl(project.links)
+              const projectSlug = projectSlugFromName(project.name)
+              const hasDetail = hasProjectDetail(projectSlug)
 
               return (
                 <div
@@ -136,7 +140,7 @@ export default function ProjectsPage() {
 
                   {/* Footer: Links */}
                   <div className="flex items-center justify-between pt-4 border-t border-outline-variant/20">
-                    <div className="flex space-x-3">
+                    <div className="flex flex-wrap items-center gap-3">
                       {codeLink ? (
                         <a
                           href={codeLink}
@@ -175,6 +179,16 @@ export default function ProjectsPage() {
                         >
                           <span className="material-symbols-outlined text-xl">open_in_new</span>
                         </button>
+                      )}
+
+                      {hasDetail && (
+                        <Link
+                          href={`/projects/${projectSlug}`}
+                          className="inline-flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/10 px-3 py-2 font-mono text-[11px] uppercase tracking-[0.18em] text-primary transition-colors hover:border-primary/40"
+                        >
+                          <span className="material-symbols-outlined text-base">arrow_outward</span>
+                          View Deep Dive
+                        </Link>
                       )}
                     </div>
 

@@ -48,6 +48,54 @@ function MetricBar({
   )
 }
 
+function RankedInsightList({
+  title,
+  subtitle,
+  items,
+  accent,
+}: {
+  title: string
+  subtitle: string
+  items: { label: string; count: number }[]
+  accent: 'primary' | 'secondary'
+}) {
+  return (
+    <section className="rounded-[24px] border border-white/5 bg-surface-container-low p-6">
+      <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-on-surface-variant/60">{title}</p>
+      <h3 className="mt-3 text-xl font-bold text-on-surface">{subtitle}</h3>
+      <div className="mt-5 space-y-3">
+        {items.map(item => (
+          <div key={item.label} className="grid grid-cols-[1fr_auto] items-center gap-4">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between gap-3 text-sm">
+                <span className="truncate text-on-surface">{item.label}</span>
+                <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-on-surface-variant">
+                  {item.count}
+                </span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-surface-container-lowest">
+                <div
+                  className={`h-full rounded-full ${accent === 'primary' ? 'bg-primary' : 'bg-secondary'}`}
+                  style={{ width: `${Math.max(12, Math.min(100, item.count * 8))}%` }}
+                />
+              </div>
+            </div>
+            <div
+              className={`rounded-full border px-3 py-1 font-mono text-[10px] uppercase tracking-[0.2em] ${
+                accent === 'primary'
+                  ? 'border-primary/20 bg-primary/10 text-primary'
+                  : 'border-secondary/20 bg-secondary/10 text-secondary'
+              }`}
+            >
+              {item.count}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
 function FitCard({
   result,
   onStatusChange,
@@ -70,8 +118,8 @@ function FitCard({
   }
 
   return (
-    <article className="rounded-[28px] border border-white/5 bg-surface-container-low p-7 transition-colors hover:bg-surface-container-high">
-      <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
+    <article className="rounded-[28px] border border-white/5 bg-surface-container-low p-6 transition-colors hover:bg-surface-container-high">
+      <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="mb-3 flex flex-wrap items-center gap-2">
             <span className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.25em] text-primary">
@@ -81,15 +129,15 @@ function FitCard({
               {result.job.source_label || result.job.source}
             </span>
           </div>
-          <h2 className="text-2xl font-bold text-on-surface">{result.job.title}</h2>
-          <p className="mt-2 text-base text-on-surface-variant">
+          <h2 className="text-[28px] font-bold leading-tight text-on-surface">{result.job.title}</h2>
+          <p className="mt-2 text-sm text-on-surface-variant">
             {result.job.company} | {result.job.location}
           </p>
         </div>
 
-        <div className="rounded-2xl border border-secondary/20 bg-secondary/10 px-5 py-4 text-right">
+        <div className="min-w-[120px] rounded-2xl border border-secondary/20 bg-secondary/10 px-4 py-4 text-right">
           <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-secondary">
-            Overall Fit
+            Fit Score
           </p>
           <p className="mt-2 text-3xl font-black text-on-surface">
             {Math.round(result.overall_score * 100)}
@@ -135,11 +183,11 @@ function FitCard({
         </span>
       </div>
 
-      <div className="mt-6 grid gap-4 md:grid-cols-2">
+      <div className="mt-6 grid gap-4 lg:grid-cols-2">
         <div className="rounded-2xl border border-white/5 bg-surface-container-lowest p-5">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="font-mono text-[10px] uppercase tracking-[0.25em] text-on-surface-variant/60">
-              Scoring
+              Match Breakdown
             </h3>
             {result.job.salary_text && (
               <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
@@ -151,13 +199,8 @@ function FitCard({
             <MetricBar label="Preference Match" value={result.preference_match_score} tone="primary" />
             <MetricBar label="Profile Match" value={result.profile_match_score} tone="secondary" />
           </div>
-        </div>
 
-        <div className="rounded-2xl border border-white/5 bg-surface-container-lowest p-5">
-          <h3 className="mb-4 font-mono text-[10px] uppercase tracking-[0.25em] text-on-surface-variant/60">
-            Role Snapshot
-          </h3>
-          <div className="space-y-3 text-sm text-on-surface-variant">
+          <div className="mt-5 grid gap-3 text-sm text-on-surface-variant sm:grid-cols-2">
             <p>
               <span className="font-semibold text-on-surface">Remote style:</span>{' '}
               {result.job.remote_type ?? 'Not specified'}
@@ -166,15 +209,13 @@ function FitCard({
               <span className="font-semibold text-on-surface">Employment:</span>{' '}
               {result.job.employment_type ?? 'Not specified'}
             </p>
-            <p>
+            <p className="sm:col-span-2">
               <span className="font-semibold text-on-surface">Posted:</span>{' '}
               {result.job.posted_at ?? 'Not specified'}
             </p>
           </div>
         </div>
-      </div>
 
-      <div className="mt-6 grid gap-4 lg:grid-cols-[1fr_1fr]">
         <div className="rounded-2xl border border-white/5 bg-[#101114] p-5">
           <h3 className="mb-4 font-mono text-[10px] uppercase tracking-[0.25em] text-secondary">
             Why It Works
@@ -189,10 +230,8 @@ function FitCard({
               </div>
             ))}
           </div>
-        </div>
 
-        <div className="rounded-2xl border border-white/5 bg-[#101114] p-5">
-          <h3 className="mb-4 font-mono text-[10px] uppercase tracking-[0.25em] text-primary">
+          <h3 className="mb-4 mt-6 font-mono text-[10px] uppercase tracking-[0.25em] text-primary">
             Resume Angles
           </h3>
           <div className="space-y-3">
@@ -206,10 +245,9 @@ function FitCard({
             ))}
           </div>
         </div>
-      </div>
 
-      {result.risks.length > 0 && (
-        <div className="mt-6 rounded-2xl border border-amber-500/20 bg-amber-500/8 p-5">
+        {result.risks.length > 0 && (
+        <div className="rounded-2xl border border-amber-500/20 bg-amber-500/8 p-5 lg:col-span-2">
           <h3 className="mb-4 font-mono text-[10px] uppercase tracking-[0.25em] text-amber-200">
             Watchouts
           </h3>
@@ -224,7 +262,8 @@ function FitCard({
             ))}
           </div>
         </div>
-      )}
+        )}
+      </div>
     </article>
   )
 }
@@ -321,7 +360,10 @@ export default function TopFitJobsPage() {
     try {
       const applied = await applyJobSourcePack(packId)
       setSources(applied)
-      setSaveMessage('Source pack applied. Run Refresh Live Jobs to pull the broader discovery universe into the cache.')
+      const result = await refreshJobs()
+      setRefreshResult(result)
+      await loadPageData()
+      setSaveMessage('Source pack applied and refreshed. The jobs agent is now scoring the new discovery universe.')
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to apply source pack')
     } finally {
@@ -350,6 +392,8 @@ export default function TopFitJobsPage() {
   }, [data])
 
   const enabledSources = useMemo(() => sources.filter(source => source.enabled), [sources])
+  const recommendedPack = data?.recommended_pack
+  const currentSourceIds = useMemo(() => new Set(sources.map(source => source.id)), [sources])
 
   if (loading) {
     return (
@@ -374,109 +418,156 @@ export default function TopFitJobsPage() {
           <div className="mx-auto max-w-6xl space-y-8">
             <section className="relative overflow-hidden rounded-[30px] border border-white/5 bg-surface-container-low p-8 shadow-[0_24px_80px_rgba(0,0,0,0.28)] lg:p-10">
               <div className="absolute inset-0 bg-[linear-gradient(130deg,rgba(56,189,248,0.08),transparent_30%,rgba(68,226,205,0.05))]" />
-              <div className="relative grid gap-8 lg:grid-cols-[1.12fr_0.88fr]">
-                <div className="space-y-5">
-                  <div className="inline-flex items-center gap-3 rounded-full border border-secondary/20 bg-secondary/10 px-4 py-2">
-                    <div className="h-2 w-2 rounded-full bg-secondary shadow-[0_0_10px_rgba(68,226,205,0.6)]" />
-                    <span className="font-mono text-[10px] uppercase tracking-[0.35em] text-secondary">
-                      Top Fit Jobs
-                    </span>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h1 className="max-w-4xl text-4xl font-black tracking-tight text-on-surface lg:text-5xl">
-                      Ranked opportunities scored against your{' '}
-                      <span className="text-primary">profile</span> and saved{' '}
-                      <span className="text-secondary">job preferences</span>.
-                    </h1>
-                    <p className="max-w-3xl text-base leading-relaxed text-on-surface-variant">
-                      The jobs agent now supports editable Greenhouse, Lever, and Ashby source tracking
-                      right from the app. Refreshes pull live boards into the cache, while fallback jobs
-                      only appear if live refreshes come back empty.
-                    </p>
-                  </div>
-
-                  <div className="flex flex-wrap items-center gap-4">
-                    <button
-                      onClick={handleRefresh}
-                      disabled={refreshing}
-                      className="inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-primary to-primary-container px-7 py-4 text-base font-bold text-on-primary transition-all hover:opacity-90 disabled:pointer-events-none disabled:opacity-40"
-                    >
-                      <span className={`material-symbols-outlined text-lg ${refreshing ? 'animate-spin' : ''}`}>
-                        {refreshing ? 'progress_activity' : 'sync'}
+              <div className="relative space-y-8">
+                <div className="grid gap-8 xl:grid-cols-[1.2fr_0.8fr]">
+                  <div className="space-y-5">
+                    <div className="inline-flex items-center gap-3 rounded-full border border-secondary/20 bg-secondary/10 px-4 py-2">
+                      <div className="h-2 w-2 rounded-full bg-secondary shadow-[0_0_10px_rgba(68,226,205,0.6)]" />
+                      <span className="font-mono text-[10px] uppercase tracking-[0.35em] text-secondary">
+                        Top Fit Jobs
                       </span>
-                      {refreshing ? 'Refreshing Live Jobs...' : 'Refresh Live Jobs'}
-                    </button>
-                    <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-on-surface-variant/60">
-                      {enabledSources.length} enabled live sources
-                    </span>
-                  </div>
+                    </div>
 
-                  <div className="grid gap-4 md:grid-cols-[0.8fr_0.9fr]">
-                    <label className="block space-y-2">
-                      <span className="block font-mono text-[10px] uppercase tracking-[0.2em] text-on-surface-variant/60">
-                        Freshness Window
-                      </span>
-                      <select
-                        value={recentDays}
-                        onChange={e => setRecentDays(Number(e.target.value))}
-                        className="w-full rounded-xl border border-outline-variant/20 bg-surface-container-lowest px-4 py-3 text-sm text-on-surface focus:border-primary/50 focus:outline-none"
+                    <div className="space-y-4">
+                      <h1 className="max-w-4xl text-4xl font-black tracking-tight text-on-surface lg:text-5xl">
+                        A cleaner view of which jobs are actually worth your time.
+                      </h1>
+                      <p className="max-w-3xl text-base leading-relaxed text-on-surface-variant">
+                        The agent scans live boards, filters them against your profile and saved preferences, then
+                        shows a diversified top list so one company does not flood the screen.
+                      </p>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-4">
+                      <button
+                        onClick={handleRefresh}
+                        disabled={refreshing}
+                        className="inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-primary to-primary-container px-7 py-4 text-base font-bold text-on-primary transition-all hover:opacity-90 disabled:pointer-events-none disabled:opacity-40"
                       >
-                        <option value={0}>All cached jobs</option>
-                        <option value={7}>Last 7 days</option>
-                        <option value={14}>Last 14 days</option>
-                        <option value={30}>Last 30 days</option>
-                        <option value={60}>Last 60 days</option>
-                      </select>
-                    </label>
+                        <span className={`material-symbols-outlined text-lg ${refreshing ? 'animate-spin' : ''}`}>
+                          {refreshing ? 'progress_activity' : 'sync'}
+                        </span>
+                        {refreshing ? 'Refreshing Live Jobs...' : 'Refresh Live Jobs'}
+                      </button>
+                      <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-on-surface-variant/60">
+                        {enabledSources.length} active sources across Greenhouse, Lever, and Ashby
+                      </span>
+                    </div>
 
-                    <label className="flex items-center gap-3 self-end rounded-xl border border-white/5 bg-surface-container-lowest px-4 py-3">
-                      <input
-                        type="checkbox"
-                        checked={dedupe}
-                        onChange={e => setDedupe(e.target.checked)}
-                        className="h-4 w-4 rounded border-white/20 bg-surface-container-high text-primary focus:ring-primary"
-                      />
-                      <div>
+                    <div className="grid gap-4 md:grid-cols-[0.8fr_0.9fr]">
+                      <label className="block space-y-2">
                         <span className="block font-mono text-[10px] uppercase tracking-[0.2em] text-on-surface-variant/60">
-                          Duplicate Suppression
+                          Freshness Window
                         </span>
-                        <span className="block text-sm text-on-surface-variant">
-                          Keep only the freshest version of repeated title/company combinations.
-                        </span>
-                      </div>
-                    </label>
+                        <select
+                          value={recentDays}
+                          onChange={e => setRecentDays(Number(e.target.value))}
+                          className="w-full rounded-xl border border-outline-variant/20 bg-surface-container-lowest px-4 py-3 text-sm text-on-surface focus:border-primary/50 focus:outline-none"
+                        >
+                          <option value={0}>All cached jobs</option>
+                          <option value={7}>Last 7 days</option>
+                          <option value={14}>Last 14 days</option>
+                          <option value={30}>Last 30 days</option>
+                          <option value={60}>Last 60 days</option>
+                        </select>
+                      </label>
+
+                      <label className="flex items-center gap-3 self-end rounded-xl border border-white/5 bg-surface-container-lowest px-4 py-3">
+                        <input
+                          type="checkbox"
+                          checked={dedupe}
+                          onChange={e => setDedupe(e.target.checked)}
+                          className="h-4 w-4 rounded border-white/20 bg-surface-container-high text-primary focus:ring-primary"
+                        />
+                        <div>
+                          <span className="block font-mono text-[10px] uppercase tracking-[0.2em] text-on-surface-variant/60">
+                            Hide Duplicate Roles
+                          </span>
+                          <span className="block text-sm text-on-surface-variant">
+                            Keep only the freshest version of repeated title and company matches.
+                          </span>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="rounded-2xl border border-white/5 bg-surface-container-lowest/80 p-5">
+                      <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-on-surface-variant/60">
+                        Roles Passing Filters
+                      </p>
+                      <p className="mt-3 text-3xl font-black text-on-surface">{data?.total_jobs ?? 0}</p>
+                      <p className="mt-2 text-sm text-on-surface-variant">
+                        Jobs still standing after role-family, location, and liveness filters.
+                      </p>
+                    </div>
+                    <div className="rounded-2xl border border-white/5 bg-surface-container-lowest/80 p-5">
+                      <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-on-surface-variant/60">
+                        Live Openings Scanned
+                      </p>
+                      <p className="mt-3 text-3xl font-black text-on-surface">{data?.live_jobs_count ?? 0}</p>
+                      <p className="mt-2 text-sm text-on-surface-variant">
+                        The total live ATS roles currently sitting in the cache before fit ranking.
+                      </p>
+                    </div>
+                    <div className="rounded-2xl border border-white/5 bg-surface-container-lowest/80 p-5">
+                      <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-on-surface-variant/60">
+                        Best-Fit Roles in Pool
+                      </p>
+                      <p className="mt-3 text-3xl font-black text-on-surface">{data?.best_fit_count ?? 0}</p>
+                      <p className="mt-2 text-sm text-on-surface-variant">
+                        How many roles hit the best-fit bucket before the displayed company cap is applied.
+                      </p>
+                    </div>
+                    <div className="rounded-2xl border border-white/5 bg-surface-container-lowest/80 p-5">
+                      <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-on-surface-variant/60">
+                        Display Rule
+                      </p>
+                      <p className="mt-3 text-3xl font-black text-on-surface">
+                        {data?.display_company_cap ?? 2} per company
+                      </p>
+                      <p className="mt-2 text-sm text-on-surface-variant">
+                        The visible top list is diversified so one company cannot dominate the page.
+                      </p>
+                    </div>
                   </div>
                 </div>
 
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-2xl border border-white/5 bg-surface-container-lowest/80 p-5">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-on-surface-variant/60">
-                      Ranked Roles
-                    </p>
-                    <p className="mt-3 text-3xl font-black text-on-surface">{data?.total_jobs ?? 0}</p>
+                {data && (
+                  <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
+                    <div className="rounded-[24px] border border-white/5 bg-surface-container-lowest/70 p-6">
+                      <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-primary">
+                        Morning Brief Preview
+                      </p>
+                      <h2 className="mt-3 text-2xl font-bold text-on-surface">{data.brief_headline}</h2>
+                      <p className="mt-4 text-sm leading-relaxed text-on-surface-variant">{data.brief_summary}</p>
+                    </div>
+
+                    <div className="rounded-[24px] border border-white/5 bg-surface-container-lowest/70 p-6">
+                      <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-secondary">
+                        Queue Health
+                      </p>
+                      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                        <div>
+                          <p className="text-3xl font-black text-on-surface">{data.new_since_refresh_count}</p>
+                          <p className="mt-1 text-sm text-on-surface-variant">new since refresh</p>
+                        </div>
+                        <div>
+                          <p className="text-3xl font-black text-on-surface">{data.ready_to_review_count}</p>
+                          <p className="mt-1 text-sm text-on-surface-variant">queued for review</p>
+                        </div>
+                        <div>
+                          <p className="text-3xl font-black text-on-surface">{data.shortlisted_count}</p>
+                          <p className="mt-1 text-sm text-on-surface-variant">shortlisted</p>
+                        </div>
+                        <div>
+                          <p className="text-3xl font-black text-on-surface">{Math.round((summary?.avgScore ?? 0) * 100)}</p>
+                          <p className="mt-1 text-sm text-on-surface-variant">avg visible fit score</p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="rounded-2xl border border-white/5 bg-surface-container-lowest/80 p-5">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-on-surface-variant/60">
-                      Live Jobs Loaded
-                    </p>
-                    <p className="mt-3 text-3xl font-black text-on-surface">{data?.live_jobs_count ?? 0}</p>
-                  </div>
-                  <div className="rounded-2xl border border-white/5 bg-surface-container-lowest/80 p-5">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-on-surface-variant/60">
-                      Best Fit Roles
-                    </p>
-                    <p className="mt-3 text-3xl font-black text-on-surface">{summary?.bestFits ?? 0}</p>
-                  </div>
-                  <div className="rounded-2xl border border-white/5 bg-surface-container-lowest/80 p-5">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-on-surface-variant/60">
-                      Data Mode
-                    </p>
-                    <p className="mt-3 text-xl font-black text-on-surface">
-                      {data?.uses_seed_fallback ? 'Fallback' : 'Live'}
-                    </p>
-                  </div>
-                </div>
+                )}
               </div>
             </section>
 
@@ -488,25 +579,52 @@ export default function TopFitJobsPage() {
                       Discovery Packs
                     </p>
                     <h2 className="mt-3 text-2xl font-bold text-on-surface">
-                      Swap the source universe without rebuilding the crawler by hand
+                      Pick the source universe that best matches your current search direction
                     </h2>
                     <p className="mt-3 max-w-3xl text-sm leading-relaxed text-on-surface-variant">
-                      These packs are the broad-search equivalent of changing strategy. Instead of re-ranking the same
-                      handful of companies, you can switch the tracked board set toward AI platform, forward deployed,
-                      solutions, or data-oriented discovery.
+                      Packs control where the crawler looks before ranking begins. They matter because changing
+                      preferences alone will not create better results if the source universe stays too narrow.
                     </p>
                   </div>
+                  {recommendedPack?.pack_id && (
+                    <div className="max-w-sm rounded-2xl border border-primary/20 bg-primary/10 p-4">
+                      <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-primary">
+                        Recommended Right Now
+                      </p>
+                      <h3 className="mt-2 text-lg font-bold text-on-surface">{recommendedPack.pack_name}</h3>
+                      <p className="mt-2 text-sm leading-relaxed text-on-surface-variant">
+                        {recommendedPack.reason}
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 <div className="grid gap-4 lg:grid-cols-2">
                   {sourcePacks.map(pack => (
                     <div
                       key={pack.id}
-                      className="rounded-2xl border border-white/5 bg-surface-container-lowest p-5"
+                      className={`rounded-2xl border p-5 ${
+                        recommendedPack?.pack_id === pack.id
+                          ? 'border-primary/20 bg-primary/5'
+                          : 'border-white/5 bg-surface-container-lowest'
+                      }`}
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div>
-                          <h3 className="text-lg font-bold text-on-surface">{pack.name}</h3>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h3 className="text-lg font-bold text-on-surface">{pack.name}</h3>
+                            {recommendedPack?.pack_id === pack.id && (
+                              <span className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
+                                Recommended
+                              </span>
+                            )}
+                            {pack.sources.every(source => currentSourceIds.has(source.id)) &&
+                              currentSourceIds.size === pack.sources.length && (
+                                <span className="rounded-full border border-secondary/20 bg-secondary/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.2em] text-secondary">
+                                  Active
+                                </span>
+                              )}
+                          </div>
                           <p className="mt-2 text-sm leading-relaxed text-on-surface-variant">
                             {pack.description}
                           </p>
@@ -550,67 +668,20 @@ export default function TopFitJobsPage() {
             )}
 
             {data && (
-              <section className="rounded-[28px] border border-white/5 bg-surface-container-low p-8">
-                <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-                  <div>
-                    <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary">
-                      Morning Brief Preview
-                    </p>
-                    <h2 className="mt-3 text-2xl font-bold text-on-surface">{data.brief_headline}</h2>
-                    <p className="mt-4 max-w-3xl text-sm leading-relaxed text-on-surface-variant">
-                      {data.brief_summary}
-                    </p>
-                    <p className="mt-3 text-sm leading-relaxed text-on-surface-variant/80">
-                      This page is meant to answer one question quickly: which roles are worth your time right now.
-                      The underlying source list is an advanced tuning layer for the jobs crawler, not something you
-                      should need every session.
-                    </p>
-                  </div>
-
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="rounded-2xl border border-white/5 bg-surface-container-lowest p-5">
-                      <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-on-surface-variant/60">
-                        New Since Refresh
-                      </p>
-                      <p className="mt-3 text-3xl font-black text-on-surface">
-                        {data.new_since_refresh_count}
-                      </p>
-                    </div>
-                    <div className="rounded-2xl border border-white/5 bg-surface-container-lowest p-5">
-                      <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-on-surface-variant/60">
-                        Best Fit
-                      </p>
-                      <p className="mt-3 text-3xl font-black text-on-surface">{data.best_fit_count}</p>
-                    </div>
-                    <div className="rounded-2xl border border-white/5 bg-surface-container-lowest p-5">
-                      <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-on-surface-variant/60">
-                        Strong Consideration
-                      </p>
-                      <p className="mt-3 text-3xl font-black text-on-surface">
-                        {data.strong_consideration_count}
-                      </p>
-                    </div>
-                    <div className="rounded-2xl border border-white/5 bg-surface-container-lowest p-5">
-                      <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-on-surface-variant/60">
-                        Stretch
-                      </p>
-                      <p className="mt-3 text-3xl font-black text-on-surface">{data.stretch_count}</p>
-                    </div>
-                    <div className="rounded-2xl border border-white/5 bg-surface-container-lowest p-5">
-                      <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-on-surface-variant/60">
-                        Review Queue
-                      </p>
-                      <p className="mt-3 text-3xl font-black text-on-surface">{data.ready_to_review_count}</p>
-                    </div>
-                    <div className="rounded-2xl border border-white/5 bg-surface-container-lowest p-5">
-                      <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-on-surface-variant/60">
-                        Shortlisted
-                      </p>
-                      <p className="mt-3 text-3xl font-black text-on-surface">{data.shortlisted_count}</p>
-                    </div>
-                  </div>
-                </div>
-              </section>
+              <div className="grid gap-6 xl:grid-cols-2">
+                <RankedInsightList
+                  title="Top Companies"
+                  subtitle="Which employers are appearing most often in the filtered pool"
+                  items={data.top_companies}
+                  accent="primary"
+                />
+                <RankedInsightList
+                  title="Top Job Titles"
+                  subtitle="Which role families are dominating the current ranked pool"
+                  items={data.top_titles}
+                  accent="secondary"
+                />
+              </div>
             )}
 
             {refreshResult && (
@@ -693,7 +764,7 @@ export default function TopFitJobsPage() {
                   <h2 className="text-lg font-bold text-on-surface">Advanced Source Tuning</h2>
                   <p className="mt-1 max-w-3xl text-sm text-on-surface-variant">
                     This controls where the jobs agent looks for openings. It is mainly useful when we want to retarget
-                    the crawler or debug weak matches. Most sessions should stay focused on the ranked roles above.
+                    the crawler, debug weak matches, or widen into non-ATS direct-board search when ATS results are too concentrated.
                   </p>
                 </div>
                 <button
@@ -711,9 +782,9 @@ export default function TopFitJobsPage() {
                 <>
                   <div className="mb-4 mt-6 flex flex-wrap items-center justify-between gap-4">
                     <div className="text-sm text-on-surface-variant">
-                      Company Label is the board name, Board Identifier is the public ATS slug, Discovery Mode
-                      describes how the crawler should treat the source, and Priority Tier decides which sources get
-                      pulled first.
+                      Company Label is the board name, Board Identifier is the ATS slug or full direct-board URL,
+                      Discovery Mode describes how the crawler should treat the source, and Priority Tier decides
+                      which sources get pulled first.
                     </div>
                     <div className="flex flex-wrap items-center gap-3">
                       <button
@@ -766,6 +837,7 @@ export default function TopFitJobsPage() {
                             <option value="greenhouse">Greenhouse</option>
                             <option value="lever">Lever</option>
                             <option value="ashby">Ashby</option>
+                            <option value="direct">Direct Board</option>
                           </select>
                         </div>
 
@@ -777,7 +849,7 @@ export default function TopFitJobsPage() {
                             value={source.identifier}
                             onChange={e => updateSource(index, { identifier: e.target.value })}
                             className="w-full rounded-xl border border-outline-variant/20 bg-surface-container-high px-4 py-3 text-sm text-on-surface focus:border-primary/50 focus:outline-none"
-                            placeholder="example-company"
+                            placeholder={source.platform === 'direct' ? 'https://company.com/careers' : 'example-company'}
                           />
                         </div>
 
@@ -863,7 +935,7 @@ export default function TopFitJobsPage() {
               </div>
             )}
 
-            <div className="space-y-6">
+            <div className="grid gap-6 xl:grid-cols-2">
               {data?.top_matches.map(result => (
                 <FitCard key={result.job.id} result={result} onStatusChange={loadPageData} />
               ))}

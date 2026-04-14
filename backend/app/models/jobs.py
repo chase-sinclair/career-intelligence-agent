@@ -59,6 +59,18 @@ class JobSourcePack(BaseModel):
     sources: list[JobSourceConfig] = Field(default_factory=list)
 
 
+class RankedCount(BaseModel):
+    label: str
+    count: int
+
+
+class JobSourcePackRecommendation(BaseModel):
+    pack_id: str = ""
+    pack_name: str = ""
+    reason: str = ""
+    match_score: float = 0.0
+
+
 class JobScanHistoryEntry(BaseModel):
     key: str
     url: str | None = None
@@ -101,6 +113,7 @@ class TopFitJobsResponse(BaseModel):
     generated_for: str
     live_jobs_count: int = 0
     uses_seed_fallback: bool = False
+    display_company_cap: int = 2
     brief_headline: str = ""
     brief_summary: str = ""
     new_since_refresh_count: int = 0
@@ -110,6 +123,9 @@ class TopFitJobsResponse(BaseModel):
     ready_to_review_count: int = 0
     shortlisted_count: int = 0
     applied_count: int = 0
+    recommended_pack: JobSourcePackRecommendation = Field(default_factory=JobSourcePackRecommendation)
+    top_companies: list[RankedCount] = Field(default_factory=list)
+    top_titles: list[RankedCount] = Field(default_factory=list)
     top_matches: list[JobFitResult] = Field(default_factory=list)
 
 

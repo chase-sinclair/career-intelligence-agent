@@ -1,10 +1,20 @@
 import json
 import re
+from collections import Counter
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from app.core.config import settings
-from app.models.jobs import JobFitResult, JobPosting, JobPreferences, JobShortlistEntry, TopFitJobsResponse
+from app.models.jobs import (
+    JobFitResult,
+    JobPosting,
+    JobPreferences,
+    JobShortlistEntry,
+    JobSourcePack,
+    JobSourcePackRecommendation,
+    RankedCount,
+    TopFitJobsResponse,
+)
 from app.models.profile import CandidateProfile
 from app.services.job_preferences import load_job_preferences
 from app.services.job_shortlist import load_job_shortlist
@@ -12,6 +22,8 @@ from app.services.job_shortlist import load_job_shortlist
 
 JOBS_CACHE_FILENAME = "jobs_cache.json"
 SEED_JOBS_CACHE_FILENAME = "jobs_cache.default.json"
+JOB_SOURCE_PACKS_FILENAME = "job_source_packs.json"
+DISPLAY_COMPANY_CAP = 2
 
 
 def get_jobs_cache_path() -> Path:
@@ -31,6 +43,14 @@ def load_candidate_profile() -> CandidateProfile:
     return CandidateProfile(**json.loads(path.read_text(encoding="utf-8")))
 
 
+def load_job_source_packs() -> list[JobSourcePack]:
+    path = Path(settings.data_dir) / JOB_SOURCE_PACKS_FILENAME
+    if not path.exists():
+        return []
+    data = json.loads(path.read_text(encoding="utf-8"))
+    return [JobSourcePack(**item) for item in data]
+
+
 def get_top_fit_jobs(limit: int = 12, recent_days: int | None = 0, dedupe: bool = True) -> TopFitJobsResponse:
     profile = load_candidate_profile()
     preferences = load_job_preferences()
@@ -47,6 +67,7 @@ def get_top_fit_jobs(limit: int = 12, recent_days: int | None = 0, dedupe: bool 
     ]
     ranked = [_attach_shortlist_state(item, shortlist) for item in ranked]
     ranked.sort(key=lambda item: item.overall_score, reverse=True)
+    displayed_matches = _cap_roles_per_company(ranked, limit=limit, company_cap=DISPLAY_COMPANY_CAP)
     best_fit_count = sum(1 for item in ranked if item.match_bucket == "Best Fit")
     strong_consideration_count = sum(1 for item in ranked if item.match_bucket == "Strong Consideration")
     stretch_count = sum(1 for item in ranked if item.match_bucket == "Stretch")
@@ -54,6 +75,9 @@ def get_top_fit_jobs(limit: int = 12, recent_days: int | None = 0, dedupe: bool 
     shortlisted_count = sum(1 for item in ranked if item.shortlist_status == "shortlisted")
     applied_count = sum(1 for item in ranked if item.shortlist_status == "applied")
     new_since_refresh_count = sum(1 for item in ranked if _is_recently_fetched(item.job))
+    top_companies = _top_ranked_counts([item.job.company for item in ranked], limit=5)
+    top_titles = _top_ranked_counts([_title_family_label(item.job.title) for item in ranked], limit=5)
+    recommended_pack = _recommend_source_pack(preferences)
     brief_headline, brief_summary = _build_brief(
         ranked=ranked,
         profile_name=profile.name,
@@ -66,6 +90,7 @@ def get_top_fit_jobs(limit: int = 12, recent_days: int | None = 0, dedupe: bool 
         generated_for=profile.name,
         live_jobs_count=len(live_jobs),
         uses_seed_fallback=not bool(live_jobs),
+        display_company_cap=DISPLAY_COMPANY_CAP,
         brief_headline=brief_headline,
         brief_summary=brief_summary,
         new_since_refresh_count=new_since_refresh_count,
@@ -75,7 +100,10 @@ def get_top_fit_jobs(limit: int = 12, recent_days: int | None = 0, dedupe: bool 
         ready_to_review_count=ready_to_review_count,
         shortlisted_count=shortlisted_count,
         applied_count=applied_count,
-        top_matches=ranked[:limit],
+        recommended_pack=recommended_pack,
+        top_companies=top_companies,
+        top_titles=top_titles,
+        top_matches=displayed_matches,
     )
 
 
@@ -334,6 +362,112 @@ def _is_recently_fetched(job: JobPosting, hours: int = 24) -> bool:
     if fetched_at is None:
         return False
     return fetched_at >= datetime.now(timezone.utc) - timedelta(hours=hours)
+
+
+def _cap_roles_per_company(
+    ranked: list[JobFitResult],
+    limit: int,
+    company_cap: int,
+) -> list[JobFitResult]:
+    if limit <= 0:
+        return []
+
+    counts: dict[str, int] = {}
+    selected: list[JobFitResult] = []
+    for item in ranked:
+        company_key = item.job.company.strip().lower()
+        current_count = counts.get(company_key, 0)
+        if current_count >= company_cap:
+            continue
+        selected.append(item)
+        counts[company_key] = current_count + 1
+        if len(selected) >= limit:
+            break
+    return selected
+
+
+def _top_ranked_counts(values: list[str], limit: int = 5) -> list[RankedCount]:
+    counts = Counter(value.strip() for value in values if value and value.strip())
+    return [RankedCount(label=label, count=count) for label, count in counts.most_common(limit)]
+
+
+def _title_family_label(title: str) -> str:
+    normalized = re.sub(r"[\(\)\|,/]", " ", title.lower())
+    tokens = [token for token in re.split(r"\s+", normalized) if token]
+    filtered = [
+        token
+        for token in tokens
+        if token
+        not in {
+            "senior",
+            "staff",
+            "lead",
+            "principal",
+            "manager",
+            "sr",
+            "jr",
+            "ii",
+            "iii",
+            "iv",
+            "federal",
+            "civilian",
+        }
+    ]
+    if not filtered:
+        filtered = tokens[:3]
+    family = " ".join(filtered[:3]).strip()
+    return family.title() if family else title
+
+
+def _recommend_source_pack(preferences: JobPreferences) -> JobSourcePackRecommendation:
+    packs = load_job_source_packs()
+    if not packs:
+        return JobSourcePackRecommendation()
+
+    preference_text = " ".join(
+        [
+            *preferences.target_titles,
+            *preferences.target_keywords,
+            *preferences.preferred_industries,
+            *preferences.preferred_company_types,
+            *preferences.tech_focus_areas,
+        ]
+    ).lower()
+    if not preference_text.strip():
+        return JobSourcePackRecommendation()
+
+    best_pack: JobSourcePack | None = None
+    best_score = 0.0
+    for pack in packs:
+        recommendation_terms = [term.lower() for term in pack.recommended_for]
+        if not recommendation_terms:
+            continue
+        overlap_hits = sum(1 for term in recommendation_terms if term in preference_text)
+        token_hits = sum(
+            1
+            for term in recommendation_terms
+            if _title_overlap_score(preference_text, [term]) > 0.45
+        )
+        score = min(1.0, overlap_hits * 0.45 + token_hits * 0.2)
+        if score > best_score:
+            best_score = score
+            best_pack = pack
+
+    if best_pack is None or best_score <= 0:
+        best_pack = packs[0]
+        best_score = 0.18
+
+    reason = (
+        f"`{best_pack.name}` aligns with your saved target roles and keywords, so it is the best starting source universe."
+        if best_score >= 0.35
+        else f"`{best_pack.name}` is the closest current discovery pack, but this is also a good time to widen into non-ATS search if ATS boards stay too concentrated."
+    )
+    return JobSourcePackRecommendation(
+        pack_id=best_pack.id,
+        pack_name=best_pack.name,
+        reason=reason,
+        match_score=round(best_score, 3),
+    )
 
 
 def _build_brief(
