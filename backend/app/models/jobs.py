@@ -51,6 +51,14 @@ class JobSourceConfig(BaseModel):
     notes: str = ""
 
 
+class JobSourcePack(BaseModel):
+    id: str
+    name: str
+    description: str
+    recommended_for: list[str] = Field(default_factory=list)
+    sources: list[JobSourceConfig] = Field(default_factory=list)
+
+
 class JobScanHistoryEntry(BaseModel):
     key: str
     url: str | None = None

@@ -7,10 +7,13 @@ from app.models.jobs import (
     JobShortlistEntry,
     JobShortlistUpdate,
     JobSourceConfig,
+    JobSourcePack,
     TopFitJobsResponse,
 )
 from app.services.job_sources import (
+    apply_job_source_pack,
     load_job_sources,
+    load_job_source_packs,
     refresh_jobs_cache_from_sources,
     save_job_sources,
 )
@@ -40,6 +43,21 @@ async def get_job_sources() -> list[JobSourceConfig]:
 async def update_job_sources(sources: list[JobSourceConfig]) -> list[JobSourceConfig]:
     """Persist tracked Greenhouse and Lever job sources."""
     return save_job_sources(sources)
+
+
+@router.get("/job-source-packs", response_model=list[JobSourcePack])
+async def get_job_source_packs() -> list[JobSourcePack]:
+    """Return available broader-discovery source packs."""
+    return load_job_source_packs()
+
+
+@router.post("/job-source-packs/{pack_id}/apply", response_model=list[JobSourceConfig])
+async def apply_source_pack(pack_id: str) -> list[JobSourceConfig]:
+    """Replace the current tracked-source list with a preset discovery pack."""
+    try:
+        return apply_job_source_pack(pack_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
 @router.post("/jobs/refresh", response_model=JobRefreshResponse)

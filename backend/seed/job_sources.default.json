@@ -1,42 +1,162 @@
 [
   {
-    "id": "portpro-lever",
-    "name": "PortPro",
-    "platform": "lever",
-    "identifier": "portpro",
+    "id": "anthropic-greenhouse",
+    "name": "Anthropic",
+    "platform": "greenhouse",
+    "identifier": "anthropic",
     "discovery_mode": "ats_api",
     "priority_tier": 1,
     "enabled": true,
-    "notes": "NYC-based logistics platform with a current Data Scientist opening."
+    "notes": "Frontier AI lab with forward deployed, applied AI, product, and platform roles."
   },
   {
-    "id": "usmobile-lever",
-    "name": "US Mobile",
-    "platform": "lever",
-    "identifier": "USMobile",
+    "id": "vercel-greenhouse",
+    "name": "Vercel",
+    "platform": "greenhouse",
+    "identifier": "vercel",
     "discovery_mode": "ats_api",
     "priority_tier": 1,
     "enabled": true,
-    "notes": "NYC hybrid board with product data science and analytics engineering roles."
+    "notes": "AI-native developer platform with solutions, product, and applied AI roles."
   },
   {
-    "id": "compstak-lever",
-    "name": "CompStak",
-    "platform": "lever",
-    "identifier": "compstak",
+    "id": "temporal-greenhouse",
+    "name": "Temporal",
+    "platform": "greenhouse",
+    "identifier": "temporal",
     "discovery_mode": "ats_api",
     "priority_tier": 1,
     "enabled": true,
-    "notes": "NYC hybrid board with applied data science and econometrics roles."
+    "notes": "Workflow orchestration company with developer-facing and solution-oriented roles."
   },
   {
-    "id": "voleon-lever",
-    "name": "The Voleon Group",
-    "platform": "lever",
-    "identifier": "voleon",
+    "id": "airtable-greenhouse",
+    "name": "Airtable",
+    "platform": "greenhouse",
+    "identifier": "airtable",
     "discovery_mode": "ats_api",
     "priority_tier": 1,
     "enabled": true,
-    "notes": "NYC quant and research-heavy board with technical lead and research roles."
+    "notes": "No-code and AI platform with solutions, product, and data roles."
+  },
+  {
+    "id": "runpod-greenhouse",
+    "name": "RunPod",
+    "platform": "greenhouse",
+    "identifier": "runpod",
+    "discovery_mode": "ats_api",
+    "priority_tier": 1,
+    "enabled": true,
+    "notes": "AI infrastructure company with applied AI, platform, and customer-facing technical roles."
+  },
+  {
+    "id": "glean-greenhouse",
+    "name": "Glean",
+    "platform": "greenhouse",
+    "identifier": "gleanwork",
+    "discovery_mode": "ats_api",
+    "priority_tier": 1,
+    "enabled": true,
+    "notes": "Enterprise AI search company with solution engineering and applied AI opportunities."
+  },
+  {
+    "id": "speechmatics-greenhouse",
+    "name": "Speechmatics",
+    "platform": "greenhouse",
+    "identifier": "speechmatics",
+    "discovery_mode": "ats_api",
+    "priority_tier": 2,
+    "enabled": true,
+    "notes": "Speech AI platform with applied AI and customer-facing technical roles."
+  },
+  {
+    "id": "wayve-greenhouse",
+    "name": "Wayve",
+    "platform": "greenhouse",
+    "identifier": "wayve",
+    "discovery_mode": "ats_api",
+    "priority_tier": 2,
+    "enabled": true,
+    "notes": "Embodied AI company with research, product, and platform roles."
+  },
+  {
+    "id": "mistral-lever",
+    "name": "Mistral AI",
+    "platform": "lever",
+    "identifier": "mistral",
+    "discovery_mode": "ats_api",
+    "priority_tier": 1,
+    "enabled": true,
+    "notes": "European frontier model lab with applied AI, product, and technical customer roles."
+  },
+  {
+    "id": "cohere-ashby",
+    "name": "Cohere",
+    "platform": "ashby",
+    "identifier": "cohere",
+    "discovery_mode": "ats_api",
+    "priority_tier": 1,
+    "enabled": true,
+    "notes": "Frontier model company with applied AI, platform, and go-to-market technical roles."
+  },
+  {
+    "id": "palantir-lever",
+    "name": "Palantir",
+    "platform": "lever",
+    "identifier": "palantir",
+    "discovery_mode": "ats_api",
+    "priority_tier": 1,
+    "enabled": true,
+    "notes": "Canonical forward deployed engineering company with deployment and product delivery roles."
+  },
+  {
+    "id": "qonto-lever",
+    "name": "Qonto",
+    "platform": "lever",
+    "identifier": "qonto",
+    "discovery_mode": "ats_api",
+    "priority_tier": 2,
+    "enabled": true,
+    "notes": "European fintech with platform, product, and AI-adjacent technical opportunities."
+  },
+  {
+    "id": "pigment-lever",
+    "name": "Pigment",
+    "platform": "lever",
+    "identifier": "pigment",
+    "discovery_mode": "ats_api",
+    "priority_tier": 2,
+    "enabled": true,
+    "notes": "AI-powered planning platform with solutions, product, and analytics roles."
+  },
+  {
+    "id": "spotify-lever",
+    "name": "Spotify",
+    "platform": "lever",
+    "identifier": "spotify",
+    "discovery_mode": "ats_api",
+    "priority_tier": 3,
+    "enabled": true,
+    "notes": "Large-scale product and data organization with ML, platform, and analytics opportunities."
+  },
+  {
+    "id": "pinecone-ashby",
+    "name": "Pinecone",
+    "platform": "ashby",
+    "identifier": "pinecone",
+    "discovery_mode": "ats_api",
+    "priority_tier": 3,
+    "enabled": true,
+    "notes": "Vector database company with AI platform and solutions-oriented roles."
+  },
+  {
+    "id": "langchain-ashby",
+    "name": "LangChain",
+    "platform": "ashby",
+    "identifier": "langchain",
+    "discovery_mode": "ats_api",
+    "priority_tier": 2,
+    "enabled": true,
+    "notes": "AI agent tooling company with platform, product, and developer-facing opportunities."
   }
 ]

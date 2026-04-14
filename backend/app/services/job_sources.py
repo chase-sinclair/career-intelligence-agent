@@ -7,12 +7,19 @@ import httpx
 
 from app.core.config import settings
 from app.core.logging import get_logger
-from app.models.jobs import JobPosting, JobRefreshResponse, JobScanHistoryEntry, JobSourceConfig
+from app.models.jobs import (
+    JobPosting,
+    JobRefreshResponse,
+    JobScanHistoryEntry,
+    JobSourceConfig,
+    JobSourcePack,
+)
 from app.services.jobs import get_jobs_cache_path, load_jobs_cache
 
 logger = get_logger(__name__)
 
 JOB_SOURCES_FILENAME = "job_sources.json"
+JOB_SOURCE_PACKS_FILENAME = "job_source_packs.json"
 JOB_SCAN_HISTORY_FILENAME = "job_scan_history.json"
 SEED_SOURCE_NAME = "seeded_demo"
 EXPIRED_PAGE_SIGNALS = (
@@ -36,6 +43,18 @@ def load_job_sources() -> list[JobSourceConfig]:
         return []
     data = json.loads(path.read_text(encoding="utf-8"))
     return [JobSourceConfig(**item) for item in data]
+
+
+def get_job_source_packs_path() -> Path:
+    return Path(settings.data_dir) / JOB_SOURCE_PACKS_FILENAME
+
+
+def load_job_source_packs() -> list[JobSourcePack]:
+    path = get_job_source_packs_path()
+    if not path.exists():
+        return []
+    data = json.loads(path.read_text(encoding="utf-8"))
+    return [JobSourcePack(**item) for item in data]
 
 
 def get_job_scan_history_path() -> Path:
@@ -68,6 +87,14 @@ def save_job_sources(sources: list[JobSourceConfig]) -> list[JobSourceConfig]:
         encoding="utf-8",
     )
     return sources
+
+
+def apply_job_source_pack(pack_id: str) -> list[JobSourceConfig]:
+    packs = load_job_source_packs()
+    for pack in packs:
+        if pack.id == pack_id:
+            return save_job_sources(pack.sources)
+    raise ValueError(f"Unknown job source pack: {pack_id}")
 
 
 def refresh_jobs_cache_from_sources() -> JobRefreshResponse:
@@ -135,6 +162,8 @@ def _fetch_source(source: JobSourceConfig) -> list[JobPosting]:
             return _fetch_greenhouse_jobs(client, source)
         if source.platform == "lever":
             return _fetch_lever_jobs(client, source)
+        if source.platform == "ashby":
+            return _fetch_ashby_jobs(client, source)
     raise ValueError(f"Unsupported source platform: {source.platform}")
 
 
@@ -229,6 +258,90 @@ def _fetch_lever_jobs(client: httpx.Client, source: JobSourceConfig) -> list[Job
                 liveness_note="Verified through Lever public postings API.",
                 liveness_checked_at=fetched_at,
             )
+        jobs.append(_verify_job_liveness(client, job))
+
+    return jobs
+
+
+def _fetch_ashby_jobs(client: httpx.Client, source: JobSourceConfig) -> list[JobPosting]:
+    url = "https://jobs.ashbyhq.com/api/non-user-graphql?op=ApiJobBoardWithTeams"
+    response = client.post(
+        url,
+        json={
+            "operationName": "ApiJobBoardWithTeams",
+            "variables": {"organizationHostedJobsPageName": source.identifier},
+            "query": """
+                query ApiJobBoardWithTeams($organizationHostedJobsPageName: String!) {
+                  jobBoardWithTeams(organizationHostedJobsPageName: $organizationHostedJobsPageName) {
+                    jobBoard {
+                      jobPostings {
+                        id
+                        title
+                        locationName
+                        employmentType
+                        secondaryLocations
+                        compensationTierSummary
+                      }
+                    }
+                  }
+                }
+            """,
+        },
+    )
+    response.raise_for_status()
+    payload = response.json()
+    postings = (
+        payload.get("data", {})
+        .get("jobBoardWithTeams", {})
+        .get("jobBoard", {})
+        .get("jobPostings", [])
+    )
+
+    jobs: list[JobPosting] = []
+    fetched_at = _now_iso()
+    for item in postings:
+        title = item.get("title", "Untitled role")
+        location = item.get("locationName") or "Unknown"
+        secondary_locations = item.get("secondaryLocations") or []
+        secondary_text = " ".join(
+            loc.get("locationName", "") for loc in secondary_locations if isinstance(loc, dict)
+        )
+        description = " ".join(
+            filter(
+                None,
+                [
+                    title,
+                    location,
+                    secondary_text,
+                    item.get("employmentType", ""),
+                    item.get("compensationTierSummary", ""),
+                ],
+            )
+        )
+        remote_type = _detect_remote_type(location=location, description=description)
+        hosted_url = f"https://jobs.ashbyhq.com/{source.identifier}/{item.get('id')}"
+
+        job = JobPosting(
+            id=f"{source.platform}:{source.id}:{item.get('id')}",
+            source=source.platform,
+            source_label=source.name,
+            title=title,
+            company=source.name,
+            location=location,
+            posted_at=None,
+            salary_text=item.get("compensationTierSummary"),
+            description=description,
+            employment_type=item.get("employmentType"),
+            remote_type=remote_type,
+            normalized_tags=[secondary_text] if secondary_text else [],
+            url=hosted_url,
+            fetched_at=fetched_at,
+            discovery_mode=source.discovery_mode,
+            priority_tier=source.priority_tier,
+            liveness_status="live",
+            liveness_note="Verified through Ashby public board API.",
+            liveness_checked_at=fetched_at,
+        )
         jobs.append(_verify_job_liveness(client, job))
 
     return jobs

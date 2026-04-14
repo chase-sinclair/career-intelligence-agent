@@ -162,6 +162,14 @@ export interface JobSourceConfig {
   notes: string
 }
 
+export interface JobSourcePack {
+  id: string
+  name: string
+  description: string
+  recommended_for: string[]
+  sources: JobSourceConfig[]
+}
+
 export interface JobFitResult {
   job: JobPosting
   overall_score: number

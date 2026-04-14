@@ -3,7 +3,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import TopNav from '@/components/TopNav'
 import {
+  applyJobSourcePack,
   getJobSources,
+  getJobSourcePacks,
   getTopFitJobs,
   refreshJobs,
   updateJobShortlist,
@@ -13,6 +15,7 @@ import type {
   JobFitResult,
   JobRefreshResponse,
   JobSourceConfig,
+  JobSourcePack,
   TopFitJobsResponse,
 } from '@/lib/types'
 
@@ -242,9 +245,11 @@ function emptySource(): JobSourceConfig {
 export default function TopFitJobsPage() {
   const [data, setData] = useState<TopFitJobsResponse | null>(null)
   const [sources, setSources] = useState<JobSourceConfig[]>([])
+  const [sourcePacks, setSourcePacks] = useState<JobSourcePack[]>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [savingSources, setSavingSources] = useState(false)
+  const [applyingPackId, setApplyingPackId] = useState<string | null>(null)
   const [recentDays, setRecentDays] = useState(0)
   const [dedupe, setDedupe] = useState(true)
   const [refreshResult, setRefreshResult] = useState<JobRefreshResponse | null>(null)
@@ -254,12 +259,14 @@ export default function TopFitJobsPage() {
 
   async function loadPageData() {
     setError(null)
-    const [jobsResponse, sourcesResponse] = await Promise.all([
+    const [jobsResponse, sourcesResponse, packsResponse] = await Promise.all([
       getTopFitJobs(12, recentDays, dedupe),
       getJobSources(),
+      getJobSourcePacks(),
     ])
     setData(jobsResponse)
     setSources(sourcesResponse)
+    setSourcePacks(packsResponse)
   }
 
   useEffect(() => {
@@ -304,6 +311,21 @@ export default function TopFitJobsPage() {
       setError(e instanceof Error ? e.message : 'Failed to save tracked job sources')
     } finally {
       setSavingSources(false)
+    }
+  }
+
+  async function handleApplySourcePack(packId: string) {
+    setApplyingPackId(packId)
+    setError(null)
+    setSaveMessage(null)
+    try {
+      const applied = await applyJobSourcePack(packId)
+      setSources(applied)
+      setSaveMessage('Source pack applied. Run Refresh Live Jobs to pull the broader discovery universe into the cache.')
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to apply source pack')
+    } finally {
+      setApplyingPackId(null)
     }
   }
 
@@ -368,8 +390,8 @@ export default function TopFitJobsPage() {
                       <span className="text-secondary">job preferences</span>.
                     </h1>
                     <p className="max-w-3xl text-base leading-relaxed text-on-surface-variant">
-                      The jobs agent now supports editable Greenhouse and Lever source tracking right
-                      from the app. Refreshes pull live boards into the cache, while fallback jobs
+                      The jobs agent now supports editable Greenhouse, Lever, and Ashby source tracking
+                      right from the app. Refreshes pull live boards into the cache, while fallback jobs
                       only appear if live refreshes come back empty.
                     </p>
                   </div>
@@ -457,6 +479,75 @@ export default function TopFitJobsPage() {
                 </div>
               </div>
             </section>
+
+            {sourcePacks.length > 0 && (
+              <section className="rounded-[28px] border border-white/5 bg-surface-container-low p-8">
+                <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-secondary">
+                      Discovery Packs
+                    </p>
+                    <h2 className="mt-3 text-2xl font-bold text-on-surface">
+                      Swap the source universe without rebuilding the crawler by hand
+                    </h2>
+                    <p className="mt-3 max-w-3xl text-sm leading-relaxed text-on-surface-variant">
+                      These packs are the broad-search equivalent of changing strategy. Instead of re-ranking the same
+                      handful of companies, you can switch the tracked board set toward AI platform, forward deployed,
+                      solutions, or data-oriented discovery.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid gap-4 lg:grid-cols-2">
+                  {sourcePacks.map(pack => (
+                    <div
+                      key={pack.id}
+                      className="rounded-2xl border border-white/5 bg-surface-container-lowest p-5"
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <h3 className="text-lg font-bold text-on-surface">{pack.name}</h3>
+                          <p className="mt-2 text-sm leading-relaxed text-on-surface-variant">
+                            {pack.description}
+                          </p>
+                        </div>
+                        <span className="rounded-full border border-white/10 bg-surface-container-high px-3 py-1 font-mono text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">
+                          {pack.sources.length} sources
+                        </span>
+                      </div>
+
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {pack.recommended_for.map(item => (
+                          <span
+                            key={item}
+                            className="rounded-full border border-secondary/20 bg-secondary/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.2em] text-secondary"
+                          >
+                            {item}
+                          </span>
+                        ))}
+                      </div>
+
+                      <div className="mt-5 flex items-center justify-between gap-4">
+                        <p className="text-sm text-on-surface-variant">
+                          Includes boards like {pack.sources.slice(0, 3).map(source => source.name).join(', ')}
+                          {pack.sources.length > 3 ? ', and more.' : '.'}
+                        </p>
+                        <button
+                          onClick={() => handleApplySourcePack(pack.id)}
+                          disabled={applyingPackId === pack.id}
+                          className="inline-flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/10 px-4 py-3 font-mono text-[11px] uppercase tracking-[0.2em] text-primary transition-colors hover:border-primary/40 disabled:pointer-events-none disabled:opacity-40"
+                        >
+                          <span className={`material-symbols-outlined text-sm ${applyingPackId === pack.id ? 'animate-spin' : ''}`}>
+                            {applyingPackId === pack.id ? 'progress_activity' : 'layers'}
+                          </span>
+                          {applyingPackId === pack.id ? 'Applying...' : 'Apply Pack'}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
 
             {data && (
               <section className="rounded-[28px] border border-white/5 bg-surface-container-low p-8">
@@ -674,6 +765,7 @@ export default function TopFitJobsPage() {
                           >
                             <option value="greenhouse">Greenhouse</option>
                             <option value="lever">Lever</option>
+                            <option value="ashby">Ashby</option>
                           </select>
                         </div>
 

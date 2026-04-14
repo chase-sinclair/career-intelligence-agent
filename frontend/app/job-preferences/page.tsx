@@ -77,14 +77,37 @@ function Field({
 
 export default function JobPreferencesPage() {
   const [preferences, setPreferences] = useState<JobPreferences>(EMPTY_PREFERENCES)
+  const [listDrafts, setListDrafts] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saveMessage, setSaveMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
+  function buildListDrafts(nextPreferences: JobPreferences): Record<string, string> {
+    return {
+      target_titles: formatList(nextPreferences.target_titles),
+      target_keywords: formatList(nextPreferences.target_keywords),
+      exclude_title_keywords: formatList(nextPreferences.exclude_title_keywords),
+      preferred_locations: formatList(nextPreferences.preferred_locations),
+      target_seniority: formatList(nextPreferences.target_seniority),
+      preferred_industries: formatList(nextPreferences.preferred_industries),
+      preferred_company_types: formatList(nextPreferences.preferred_company_types),
+      tech_focus_areas: formatList(nextPreferences.tech_focus_areas),
+      avoid_keywords: formatList(nextPreferences.avoid_keywords),
+    }
+  }
+
+  function setListField(field: keyof JobPreferences, value: string) {
+    setListDrafts(prev => ({ ...prev, [field]: value }))
+    setPreferences(prev => ({ ...prev, [field]: parseList(value) }))
+  }
+
   useEffect(() => {
     getJobPreferences()
-      .then(setPreferences)
+      .then(data => {
+        setPreferences(data)
+        setListDrafts(buildListDrafts(data))
+      })
       .catch(e => setError(e instanceof Error ? e.message : 'Failed to load job preferences'))
       .finally(() => setLoading(false))
   }, [])
@@ -96,6 +119,7 @@ export default function JobPreferencesPage() {
     try {
       const saved = await updateJobPreferences(preferences)
       setPreferences(saved)
+      setListDrafts(buildListDrafts(saved))
       setSaveMessage('Preferences saved. This will drive the stronger jobs agent as we build it out.')
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to save job preferences')
@@ -234,10 +258,8 @@ export default function JobPreferencesPage() {
                   hint="Comma-separated. Example: Lead Data Scientist, Senior Data Scientist, Applied AI Strategist"
                 >
                   <input
-                    value={formatList(preferences.target_titles)}
-                    onChange={e =>
-                      setPreferences(prev => ({ ...prev, target_titles: parseList(e.target.value) }))
-                    }
+                    value={listDrafts.target_titles ?? ''}
+                    onChange={e => setListField('target_titles', e.target.value)}
                     className="w-full rounded-xl border border-outline-variant/20 bg-surface-container-lowest px-4 py-3 text-sm text-on-surface placeholder:text-on-surface-variant/35 focus:border-primary/50 focus:outline-none"
                     placeholder="Lead Data Scientist, Senior Data Scientist"
                   />
@@ -248,10 +270,8 @@ export default function JobPreferencesPage() {
                   hint="These will help the agent identify matching responsibilities and domains."
                 >
                   <input
-                    value={formatList(preferences.target_keywords)}
-                    onChange={e =>
-                      setPreferences(prev => ({ ...prev, target_keywords: parseList(e.target.value) }))
-                    }
+                    value={listDrafts.target_keywords ?? ''}
+                    onChange={e => setListField('target_keywords', e.target.value)}
                     className="w-full rounded-xl border border-outline-variant/20 bg-surface-container-lowest px-4 py-3 text-sm text-on-surface placeholder:text-on-surface-variant/35 focus:border-primary/50 focus:outline-none"
                     placeholder="GenAI, RAG, analytics transformation"
                   />
@@ -262,13 +282,8 @@ export default function JobPreferencesPage() {
                   hint="Hard filter for role families you do not want ranked. Example: account executive, sales, recruiter"
                 >
                   <input
-                    value={formatList(preferences.exclude_title_keywords)}
-                    onChange={e =>
-                      setPreferences(prev => ({
-                        ...prev,
-                        exclude_title_keywords: parseList(e.target.value),
-                      }))
-                    }
+                    value={listDrafts.exclude_title_keywords ?? ''}
+                    onChange={e => setListField('exclude_title_keywords', e.target.value)}
                     className="w-full rounded-xl border border-outline-variant/20 bg-surface-container-lowest px-4 py-3 text-sm text-on-surface placeholder:text-on-surface-variant/35 focus:border-primary/50 focus:outline-none"
                     placeholder="account executive, sales, recruiter"
                   />
@@ -279,13 +294,8 @@ export default function JobPreferencesPage() {
                   hint="Use city names, metro areas, states, or Remote."
                 >
                   <input
-                    value={formatList(preferences.preferred_locations)}
-                    onChange={e =>
-                      setPreferences(prev => ({
-                        ...prev,
-                        preferred_locations: parseList(e.target.value),
-                      }))
-                    }
+                    value={listDrafts.preferred_locations ?? ''}
+                    onChange={e => setListField('preferred_locations', e.target.value)}
                     className="w-full rounded-xl border border-outline-variant/20 bg-surface-container-lowest px-4 py-3 text-sm text-on-surface placeholder:text-on-surface-variant/35 focus:border-primary/50 focus:outline-none"
                     placeholder="Remote, Washington, DC, Northern Virginia"
                   />
@@ -308,13 +318,8 @@ export default function JobPreferencesPage() {
 
                 <Field label="Target Seniority" hint="Comma-separated. Example: Senior, Lead, Staff">
                   <input
-                    value={formatList(preferences.target_seniority)}
-                    onChange={e =>
-                      setPreferences(prev => ({
-                        ...prev,
-                        target_seniority: parseList(e.target.value),
-                      }))
-                    }
+                    value={listDrafts.target_seniority ?? ''}
+                    onChange={e => setListField('target_seniority', e.target.value)}
                     className="w-full rounded-xl border border-outline-variant/20 bg-surface-container-lowest px-4 py-3 text-sm text-on-surface placeholder:text-on-surface-variant/35 focus:border-primary/50 focus:outline-none"
                     placeholder="Senior, Lead, Staff"
                   />
@@ -337,13 +342,8 @@ export default function JobPreferencesPage() {
 
                 <Field label="Preferred Industries">
                   <input
-                    value={formatList(preferences.preferred_industries)}
-                    onChange={e =>
-                      setPreferences(prev => ({
-                        ...prev,
-                        preferred_industries: parseList(e.target.value),
-                      }))
-                    }
+                    value={listDrafts.preferred_industries ?? ''}
+                    onChange={e => setListField('preferred_industries', e.target.value)}
                     className="w-full rounded-xl border border-outline-variant/20 bg-surface-container-lowest px-4 py-3 text-sm text-on-surface placeholder:text-on-surface-variant/35 focus:border-primary/50 focus:outline-none"
                     placeholder="AI, Enterprise SaaS, Public Sector"
                   />
@@ -351,13 +351,8 @@ export default function JobPreferencesPage() {
 
                 <Field label="Preferred Company Types">
                   <input
-                    value={formatList(preferences.preferred_company_types)}
-                    onChange={e =>
-                      setPreferences(prev => ({
-                        ...prev,
-                        preferred_company_types: parseList(e.target.value),
-                      }))
-                    }
+                    value={listDrafts.preferred_company_types ?? ''}
+                    onChange={e => setListField('preferred_company_types', e.target.value)}
                     className="w-full rounded-xl border border-outline-variant/20 bg-surface-container-lowest px-4 py-3 text-sm text-on-surface placeholder:text-on-surface-variant/35 focus:border-primary/50 focus:outline-none"
                     placeholder="Growth-stage startup, established technology company"
                   />
@@ -365,13 +360,8 @@ export default function JobPreferencesPage() {
 
                 <Field label="Tech Focus Areas">
                   <input
-                    value={formatList(preferences.tech_focus_areas)}
-                    onChange={e =>
-                      setPreferences(prev => ({
-                        ...prev,
-                        tech_focus_areas: parseList(e.target.value),
-                      }))
-                    }
+                    value={listDrafts.tech_focus_areas ?? ''}
+                    onChange={e => setListField('tech_focus_areas', e.target.value)}
                     className="w-full rounded-xl border border-outline-variant/20 bg-surface-container-lowest px-4 py-3 text-sm text-on-surface placeholder:text-on-surface-variant/35 focus:border-primary/50 focus:outline-none"
                     placeholder="LLM applications, RAG systems, data platforms"
                   />
@@ -417,14 +407,12 @@ export default function JobPreferencesPage() {
                   </Field>
 
                   <Field label="Avoid Keywords">
-                    <input
-                      value={formatList(preferences.avoid_keywords)}
-                      onChange={e =>
-                        setPreferences(prev => ({ ...prev, avoid_keywords: parseList(e.target.value) }))
-                      }
-                      className="w-full rounded-xl border border-outline-variant/20 bg-surface-container-lowest px-4 py-3 text-sm text-on-surface placeholder:text-on-surface-variant/35 focus:border-primary/50 focus:outline-none"
-                      placeholder="on-site only, junior, commission-only"
-                    />
+                  <input
+                    value={listDrafts.avoid_keywords ?? ''}
+                    onChange={e => setListField('avoid_keywords', e.target.value)}
+                    className="w-full rounded-xl border border-outline-variant/20 bg-surface-container-lowest px-4 py-3 text-sm text-on-surface placeholder:text-on-surface-variant/35 focus:border-primary/50 focus:outline-none"
+                    placeholder="on-site only, junior, commission-only"
+                  />
                   </Field>
 
                   <label className="flex items-start gap-3 rounded-xl border border-white/5 bg-surface-container-lowest px-4 py-4">

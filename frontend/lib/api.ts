@@ -12,6 +12,7 @@ import type {
   JobPreferences,
   JobShortlistEntry,
   JobSourceConfig,
+  JobSourcePack,
   JobRefreshResponse,
   TopFitJobsResponse,
   EvalRunResult,
@@ -102,6 +103,10 @@ export function getJobSources(): Promise<JobSourceConfig[]> {
   return apiFetch<JobSourceConfig[]>('/job-sources')
 }
 
+export function getJobSourcePacks(): Promise<JobSourcePack[]> {
+  return apiFetch<JobSourcePack[]>('/job-source-packs')
+}
+
 export function updateJobSources(sources: JobSourceConfig[]): Promise<JobSourceConfig[]> {
   return apiFetch<JobSourceConfig[]>('/job-sources', {
     method: 'PUT',
@@ -111,6 +116,12 @@ export function updateJobSources(sources: JobSourceConfig[]): Promise<JobSourceC
 
 export function refreshJobs(): Promise<JobRefreshResponse> {
   return apiFetch<JobRefreshResponse>('/jobs/refresh', { method: 'POST' })
+}
+
+export function applyJobSourcePack(packId: string): Promise<JobSourceConfig[]> {
+  return apiFetch<JobSourceConfig[]>(`/job-source-packs/${encodeURIComponent(packId)}/apply`, {
+    method: 'POST',
+  })
 }
 
 export function getJobShortlist(): Promise<JobShortlistEntry[]> {

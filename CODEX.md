@@ -62,9 +62,10 @@ GET  /admin/status          -> Return ingestion/index status
 - [x] Phase 5: Evaluation layer (live scoring, batch test set, diagnostics page)
 - [x] Phase 6: Job Agent Foundations (preferences capture, job schemas/storage, ingestion scaffolding, fit scoring surfaces)
 - [x] Phase 7: Efficient Job Discovery Pipeline (career-ops-inspired source tiers, scan history, refresh deltas, liveness-aware discovery, shortlist-first evaluation)
+- [x] Phase 8: Broad Discovery Expansion (multi-board ATS source packs, wider AI/company coverage, preference-responsive search universe, career-ops-style discovery breadth)
 
 ## Current Phase
-Phase 7 complete - Efficient Job Discovery Pipeline
+Phase 8 complete - Broad Discovery Expansion
 
 ## Run Command
 Always run uvicorn from the `backend/` directory (not repo root):
@@ -452,3 +453,58 @@ Completed: Closed Phase 7 with liveness-aware discovery gating.
 - Verified backend compilation with `python -m compileall app`
 - Verified frontend build with `npm run build`
 Next: Phase 7 is complete. The next likely build track is a delivery layer on top of the finished jobs pipeline: a true morning-brief experience, automation, and possibly tailored application materials fed by the shortlist queue.
+
+### Session 23 - 2026-04-14
+Completed: Defined and started Phase 8 - Broad Discovery Expansion.
+- Promoted the next build track into the phase plan as `Phase 8 - Broad Discovery Expansion`
+- Clarified the key problem this phase solves: the jobs agent was re-ranking a narrow 4-board universe instead of expanding outward the way `career-ops` does
+- Set the immediate phase goal to broaden the discovery window before adding more UI or automation:
+  - expand tracked ATS boards beyond the initial NYC-focused test set
+  - follow the same kind of multi-company source strategy used in `career-ops`
+  - make the fetched job universe much more responsive to changing preferences because the source pool is no longer so narrow
+- backend/seed/job_sources.default.json - replaced the 4-board sandbox source list with a broader AI/solutions-oriented ATS source pack spanning companies and boards inspired by the `career-ops` tracked-company set, including:
+  - Greenhouse: Anthropic, Vercel, Temporal, Airtable, RunPod, Glean, Speechmatics, Wayve
+  - Lever: Mistral AI, Weights & Biases, Palantir, Qonto, Pigment, Spotify, Vinted
+- backend/data/job_sources.json - updated the current runtime tracked-source set to match the broader seed pack so local testing immediately reflects the wider discovery universe
+- This intentionally keeps the implementation inside currently supported ATS providers (`greenhouse`, `lever`) as the fastest safe step toward `career-ops`-style discovery breadth before adding additional providers like Ashby or Workable
+Next: Continue Phase 8 by adding the next breadth-building layer:
+- more ATS provider support where it materially expands coverage (starting with Ashby)
+- preset source packs or source-set switching so preferences can pull from different discovery universes without hand-editing the full board list
+- validation of the widened source pack via live refresh so we can see whether the ranked queue begins surfacing the broader role families you expect
+
+### Session 24 - 2026-04-14
+Completed: Closed Phase 8 - Broad Discovery Expansion.
+- backend/app/models/jobs.py - added `JobSourcePack` so broader discovery presets are first-class typed objects in the API and frontend contracts
+- backend/app/services/bootstrap.py - now bootstraps `backend/data/job_source_packs.json` from a committed seed file so discovery packs exist automatically on a fresh checkout
+- backend/seed/job_source_packs.default.json - added committed discovery presets:
+  - `AI Platform & Solutions`
+  - `Data & Analytics`
+- backend/app/services/job_sources.py - expanded the discovery layer to support:
+  - loading and applying named source packs
+  - Ashby public job board ingestion alongside Greenhouse and Lever
+  - preserved liveness verification and refresh-delta tracking while broadening the source universe
+- backend/app/api/jobs.py - added:
+  - `GET /job-source-packs`
+  - `POST /job-source-packs/{pack_id}/apply`
+- frontend/lib/types.ts and frontend/lib/api.ts - added typed frontend support for discovery packs and pack application
+- frontend/app/top-fit-jobs/page.tsx - upgraded the jobs UI with:
+  - a new `Discovery Packs` section for switching between broader tracked-board universes
+  - direct application of source packs without hand-editing the advanced crawler controls
+  - Ashby as a supported editable source platform in `Advanced Source Tuning`
+  - refreshed hero copy reflecting Greenhouse + Lever + Ashby coverage
+- backend/seed/job_sources.default.json - replaced the old narrow sandbox with a much broader default tracked-source universe across AI platform, solutions, and data-adjacent companies
+- Validation:
+  - backend compile passed with `python -m compileall app`
+  - frontend build passed with `npm run build`
+  - live refresh succeeded against the expanded source universe:
+    - 15 enabled sources
+    - 1,558 live jobs fetched
+    - refresh deltas reported correctly (`8` added, `4` dropped, `1,550` unchanged)
+    - verified-live counts remained intact
+- Cleanup after validation:
+  - removed two dead default boards that returned 404s (`Weights & Biases`, `Vinted`)
+  - replaced them in the default tracked-source universe with live Ashby-backed sources (`Cohere`, `Pinecone`, `LangChain`) so the widened discovery set is broader and cleaner out of the box
+Next: The next likely build track is a delivery and intelligence layer on top of the broadened jobs pipeline:
+- morning brief generation from refresh deltas + shortlist state
+- smarter preference-to-pack recommendations
+- deeper search expansion beyond ATS boards when needed

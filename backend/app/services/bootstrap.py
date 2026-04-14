@@ -17,6 +17,7 @@ SEED_JOBS_CACHE_PATH = SEED_DIR / "jobs_cache.default.json"
 SEED_JOB_SOURCES_PATH = SEED_DIR / "job_sources.default.json"
 SEED_JOB_SCAN_HISTORY_PATH = SEED_DIR / "job_scan_history.default.json"
 SEED_JOB_SHORTLIST_PATH = SEED_DIR / "job_shortlist.default.json"
+SEED_JOB_SOURCE_PACKS_PATH = SEED_DIR / "job_source_packs.default.json"
 
 
 def ensure_default_public_assets() -> None:
@@ -29,6 +30,7 @@ def ensure_default_public_assets() -> None:
     _copy_if_missing(SEED_JOB_PREFERENCES_PATH, data_dir / "job_preferences.json")
     _copy_if_missing(SEED_JOBS_CACHE_PATH, data_dir / "jobs_cache.json")
     _copy_if_missing(SEED_JOB_SOURCES_PATH, data_dir / "job_sources.json")
+    _copy_if_missing(SEED_JOB_SOURCE_PACKS_PATH, data_dir / "job_source_packs.json")
     _copy_if_missing(SEED_JOB_SCAN_HISTORY_PATH, data_dir / "job_scan_history.json")
     _copy_if_missing(SEED_JOB_SHORTLIST_PATH, data_dir / "job_shortlist.json")
 
