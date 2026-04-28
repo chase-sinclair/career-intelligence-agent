@@ -167,7 +167,7 @@ export default function DemoLabPage() {
     <>
       <TopNav subtitle="Demo Lab" />
 
-      <main className="ml-64 h-screen overflow-y-auto custom-scrollbar">
+      <main className="pl-5 h-screen overflow-y-auto custom-scrollbar">
         <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.15),transparent_30%),radial-gradient(circle_at_top_right,rgba(68,226,205,0.08),transparent_24%),linear-gradient(180deg,#121315_0%,#141518_100%)] px-8 pb-16 pt-24">
           <div className="mx-auto max-w-6xl space-y-8">
             <section className="relative overflow-hidden rounded-[28px] border border-white/5 bg-surface-container-low p-8 shadow-[0_24px_80px_rgba(0,0,0,0.28)] lg:p-10">

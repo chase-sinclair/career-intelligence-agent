@@ -1,224 +1,185 @@
-'use client'
-
 import Link from 'next/link'
+import {
+  ArrowUpRight,
+  User,
+  MessageSquare,
+  LayoutGrid,
+  Compass,
+  SlidersHorizontal,
+  FlaskConical,
+  ChevronRight,
+} from 'lucide-react'
+import ConstellationCanvas from '@/components/ConstellationCanvas'
 
-function LandingCard({
-  icon,
-  title,
-  body,
-  action,
-  href,
-  accent = 'primary',
-}: {
-  icon: string
-  title: string
-  body: string
-  action: string
+// ── Card definitions ──────────────────────────────────────────────────────────
+
+interface CardDef {
   href: string
-  accent?: 'primary' | 'secondary' | 'neutral'
-}) {
-  const accentClass =
-    accent === 'primary'
-      ? 'text-primary'
-      : accent === 'secondary'
-        ? 'text-secondary'
-        : 'text-on-surface'
+  icon: React.ReactNode
+  title: string
+  desc: string
+  accent?: boolean
+}
+
+const CARDS: CardDef[] = [
+  {
+    href: '/about',
+    icon: <User size={20} color="#C4A882" strokeWidth={1.5} />,
+    title: 'Architect Profile',
+    desc: 'Skills, experience & career timeline',
+    accent: true,
+  },
+  {
+    href: '/knowledge-base',
+    icon: <MessageSquare size={20} color="#E2DFD0" strokeWidth={1.5} />,
+    title: 'Knowledge Base',
+    desc: 'Ask anything. Grounded RAG answers.',
+  },
+  {
+    href: '/projects',
+    icon: <LayoutGrid size={20} color="#E2DFD0" strokeWidth={1.5} />,
+    title: 'Projects',
+    desc: 'Deep dives into selected work',
+  },
+  {
+    href: '/top-fit-jobs',
+    icon: <Compass size={20} color="#E2DFD0" strokeWidth={1.5} />,
+    title: 'Top Fit Jobs',
+    desc: 'Ranked roles by match score',
+  },
+  {
+    href: '/job-preferences',
+    icon: <SlidersHorizontal size={20} color="#E2DFD0" strokeWidth={1.5} />,
+    title: 'Job Preferences',
+    desc: 'Roles, locations & work style',
+  },
+  {
+    href: '/admin',
+    icon: <FlaskConical size={20} color="#E2DFD0" strokeWidth={1.5} />,
+    title: 'Demo Lab',
+    desc: 'Upload, rebuild & regenerate',
+  },
+]
+
+// ── Card component ────────────────────────────────────────────────────────────
+
+function Card({ card }: { card: CardDef }) {
+  const base =
+    'relative overflow-hidden rounded-xl p-4 flex flex-col min-h-[100px] backdrop-blur-md border transition-all duration-200 group'
+
+  const variant = card.accent
+    ? 'bg-[rgba(180,158,120,0.08)] border-[rgba(180,158,120,0.22)] hover:bg-[rgba(180,158,120,0.13)] hover:border-[rgba(180,158,120,0.38)]'
+    : 'bg-[rgba(226,223,208,0.04)] border-[rgba(226,223,208,0.10)] hover:bg-[rgba(226,223,208,0.07)] hover:border-[rgba(226,223,208,0.20)]'
+
+  const sheenGradient = card.accent
+    ? 'linear-gradient(135deg, rgba(180,158,120,0.13) 0%, transparent 60%)'
+    : 'linear-gradient(135deg, rgba(226,223,208,0.07) 0%, transparent 60%)'
+
+  const titleColor = card.accent ? 'text-[#C4A882]' : 'text-[#E2DFD0] opacity-80'
+  const arrowColor = card.accent ? 'text-[#C4A882] opacity-45' : 'text-[#E2DFD0] opacity-[0.18]'
+  const iconOpacity = card.accent ? 'opacity-90' : 'opacity-[0.55]'
 
   return (
-    <Link
-      href={href}
-      className="group rounded-[24px] border border-white/5 bg-surface-container-low p-6 transition-all hover:-translate-y-1 hover:border-primary/30 hover:bg-surface-container-high"
-    >
-      <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl border border-white/5 bg-surface-container-lowest">
-        <span className={`material-symbols-outlined ${accentClass}`}>{icon}</span>
-      </div>
-      <h3 className="mb-3 text-xl font-bold text-on-surface">{title}</h3>
-      <p className="mb-6 text-sm leading-relaxed text-on-surface-variant">{body}</p>
-      <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.25em] text-primary">
-        {action}
-        <span className="material-symbols-outlined text-sm transition-transform group-hover:translate-x-1">
-          arrow_outward
-        </span>
-      </div>
+    <Link href={card.href} className={`${base} ${variant}`}>
+      {/* Sheen */}
+      <div
+        className="absolute inset-0 rounded-xl pointer-events-none"
+        style={{ background: sheenGradient }}
+      />
+
+      <div className={`w-5 h-5 mb-3 ${iconOpacity}`}>{card.icon}</div>
+
+      <span className={`text-[11px] font-medium mb-1 ${titleColor}`}>
+        {card.title}
+      </span>
+
+      <span className="text-[10px] text-[#E2DFD0] opacity-[0.32] leading-relaxed flex-1">
+        {card.desc}
+      </span>
+
+      <ChevronRight
+        size={10}
+        className={`mt-2.5 self-end ${arrowColor}`}
+        strokeWidth={1.5}
+      />
     </Link>
   )
 }
 
+// ── Page ──────────────────────────────────────────────────────────────────────
+
 export default function HomePage() {
   return (
-    <>
-      <main className="ml-64 min-h-screen overflow-y-auto custom-scrollbar bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.15),transparent_28%),radial-gradient(circle_at_top_right,rgba(68,226,205,0.08),transparent_24%),linear-gradient(180deg,#121315_0%,#141518_100%)]">
-        <div className="mx-auto max-w-6xl px-8 pb-16 pt-14">
-          <section className="relative overflow-hidden rounded-[32px] border border-white/5 bg-surface-container-low px-8 py-10 shadow-[0_24px_80px_rgba(0,0,0,0.28)] lg:px-10 lg:py-12">
-            <div className="absolute inset-0 bg-[linear-gradient(130deg,rgba(56,189,248,0.08),transparent_28%,rgba(68,226,205,0.06))]" />
-            <div className="relative grid gap-12 lg:grid-cols-[1.1fr_0.9fr]">
-              <div className="space-y-7">
-                <div className="inline-flex items-center gap-3 rounded-full border border-secondary/20 bg-secondary/10 px-4 py-2">
-                  <div className="h-2 w-2 rounded-full bg-secondary shadow-[0_0_10px_rgba(68,226,205,0.6)]" />
-                  <span className="font-mono text-[10px] uppercase tracking-[0.35em] text-secondary">
-                    Recruiter View Recommended
-                  </span>
-                </div>
+    <main className="min-h-screen flex flex-col bg-[#080808]">
 
-                <div className="space-y-4">
-                  <h1 className="max-w-4xl text-5xl font-black tracking-tight text-on-surface lg:text-6xl">
-                    Explore Chase Sinclair through an{' '}
-                    <span className="text-primary">Architect Profile</span> and an AI-powered{' '}
-                    <span className="text-secondary">Career Knowledge Base</span>.
-                  </h1>
-                  <p className="max-w-3xl text-lg leading-relaxed text-on-surface-variant">
-                    Career Architect is a recruiter-facing experience designed to make professional
-                    research faster and more interactive. Start with the Architect Profile for a
-                    structured overview, then move into the Career Knowledge Base to ask grounded
-                    questions about experience, projects, and impact.
-                  </p>
-                </div>
+      {/* ── Hero ──────────────────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden flex-1">
+        <ConstellationCanvas />
 
-                <div className="flex flex-wrap gap-4">
-                  <Link
-                    href="/about"
-                    className="inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-primary to-primary-container px-7 py-4 text-base font-bold text-on-primary transition-all hover:opacity-90"
-                  >
-                    View Chase&apos;s Architect Profile
-                    <span className="material-symbols-outlined text-lg">arrow_forward</span>
-                  </Link>
-                  <Link
-                    href="/admin"
-                    className="inline-flex items-center gap-3 rounded-2xl border border-white/10 bg-surface-container-lowest px-7 py-4 text-base font-semibold text-on-surface transition-colors hover:border-primary/30 hover:text-primary"
-                  >
-                    Try Demo Workflow
-                    <span className="material-symbols-outlined text-lg">science</span>
-                  </Link>
-                </div>
+        {/* Gradient fade to page bg */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: 'linear-gradient(to bottom, transparent 40%, #080808 100%)' }}
+        />
 
-                <div className="grid gap-3 sm:grid-cols-3">
-                  <div className="rounded-2xl border border-white/5 bg-surface-container-lowest/70 p-4">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-on-surface-variant/60">
-                      Start Here
-                    </p>
-                    <p className="mt-2 text-sm font-semibold text-on-surface">Architect Profile</p>
-                    <p className="mt-1 text-sm text-on-surface-variant">Best first stop for recruiters.</p>
-                  </div>
-                  <div className="rounded-2xl border border-white/5 bg-surface-container-lowest/70 p-4">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-on-surface-variant/60">
-                      Interactive Layer
-                    </p>
-                    <p className="mt-2 text-sm font-semibold text-on-surface">Career Knowledge Base</p>
-                    <p className="mt-1 text-sm text-on-surface-variant">Ask detailed questions with evidence.</p>
-                  </div>
-                  <div className="rounded-2xl border border-white/5 bg-surface-container-lowest/70 p-4">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-on-surface-variant/60">
-                      Capability Demo
-                    </p>
-                    <p className="mt-2 text-sm font-semibold text-on-surface">Create a New Profile</p>
-                    <p className="mt-1 text-sm text-on-surface-variant">Preview how the workflow generalizes.</p>
-                  </div>
-                </div>
-              </div>
+        {/* Hero content — bottom-anchored */}
+        <div className="absolute inset-0 flex flex-col justify-end px-5 pb-8 md:px-8 md:pb-10 pointer-events-none">
 
-              <div className="grid gap-4">
-                <div className="rounded-[26px] border border-white/5 bg-[#101114]/90 p-6">
-                  <div className="mb-4 flex items-center justify-between">
-                    <div>
-                      <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-primary">
-                        Recommended Flow
-                      </p>
-                      <h2 className="mt-2 text-xl font-bold text-on-surface">How to use the app</h2>
-                    </div>
-                    <span className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.25em] text-primary">
-                      Live
-                    </span>
-                  </div>
+          {/* Eyebrow */}
+          <div className="inline-flex items-center gap-1.5 mb-4">
+            <span className="w-[5px] h-[5px] rounded-full bg-[#C4A882] opacity-80" />
+            <span className="text-[10px] tracking-[0.18em] uppercase text-[#E2DFD0] opacity-40">
+              AI-Powered Candidate Profile
+            </span>
+          </div>
 
-                  <div className="space-y-4">
-                    {[
-                      {
-                        step: '01',
-                        title: 'Open the Architect Profile',
-                        body: 'Read the structured profile, timeline, skills, and project context before going deeper.',
-                      },
-                      {
-                        step: '02',
-                        title: 'Open the Career Knowledge Base',
-                        body: 'Use natural-language questions to investigate technical depth, leadership, and evidence-backed experience.',
-                      },
-                      {
-                        step: '03',
-                        title: 'Review projects or try the demo',
-                        body: 'Explore featured work or preview how the same workflow can be used for other professionals.',
-                      },
-                    ].map(item => (
-                      <div
-                        key={item.step}
-                        className="rounded-2xl border border-white/5 bg-surface-container-lowest px-4 py-4"
-                      >
-                        <div className="mb-2 flex items-center gap-3">
-                          <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-secondary">
-                            {item.step}
-                          </span>
-                          <h3 className="text-base font-bold text-on-surface">{item.title}</h3>
-                        </div>
-                        <p className="text-sm leading-relaxed text-on-surface-variant">{item.body}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
+          {/* Headline */}
+          <h1
+            className="text-4xl md:text-5xl lg:text-6xl leading-none text-[#E2DFD0] mb-4"
+            style={{ fontWeight: 300, letterSpacing: '-0.04em' }}
+          >
+            The Career
+            <br />
+            <em className="font-serif italic text-[#C4A882]">Architect.</em>
+          </h1>
 
-          <section className="mt-8 grid gap-6 lg:grid-cols-6">
-            <LandingCard
-              icon="badge"
-              title="Architect Profile"
-              body="A polished, recruiter-friendly view of Chase's background, experience, skills, and academic foundation."
-              action="Open Profile"
-              href="/about"
-              accent="primary"
-            />
-            <LandingCard
-              icon="forum"
-              title="Career Knowledge Base"
-              body="An interactive RAG interface that answers detailed questions using grounded source evidence and quality metrics."
-              action="Ask Questions"
-              href="/knowledge-base"
-              accent="secondary"
-            />
-            <LandingCard
-              icon="folder_open"
-              title="Projects"
-              body="A curated collection of technical work spanning AI systems, analytics platforms, and end-to-end product builds."
-              action="Browse Projects"
-              href="/projects"
-              accent="neutral"
-            />
-            <LandingCard
-              icon="tune"
-              title="Job Preferences"
-              body="The foundation for a stronger personal jobs agent that will learn role targets, preferences, and constraints before daily matching begins."
-              action="Set Preferences"
-              href="/job-preferences"
-              accent="secondary"
-            />
-            <LandingCard
-              icon="work"
-              title="Top Fit Jobs"
-              body="A scored scouting queue that ranks opportunities against your Architect Profile and saved preferences, with strengths, risks, and talking angles."
-              action="View Matches"
-              href="/top-fit-jobs"
-              accent="primary"
-            />
-            <LandingCard
-              icon="experiment"
-              title="Demo Lab"
-              body="A guided capability showcase for creating a new profile from uploaded career artifacts and supporting documents."
-              action="Launch Demo"
-              href="/admin"
-              accent="neutral"
-            />
-          </section>
+          {/* Body copy */}
+          <p className="text-sm text-[#E2DFD0] opacity-50 leading-relaxed max-w-lg mb-6">
+            <strong className="opacity-[0.75] font-medium not-italic">
+              You&apos;re looking at an intelligent portfolio — not a résumé.
+            </strong>{' '}
+            Ask it anything about Chase&apos;s background, projects, and technical decisions.
+            Every answer is grounded in real career artifacts and cited with evidence.
+          </p>
+
+          {/* CTA */}
+          <Link
+            href="/knowledge-base"
+            className="inline-flex items-center gap-2.5 bg-[#E2DFD0] rounded-full pl-4 pr-2 py-2 self-start hover:opacity-90 transition-opacity pointer-events-auto"
+          >
+            <span className="text-[#080808] text-xs font-medium">
+              Ask the first question
+            </span>
+            <span className="w-7 h-7 bg-[#080808] rounded-full flex items-center justify-center shrink-0">
+              <ArrowUpRight size={12} color="#E2DFD0" strokeWidth={2} />
+            </span>
+          </Link>
         </div>
-      </main>
-    </>
+      </section>
+
+      {/* ── Cards ─────────────────────────────────────────────────────────── */}
+      <section className="px-4 pb-5">
+        <p className="text-[9px] tracking-[0.18em] uppercase text-[#E2DFD0] opacity-25 mb-2.5 px-0.5">
+          Explore the platform
+        </p>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+          {CARDS.map(card => (
+            <Card key={card.href} card={card} />
+          ))}
+        </div>
+      </section>
+
+    </main>
   )
 }

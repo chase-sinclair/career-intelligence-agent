@@ -41,7 +41,7 @@ export default function ProjectDetailPage() {
     <>
       <TopNav subtitle="Project Deep Dive" />
 
-      <main className="ml-64 h-screen overflow-y-auto custom-scrollbar">
+      <main className="pl-5 h-screen overflow-y-auto custom-scrollbar">
         <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.12),transparent_24%),linear-gradient(180deg,#121315_0%,#151619_100%)] px-8 pb-24 pt-24">
           <div className="mx-auto max-w-5xl">
             <div className="sticky top-16 z-30 border-b border-white/5 bg-[#121315]/80 py-4 backdrop-blur-xl">

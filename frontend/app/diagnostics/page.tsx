@@ -93,8 +93,8 @@ export default function AnswerQualityCheckPage() {
     <>
       <TopNav subtitle="Answer Quality Check" />
 
-      <main className="ml-64 h-screen overflow-y-auto custom-scrollbar">
-        <div className="p-10 space-y-10 max-w-6xl">
+      <main className="pl-5 h-screen overflow-y-auto custom-scrollbar">
+        <div className="px-10 pb-10 pt-24 space-y-10 max-w-6xl">
           <header>
             <h2 className="text-4xl font-extrabold tracking-tight text-on-surface mb-2">
               Answer Quality Check

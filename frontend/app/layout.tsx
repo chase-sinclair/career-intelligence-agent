@@ -1,6 +1,14 @@
 import type { Metadata } from 'next'
+import { Instrument_Serif } from 'next/font/google'
 import './globals.css'
-import Sidebar from '@/components/Sidebar'
+import ConditionalSidebar from '@/components/ConditionalSidebar'
+
+const instrumentSerif = Instrument_Serif({
+  subsets: ['latin'],
+  style: 'italic',
+  weight: '400',
+  variable: '--font-instrument-serif',
+})
 
 export const metadata: Metadata = {
   title: 'Career Architect AI',
@@ -9,7 +17,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className={`dark ${instrumentSerif.variable}`}>
       <head>
         <link
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500&display=swap"
@@ -21,7 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="font-body selection:bg-primary-container selection:text-on-primary-container">
-        <Sidebar />
+        <ConditionalSidebar />
         {children}
       </body>
     </html>

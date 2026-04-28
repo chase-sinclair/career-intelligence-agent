@@ -1,7 +1,10 @@
 # Career Intelligence Agent — Project Memory
 
+## Product Vision
+The current priority is Chase's public recruiter-facing profile (landing page, Architect Profile, Career Knowledge Base, Projects). Longer term, this becomes a self-serve platform where any user uploads career artifacts and the app builds their profile, knowledge base, project highlights, and private job-matching workflows. Job-search and job-agent pages should eventually be private/user-only, not part of the public recruiter path.
+
 ## Project Overview
-A recruiter-facing AI Career Intelligence App. Recruiters can ask questions about the owner's background, skills, and projects. Answers are grounded in a RAG pipeline built from a resume and career artifacts. This is a single-user MVP designed to demonstrate RAG, agentic workflow design, orchestration, and LLM output evaluation.
+A recruiter-facing AI Career Intelligence App. Recruiters can ask questions about Chase Sinclair's background, skills, and projects. Answers are grounded in a RAG pipeline built from a resume and career artifacts. Single-user MVP designed to demonstrate RAG, agentic workflow design, orchestration, and LLM output evaluation.
 
 ## Tech Stack
 - Frontend: Next.js (App Router), TypeScript, Tailwind CSS, shadcn/ui
@@ -10,8 +13,7 @@ A recruiter-facing AI Career Intelligence App. Recruiters can ask questions abou
 - LLM Provider: OpenAI (GPT-4o for generation, text-embedding-3-small for embeddings, gpt-4o-mini for evaluation)
 - Vector DB: Chroma
 - Schemas/Settings: Pydantic Settings (env-based config)
-- Storage: Local file storage + SQLite for metadata (dev), upgradeable to Supabase/Postgres
-- Deployment: Vercel (frontend), Python-friendly host or Docker (backend)
+- Storage: Local file storage + JSON/SQLite (dev), upgradeable to Supabase/Postgres
 
 ## Repo Structure
 career-intelligence-agent/
@@ -20,14 +22,16 @@ career-intelligence-agent/
     app/
       api/          → Route handlers
       core/         → Config, logging, shared utilities
-      services/     → ingestion, retrieval, generation, evaluation
+      services/     → ingestion, retrieval, generation, evaluation, job services
       workflows/    → LangGraph graphs (ingestion, profile, chat, eval)
       models/       → Pydantic schemas
       evals/        → Test sets and scoring logic
-    data/           → candidate_profile.json, site_content.json (gitignored if repo is public)
+    data/           → Runtime JSON files + Chroma (gitignored)
+    seed/           → Default public profile assets (committed)
     uploads/        → Uploaded resumes and docs (always gitignored)
-    tests/
-  docs/             → Architecture notes, API docs
+    scripts/        → refresh_public_profile.py
+  docs/             → Architecture notes
+  CODEX.md          → Detailed project history and product direction
   README.md
 
 ## Key Backend Endpoints
@@ -41,17 +45,37 @@ GET  /projects              → Return project cards from site_content.json
 GET  /profile               → Return structured profile
 GET  /about-content         → Return about page content
 GET  /admin/status          → Return ingestion/index status
+GET/PUT /job-preferences    → Read/write job preferences
+GET  /jobs/top-fit          → Ranked job list with fit scores
+GET/PUT /job-sources        → Manage tracked ATS job sources
+GET  /job-source-packs      → Discovery pack presets
+POST /job-source-packs/{id}/apply → Apply a source pack
+POST /jobs/refresh          → Fetch live jobs from enabled sources
+GET  /jobs/shortlist        → Current shortlist state
+PUT  /jobs/{id}/shortlist   → Update shortlist status
 
 ## Core Data Files
-- backend/data/candidate_profile.json — Canonical structured profile (name, headline, experience, skills, projects, etc.)
-- backend/data/site_content.json — UI-ready copy generated from profile (hero, about, project cards)
-- backend/uploads/ — Raw uploaded files (resume PDF, project docs)
+- backend/data/candidate_profile.json — Canonical structured profile
+- backend/data/site_content.json — UI-ready copy (hero, about, project cards)
+- backend/seed/ — Default public profile assets auto-loaded on startup if data/ is missing
+- backend/uploads/ — Raw uploaded files
+
+## Frontend Pages (Current)
+- /                  → Landing page (hero, 6 entry cards)
+- /about             → Architect Profile (structured resume view)
+- /knowledge-base    → Career Knowledge Base (RAG chat + quality scores panel)
+- /projects          → Project cards
+- /projects/[slug]   → Project deep dives (animated reveal sections)
+- /job-preferences   → Job preferences editor
+- /top-fit-jobs      → Ranked jobs with fit scoring and shortlist
+- /admin             → Demo Lab (upload, rebuild, regenerate)
+- /diagnostics       → Answer Quality Check (session-based eval)
 
 ## LangGraph Workflows (4 agents)
-1. Ingestion Agent — file intake → text extraction → chunking → embedding → indexing → profile update
+1. Ingestion Agent — file intake → text extraction → chunking → embedding → indexing
 2. Profile Synthesis Agent — build candidate_profile.json and site_content.json from source materials
 3. Recruiter Q&A Agent — retrieve evidence → compose grounded answer → cite sources
-4. Evaluation Agent — LLM-as-judge using gpt-4o-mini: compare answer to evidence → score groundedness + completeness → flag unsupported claims
+4. Evaluation Agent — LLM-as-judge using gpt-4o-mini: groundedness + completeness + unsupported claim flag
 
 ## Build Phases
 - [x] Phase 0: Scaffolding + CLAUDE.md setup
@@ -60,14 +84,28 @@ GET  /admin/status          → Return ingestion/index status
 - [x] Phase 3: Frontend shell (Home, About, Projects, chat integration)
 - [x] Phase 4: Admin + rebuild flow (upload page, rebuild button, status)
 - [x] Phase 5: Evaluation layer (live scoring, batch test set, diagnostics page)
+- [x] Phase 6–10: IA rework, persistent public profile, Demo Lab, session-based eval, job agent, project deep dives
+- [ ] Phase 11: Recruiter-facing profile finish — expanded career data, more deep dives, public/private separation
 
 ## Current Phase
-Phase 5 complete — MVP complete
+Phase 11 — Recruiter-Facing AI Architect Profile Finish
 
-## Run Command
-Always run uvicorn from the `backend/` directory (not repo root):
+## Run Commands
+Backend (run from backend/ dir, port 8765):
+```powershell
+cd C:\Users\chase\Documents\career-intelligence-agent\backend
+..\.venv\Scripts\python -m uvicorn main:app --reload --host 127.0.0.1 --port 8765
 ```
-cd backend && ../.venv/Scripts/python -m uvicorn main:app --reload
+
+Frontend:
+```powershell
+cd C:\Users\chase\Documents\career-intelligence-agent\frontend
+npm run dev
+```
+
+Frontend .env.local must have:
+```
+NEXT_PUBLIC_API_URL=http://127.0.0.1:8765
 ```
 
 ## Important Conventions
@@ -78,9 +116,10 @@ cd backend && ../.venv/Scripts/python -m uvicorn main:app --reload
 - Pydantic models for all request/response schemas
 - FastAPI lifespan events for startup/shutdown
 - Keep chunk metadata rich: doc_id, doc_type, chunk_id, section, project_name, source_filename
-- Chroma is the vector DB for MVP; Pinecone upgrade is possible later but not planned for v1
+- Chroma is the vector DB for MVP; Pinecone upgrade not planned for v1
 - OpenAI is the sole LLM provider for v1 — do not abstract for multi-provider until v2
 - Pin LangGraph at 0.2.28 — do not upgrade without explicit instruction
+- All pages with a fixed TopNav (h-16 = 64px) must have at least pt-16 top padding; use pt-24 for breathing room
 
 ## OpenAI Model Assignments
 - Generation (chat answers): gpt-4o
@@ -89,59 +128,29 @@ cd backend && ../.venv/Scripts/python -m uvicorn main:app --reload
 
 ## Session Notes
 <!-- Claude: update this section at the end of every session with what was completed and what is next -->
-### Session 1 — 2026-03-23
-Completed: Phase 0 scaffolding + Phase 1 backend core.
-- Phase 0: full monorepo structure, CLAUDE.md files, slash commands, .env.example, .gitignore, requirements.txt, README.md
-- Phase 1: ingestion service (PDF/txt/md), chunking (tiktoken, cl100k_base, size by doc_type), embedding+indexing (Chroma via langchain-chroma), retrieval, generation (GPT-4o), LangGraph ingestion and chat workflows, /upload + /ingest/rebuild + /chat endpoints
-- All Phase 1 smoke tests passed: upload → ingest → chat returning grounded answers
-- Run server from backend/ dir: `cd backend && ../.venv/Scripts/python -m uvicorn main:app --reload`
-### Session 2 — 2026-03-23
-Completed: Phase 2 — Structured profile.
-- Extended models/profile.py with SiteContent and ProjectCard schemas
-- services/profile_builder.py — GPT-4o extracts CandidateProfile from Chroma chunks, writes candidate_profile.json
-- services/content_generator.py — GPT-4o generates UI copy (hero, about, project cards, suggested prompts), writes site_content.json
-- workflows/profile_graph.py — LangGraph: retrieve_all → build_profile → generate_content
-- api/profile.py — POST /profile/generate, GET /profile
-- api/about.py — GET /about-content
-- api/projects.py — GET /projects
-- All Phase 2 smoke tests passed
-Next: Phase 3 — Frontend shell (Next.js App Router, Tailwind, shadcn/ui, Home/About/Projects pages)
-### Session 3 — 2026-03-23
-Completed: Phase 3 — Frontend shell.
-- Scaffolded Next.js 14 App Router project (package.json, tsconfig, tailwind.config, postcss, globals.css, layout)
-- tailwind.config.ts: full design system color palette + font families (Inter, JetBrains Mono, Space Grotesk) from DESIGN.md
-- lib/types.ts: TypeScript types mirroring all backend Pydantic models (ChatRequest/Response, EvaluationScores, CandidateProfile, AboutContent, ProjectCard)
-- lib/api.ts: typed API client — chat(), getProfile(), getAboutContent(), getProjects() via NEXT_PUBLIC_API_URL
-- components/Sidebar.tsx: shared left nav with active-route highlighting (usePathname)
-- components/TopNav.tsx: shared header with hasRightPanel prop (right-80 vs right-0)
-- app/page.tsx: full chat interface — dynamic candidate name + suggested prompts, message history, loading state, POST /chat wired, right panel with live quality metrics + source evidence
-- app/about/page.tsx: Stitch-converted Deep-Dive page — profile.name/headline, skills/tools/certifications badges, experience timeline, education; wired to GET /profile + GET /about-content
-- app/projects/page.tsx: Stitch-converted Projects page — dynamic cards with name, summary, tech badges, impact bullets, link buttons; wired to GET /projects
-- Run frontend: `cd frontend && npm install && npm run dev` (requires NEXT_PUBLIC_API_URL in .env.local)
-Next: Phase 4 — Admin + rebuild flow (upload page, rebuild button, status panel)
-### Session 4 — 2026-03-23
-Completed: Phase 4 — Admin + rebuild flow.
-- backend/app/api/admin.py — GET /admin/status: upload dir exists/count/filenames, Chroma index exists, profile+site_content exists, ISO last-modified timestamps
-- backend/main.py — registered admin router
-- frontend/lib/types.ts — added DocType, UploadResponse, IngestResponse, GenerateResponse, AdminStatus
-- frontend/lib/api.ts — added getAdminStatus(), uploadFile() (FormData), rebuildIndex(), generateProfile()
-- frontend/components/Sidebar.tsx — added Admin nav item (admin_panel_settings icon)
-- frontend/app/admin/page.tsx — three sections: System Status (indicator dots, file list, timestamps, refresh), File Upload (drop zone, doc_type select, project_name input, result cards), Operations (Rebuild Index + Regenerate Profile buttons with loading state + inline results, auto-refresh status on success)
-Next: Phase 5 — Evaluation layer (live scoring, batch test set, diagnostics page)
-### Session 5 — 2026-03-23
-Completed: Chroma stale-data bug fix.
-- backend/app/services/embedding.py — added clear_collection(): calls vectorstore.delete_collection() then resets _vectorstore singleton to None so next get_vectorstore() creates a fresh collection
-- backend/app/api/ingest.py — calls clear_collection() once before the file loop in POST /ingest/rebuild, ensuring stale chunks (e.g. Jane Doe sample resume) are wiped before reindexing current uploads
-Next: Phase 5 — Evaluation layer (live scoring, batch test set, diagnostics page)
-### Session 6 — 2026-03-23
-Completed: Phase 5 — Evaluation layer.
-- backend/app/services/evaluation.py — gpt-4o-mini LLM-as-judge: evaluate_answer(query, answer, chunks) → EvaluationScores; structured JSON output via response_format; safe defaults on failure
-- backend/app/workflows/eval_graph.py — LangGraph eval agent (EvalState TypedDict, single judge_node, run_evaluation() public entry point)
-- backend/app/workflows/chat_graph.py — removed _PLACEHOLDER_SCORES, added evaluate_node wired after generate_node (retrieve → generate → evaluate → END)
-- backend/app/evals/scoring.py — batch runner: EvalQuestionResult + EvalRunResult Pydantic models, run_batch_eval() loads recruiter_questions.json, calls run_chat() per question, checks must_mention keywords, persists to backend/data/eval_results.json
-- backend/app/api/eval.py — POST /eval/run + GET /eval/results (404 if not yet run)
-- backend/main.py — registered eval router
-- frontend/lib/types.ts — added EvalQuestionResult, EvalRunResult interfaces
-- frontend/lib/api.ts — added runEval() (POST /eval/run), getEvalResults() (GET /eval/results)
-- frontend/app/diagnostics/page.tsx — full diagnostics page: MetricBar + PassBadge helpers, aggregate metrics panel, run controls panel, per-question results table with line-clamp explanations
-MVP complete — all 5 phases done.
+
+### Sessions 1–6 Summary (2026-03-23)
+Full MVP built across 6 sessions: backend core (ingestion, chunking, Chroma, RAG, generation), structured profile synthesis, Next.js frontend shell, admin rebuild flow, Chroma stale-data fix, LLM-as-judge evaluation layer.
+
+### Sessions 7–10 Summary (condensed in CODEX.md — 2026-04-21)
+Major rework: IA/naming changes (Career Knowledge Base, Architect Profile, Demo Lab), persistent public profile with seed assets + bootstrap logic, job agent foundation (preferences, top-fit jobs, sources, packs, shortlist, scan history), project deep-dive system with AnimatedReveal component, session-based Answer Quality Check replacing static batch eval, backend port standardized to 8765.
+
+### Session 11 — 2026-04-21
+Completed: Pre-career-data code review and layout fixes.
+- Fixed content-under-nav bug on 3 pages: `about/page.tsx`, `diagnostics/page.tsx`, `job-preferences/page.tsx` — all used `p-10` (40px) as top padding but the fixed TopNav is 64px, causing the top portion of page content to be hidden. Changed to `px-10 pb-10 pt-24` to match the pattern used by all other pages.
+- Reviewed full codebase: all backend routes, LangGraph workflows, frontend pages, types, and API client are consistent and correct.
+- Identified remaining gaps: only 1 of many project deep dives populated (`oss-dependency-risk-agent`), gold eval set has only 3 questions, no public/private route separation yet.
+- Updated CLAUDE.md with current state; removed stale session history.
+Next: Intake Chase's updated career data, ingest into knowledge base, expand project deep dives.
+
+### Session 12 — 2026-04-28
+Completed: Landing page rebuild + frontend housekeeping.
+- Rebuilt `frontend/app/page.tsx` — full-viewport landing with ConstellationCanvas hero, bottom-anchored headline ("The Career / *Architect.*"), pill CTA linking to /knowledge-base, and 6 glassmorphism cards (2-col mobile / 3-col desktop).
+- Created `frontend/components/ConstellationCanvas.tsx` — 44-node animated canvas with mouse proximity glow, edge rendering, and pulsing nodes.
+- Created `frontend/components/ConditionalSidebar.tsx` — hides sidebar on `/` only; all other pages unaffected.
+- Updated `frontend/app/layout.tsx` — added Instrument Serif via next/font/google (CSS variable `--font-instrument-serif`), swapped Sidebar for ConditionalSidebar.
+- Updated `frontend/tailwind.config.ts` — added `surface-dark`, `cream`, `gold` color tokens + `serif` font family.
+- Installed `lucide-react`.
+- Deleted CODEX.md; merged product vision into CLAUDE.md.
+- Wrote full recruiter briefing doc + career data organization guide for RAG ingestion.
+Next: Chase to provide updated career data. Ingest files → rebuild index → regenerate profile → refresh seed assets → expand project deep dives.

@@ -5,7 +5,11 @@
       "Bash(echo:*)",
       "Bash(find /c/Users/chase/Documents/career-intelligence-agent -maxdepth 2 -name *.json -o -name *.js -o -name *.ts)",
       "Bash(grep -E \"\\\\.\\(json|js|ts|md\\)$\")",
-      "Bash(find C:UserschaseDocumentscareer-intelligence-agentfrontend -name admin* -o -name diagnostics*)"
+      "Bash(find C:UserschaseDocumentscareer-intelligence-agentfrontend -name admin* -o -name diagnostics*)",
+      "Bash(grep \"\\\\.py$\")",
+      "Bash(npm install *)",
+      "Bash(npm list *)",
+      "Bash(npx tsc *)"
     ]
   }
 }

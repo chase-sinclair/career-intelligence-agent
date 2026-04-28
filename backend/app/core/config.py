@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     chroma_persist_dir: str = str(PROJECT_ROOT / "backend" / "data" / "chroma")
     upload_dir: str = str(PROJECT_ROOT / "backend" / "uploads")
     data_dir: str = str(PROJECT_ROOT / "backend" / "data")
-    allowed_origins: str = "http://localhost:3000"
+    allowed_origins: str = "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,http://127.0.0.1:3001"
 
     @field_validator("chroma_persist_dir", "upload_dir", "data_dir", mode="before")
     @classmethod

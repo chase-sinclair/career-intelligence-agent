@@ -399,7 +399,7 @@ export default function TopFitJobsPage() {
     return (
       <>
         <TopNav subtitle="Top Fit Jobs" />
-        <main className="ml-64 h-screen overflow-y-auto custom-scrollbar">
+        <main className="pl-5 h-screen overflow-y-auto custom-scrollbar">
           <div className="p-10 flex items-center gap-2 text-on-surface-variant font-mono text-sm">
             <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
             Loading ranked opportunities...

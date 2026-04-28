@@ -1,23 +1,21 @@
 'use client'
 
-import Link from 'next/link'
 import { useState, useEffect, useRef, KeyboardEvent } from 'react'
+import { motion } from 'framer-motion'
+import { Search, ArrowUpRight } from 'lucide-react'
 import TopNav from '@/components/TopNav'
-import { chat as sendChat, getProfile, getAboutContent } from '@/lib/api'
-import type {
-  ChatResponse,
-  CandidateProfile,
-  AboutContent,
-  EvaluationScores,
-} from '@/lib/types'
+import { chat as sendChat } from '@/lib/api'
+import type { ChatResponse, EvaluationScores } from '@/lib/types'
 
-interface Message {
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+type Message = {
+  id: string
   role: 'user' | 'assistant'
   content: string
+  scores?: EvaluationScores
   sources?: string[]
   evidence_snippets?: string[]
-  scores?: EvaluationScores
-  processingTime?: number
 }
 
 interface SessionQualityEntry {
@@ -31,369 +29,601 @@ interface SessionQualityEntry {
   createdAt: string
 }
 
+// ── Constants ─────────────────────────────────────────────────────────────────
+
 const SESSION_STORAGE_KEY = 'career-architect-answer-quality-session'
 
-const PROMPT_ICONS = ['psychology', 'source', 'monitoring'] as const
+const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1]
 
-const DEFAULT_PROMPTS = [
-  "What is this candidate's experience with LangGraph?",
-  'Show me evidence of leadership in AI projects',
-  'Which projects demonstrate RAG pipeline experience?',
+const STARTER_QUESTIONS = [
+  'What AI systems has Chase built in production?',
+  'How does Chase approach LLM evaluation?',
+  "What is Chase's experience with RAG pipelines?",
+  'What kind of roles is Chase looking for?',
 ]
+
+// ── Session storage ───────────────────────────────────────────────────────────
+
+function saveSessionEntry(entry: SessionQualityEntry) {
+  if (typeof window === 'undefined') return
+  const raw = window.sessionStorage.getItem(SESSION_STORAGE_KEY)
+  const existing: SessionQualityEntry[] = raw ? JSON.parse(raw) : []
+  existing.push(entry)
+  window.sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(existing))
+}
+
+// ── Sub-components ────────────────────────────────────────────────────────────
+
+function TypingIndicator() {
+  return (
+    <motion.div
+      className="flex gap-2.5 items-start"
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, ease: EASE }}
+    >
+      <div
+        className="w-6 h-6 rounded-full flex-shrink-0 mt-0.5 flex items-center justify-center"
+        style={{
+          background: 'rgba(196,168,130,0.12)',
+          border: '0.5px solid rgba(196,168,130,0.28)',
+        }}
+      >
+        <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#C4A882', opacity: 0.85 }} />
+      </div>
+      <div
+        className="px-3.5 py-3 rounded-[3px_14px_14px_14px] flex items-center gap-2"
+        style={{
+          background: 'rgba(226,223,208,0.04)',
+          border: '0.5px solid rgba(226,223,208,0.10)',
+          backdropFilter: 'blur(12px)',
+        }}
+      >
+        {[0, 1, 2].map(i => (
+          <span
+            key={i}
+            className="w-1.5 h-1.5 rounded-full animate-typingBounce"
+            style={{
+              background: 'rgba(196,168,130,0.5)',
+              animationDelay: `${i * 0.2}s`,
+            }}
+          />
+        ))}
+      </div>
+    </motion.div>
+  )
+}
+
+interface ScoreBarProps {
+  label: string
+  value: number
+}
+
+function ScoreBar({ label, value }: ScoreBarProps) {
+  return (
+    <div className="flex flex-col gap-1 mb-2">
+      <div className="flex justify-between">
+        <span className="text-[9px]" style={{ color: 'rgba(226,223,208,0.42)' }}>{label}</span>
+        <span className="text-[10px] font-medium" style={{ color: '#C4A882' }}>
+          {(value * 100).toFixed(0)}%
+        </span>
+      </div>
+      <div className="h-0.5 rounded-full overflow-hidden" style={{ background: 'rgba(226,223,208,0.07)' }}>
+        <motion.div
+          className="h-full rounded-full"
+          style={{ background: 'linear-gradient(90deg, rgba(196,168,130,0.4), rgba(196,168,130,0.85))' }}
+          initial={{ width: '0%' }}
+          animate={{ width: `${value * 100}%` }}
+          transition={{ duration: 0.8, ease: EASE }}
+        />
+      </div>
+    </div>
+  )
+}
+
+// ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function KnowledgeBasePage() {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [panelOpen, setPanelOpen] = useState(false)
+  const [startersDismissed, setStartersDismissed] = useState(false)
   const [lastResponse, setLastResponse] = useState<ChatResponse | null>(null)
-  const [profile, setProfile] = useState<CandidateProfile | null>(null)
-  const [siteContent, setSiteContent] = useState<AboutContent | null>(null)
+  const [typingId, setTypingId] = useState<string | null>(null)
+  const [displayedText, setDisplayedText] = useState('')
 
   const scrollRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const typingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  useEffect(() => {
-    getProfile().then(setProfile).catch(() => {})
-    getAboutContent().then(setSiteContent).catch(() => {})
-  }, [])
-
+  // Scroll to bottom
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight
     }
-  }, [messages, isLoading])
+  }, [messages, isLoading, displayedText])
 
-  async function handleSend(query?: string) {
-    const text = (query ?? input).trim()
-    if (!text || isLoading) return
+  // Typewriter effect
+  useEffect(() => {
+    if (!typingId) return
+    const msg = messages.find(m => m.id === typingId)
+    if (!msg) return
+
+    const fullText = msg.content
+    let idx = 0
+    setDisplayedText('')
+
+    typingIntervalRef.current = setInterval(() => {
+      idx++
+      setDisplayedText(fullText.slice(0, idx))
+      if (idx >= fullText.length) {
+        clearInterval(typingIntervalRef.current!)
+        typingIntervalRef.current = null
+        setTypingId(null)
+      }
+    }, 14)
+
+    return () => {
+      if (typingIntervalRef.current) {
+        clearInterval(typingIntervalRef.current)
+        typingIntervalRef.current = null
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [typingId])
+
+  async function sendMessage(text?: string) {
+    const query = (text ?? input).trim()
+    if (!query || isLoading) return
 
     setInput('')
-    const userMessage: Message = { role: 'user', content: text }
-    setMessages(prev => [...prev, userMessage])
+    setStartersDismissed(true)
+
+    const userMsg: Message = {
+      id: `${Date.now()}-user`,
+      role: 'user',
+      content: query,
+    }
+    setMessages(prev => [...prev, userMsg])
     setIsLoading(true)
 
-    const startTime = performance.now()
     try {
-      const history = messages.map(m => ({ role: m.role, content: m.content }))
-      const response = await sendChat({ query: text, conversation_history: history })
-      const processingTime = (performance.now() - startTime) / 1000
+      const history = messages.map(m => ({
+        role: m.role as 'user' | 'assistant',
+        content: m.content,
+      }))
+      const response = await sendChat({ query, conversation_history: history })
 
-      const aiMessage: Message = {
+      const aiId = `${Date.now()}-ai`
+      const aiMsg: Message = {
+        id: aiId,
         role: 'assistant',
         content: response.answer,
+        scores: response.scores,
         sources: response.sources,
         evidence_snippets: response.evidence_snippets,
-        scores: response.scores,
-        processingTime,
       }
-      setMessages(prev => [...prev, aiMessage])
+      setMessages(prev => [...prev, aiMsg])
       setLastResponse(response)
+      setTypingId(aiId)
+
       saveSessionEntry({
-        id: `${Date.now()}`,
-        question: text,
+        id: aiId,
+        question: query,
         answer: response.answer,
         sources: response.sources,
         evidence_snippets: response.evidence_snippets,
         scores: response.scores,
-        processingTime,
+        processingTime: 0,
         createdAt: new Date().toISOString(),
       })
-    } catch (e) {
-      const fallback =
-        e instanceof Error
-          ? e.message
-          : 'Could not reach the backend. Make sure the API server is running.'
-      setMessages(prev => [
-        ...prev,
-        {
-          role: 'assistant',
-          content: fallback,
-        },
-      ])
+    } catch {
+      const errMsg: Message = {
+        id: `${Date.now()}-err`,
+        role: 'assistant',
+        content: 'Something went wrong. Please try again.',
+      }
+      setMessages(prev => [...prev, errMsg])
     } finally {
       setIsLoading(false)
+      inputRef.current?.focus()
     }
   }
 
   function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
-    if (e.key === 'Enter') handleSend()
+    if (e.key === 'Enter') sendMessage()
   }
 
-  const suggestedPrompts = siteContent?.suggested_prompts.slice(0, 3) ?? DEFAULT_PROMPTS
-  const candidateName = profile?.name ?? 'Candidate'
-
   return (
-    <>
-      <main className="ml-64 mr-80 flex h-screen flex-col relative bg-surface">
-        <TopNav hasRightPanel subtitle="Career Knowledge Base" />
+    <main
+      className="flex flex-col h-screen bg-[#080808] overflow-hidden transition-[margin] duration-300"
+      style={{ marginRight: panelOpen ? 320 : 0 }}
+    >
+      <TopNav subtitle="Knowledge Base" hasRightPanel={panelOpen} />
 
-        <div className="pt-16 pb-24 flex-1 flex flex-col overflow-hidden">
-          <div className="px-8 py-3 bg-surface-container-low/50 flex items-center gap-3">
-            <div className="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_rgba(68,226,205,0.6)]" />
-            <span className="font-mono text-[11px] tracking-tight text-on-surface-variant uppercase">
-              Evidence-grounded answers from the active career knowledge base
-            </span>
-          </div>
+      {/* Content wrapper — clears fixed TopNav */}
+      <div className="flex flex-col flex-1 overflow-hidden" style={{ paddingTop: 64 }}>
 
-          <div
-            ref={scrollRef}
-            className="flex-1 overflow-y-auto custom-scrollbar px-8 py-8 space-y-10"
+        {/* Page header */}
+        <div className="pt-6 px-6 pb-0 flex-shrink-0">
+          <h1
+            className="text-xl md:text-2xl font-light tracking-[-0.03em] leading-tight"
+            style={{ color: '#E2DFD0' }}
           >
-            {messages.length === 0 && (
-              <div className="max-w-3xl mx-auto space-y-8">
-                <div className="space-y-2">
-                  <h2 className="text-2xl font-bold tracking-tight text-on-surface">
-                    Career Knowledge Base: {candidateName}
-                  </h2>
-                  <p className="text-on-surface-variant text-sm">
-                    Ask grounded questions about experience, projects, skills, and impact.
-                  </p>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {suggestedPrompts.map((prompt, i) => (
-                    <button
-                      key={i}
-                      onClick={() => handleSend(prompt)}
-                      className="group bg-surface-container-low p-4 rounded-lg text-left border border-white/5 hover:bg-surface-container-high hover:border-primary/30 transition-all"
-                    >
-                      <span className="material-symbols-outlined text-primary text-xl mb-3 block">
-                        {PROMPT_ICONS[i]}
-                      </span>
-                      <span className="text-xs font-medium text-on-surface block leading-relaxed">
-                        {prompt}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+            Career Knowledge Base:{' '}
+            <em className="font-serif not-italic" style={{ color: '#C4A882' }}>Candidate</em>
+          </h1>
+          <p
+            className="text-[11px] mt-1.5 leading-relaxed"
+            style={{ color: 'rgba(226,223,208,0.35)' }}
+          >
+            Ask grounded questions about experience, projects, skills, and impact.
+          </p>
+        </div>
 
-            {messages.map((msg, i) => {
-              if (msg.role === 'user') {
-                return (
-                  <div key={i} className="max-w-3xl mx-auto flex justify-end">
-                    <div className="bg-surface-container-high px-5 py-3 rounded-lg max-w-xl text-sm text-on-surface">
-                      {msg.content}
-                    </div>
-                  </div>
-                )
-              }
+        {/* Messages area */}
+        <div
+          ref={scrollRef}
+          className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-4"
+        >
 
-              return (
-                <div key={i} className="max-w-4xl mx-auto flex gap-6">
-                  <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
-                    <span className="material-symbols-outlined text-primary">auto_awesome</span>
-                  </div>
-                  <div className="flex-1 space-y-4">
-                    <div className="bg-surface-container-lowest p-6 rounded-lg border-l-2 border-primary relative">
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="text-[10px] font-mono text-primary uppercase tracking-widest font-bold">
-                          Answer
-                        </span>
-                        {msg.processingTime !== undefined && (
-                          <span className="text-[10px] font-mono text-on-surface-variant">
-                            {msg.processingTime.toFixed(4)}s Processing Time
-                          </span>
-                        )}
-                      </div>
-                      <div className="space-y-4 text-sm leading-relaxed text-on-surface">
-                        <p>{msg.content}</p>
-                        {msg.evidence_snippets && msg.evidence_snippets.length > 0 && (
-                          <div className="bg-surface-container-low/50 p-4 rounded border border-white/5 font-mono text-[12px] text-on-surface-variant">
-                            <div className="flex items-center gap-2 mb-2 text-secondary">
-                              <span className="material-symbols-outlined text-xs">terminal</span>
-                              <span className="uppercase tracking-tighter">Evidence Snippet</span>
-                            </div>
-                            <span className="block whitespace-pre-wrap">
-                              {msg.evidence_snippets[0]}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
-
-            {isLoading && (
-              <div className="max-w-4xl mx-auto flex gap-6">
-                <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
-                  <span className="material-symbols-outlined text-primary">auto_awesome</span>
-                </div>
-                <div className="flex-1">
-                  <div className="bg-surface-container-lowest p-6 rounded-lg border-l-2 border-primary">
-                    <div className="flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse [animation-delay:150ms]" />
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse [animation-delay:300ms]" />
-                      <span className="text-[10px] font-mono text-on-surface-variant ml-2 uppercase tracking-widest">
-                        Retrieving evidence...
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-surface via-surface to-transparent">
-            <div className="max-w-4xl mx-auto">
-              <div className="bg-surface-container-high rounded-xl p-2 shadow-2xl flex items-center gap-2 border border-white/5 focus-within:border-primary/50 transition-colors">
-                <button className="p-2 text-on-surface-variant hover:text-primary transition-colors">
-                  <span className="material-symbols-outlined">query_stats</span>
-                </button>
-                <input
-                  value={input}
-                  onChange={e => setInput(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  disabled={isLoading}
-                  className="flex-1 bg-transparent border-none focus:ring-0 text-sm py-2 text-on-surface placeholder:text-on-surface-variant/50 disabled:opacity-50"
-                  placeholder="Ask the career knowledge base anything..."
-                  type="text"
-                />
-                <button
-                  onClick={() => handleSend()}
-                  disabled={isLoading || !input.trim()}
-                  className="bg-gradient-to-r from-primary to-primary-container text-on-primary px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 hover:opacity-90 transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
-                >
-                  ASK
-                  <span className="material-symbols-outlined text-sm">send</span>
-                </button>
-              </div>
-              <div className="mt-4 flex justify-end">
-                <Link
-                  href="/diagnostics"
-                  className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-surface-container-lowest px-4 py-3 font-mono text-[11px] uppercase tracking-[0.2em] text-on-surface-variant transition-colors hover:border-primary/30 hover:text-primary"
-                >
-                  Answer Quality Check
-                  <span className="material-symbols-outlined text-sm">arrow_outward</span>
-                </Link>
+          {/* Starter prompts — shown until first send */}
+          {!startersDismissed && messages.length === 0 && (
+            <div className="mt-auto flex flex-col gap-3 pb-2">
+              <p
+                className="text-[9px] tracking-[0.16em] uppercase text-center mb-1"
+                style={{ color: 'rgba(226,223,208,0.22)' }}
+              >
+                Suggested questions
+              </p>
+              <div className="grid grid-cols-2 gap-1.5">
+                {STARTER_QUESTIONS.map(q => (
+                  <button
+                    key={q}
+                    onClick={() => sendMessage(q)}
+                    className="relative overflow-hidden rounded-xl p-2.5 text-[10px] leading-relaxed text-left transition-all duration-150 group"
+                    style={{
+                      background: 'rgba(226,223,208,0.03)',
+                      border: '0.5px solid rgba(226,223,208,0.09)',
+                      color: 'rgba(226,223,208,0.42)',
+                      backdropFilter: 'blur(8px)',
+                    }}
+                    onMouseEnter={e => {
+                      const el = e.currentTarget
+                      el.style.background = 'rgba(226,223,208,0.06)'
+                      el.style.borderColor = 'rgba(226,223,208,0.18)'
+                      el.style.color = 'rgba(226,223,208,0.7)'
+                    }}
+                    onMouseLeave={e => {
+                      const el = e.currentTarget
+                      el.style.background = 'rgba(226,223,208,0.03)'
+                      el.style.borderColor = 'rgba(226,223,208,0.09)'
+                      el.style.color = 'rgba(226,223,208,0.42)'
+                    }}
+                  >
+                    <div
+                      className="absolute inset-0 pointer-events-none"
+                      style={{ background: 'linear-gradient(135deg, rgba(226,223,208,0.04) 0%, transparent 60%)' }}
+                    />
+                    {q}
+                  </button>
+                ))}
               </div>
             </div>
+          )}
+
+          {/* Messages */}
+          {messages.map(msg => {
+            const isTypingThis = msg.id === typingId
+
+            if (msg.role === 'user') {
+              return (
+                <motion.div
+                  key={msg.id}
+                  className="flex justify-end"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.25, ease: EASE }}
+                >
+                  <div
+                    className="max-w-[72%] px-3.5 py-2.5 text-[11px] leading-relaxed rounded-[14px_14px_3px_14px] relative overflow-hidden"
+                    style={{
+                      color: 'rgba(226,223,208,0.82)',
+                      background: 'rgba(196,168,130,0.10)',
+                      border: '0.5px solid rgba(196,168,130,0.22)',
+                      backdropFilter: 'blur(12px)',
+                    }}
+                  >
+                    <div
+                      className="absolute inset-0 rounded-[14px_14px_3px_14px] pointer-events-none"
+                      style={{ background: 'linear-gradient(135deg, rgba(196,168,130,0.08) 0%, transparent 60%)' }}
+                    />
+                    <span className="relative">{msg.content}</span>
+                  </div>
+                </motion.div>
+              )
+            }
+
+            // Assistant message
+            const renderedText = isTypingThis ? displayedText : msg.content
+            const isStillTyping = isTypingThis && displayedText !== msg.content
+
+            return (
+              <motion.div
+                key={msg.id}
+                className="flex gap-2.5 items-start"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.25, ease: EASE }}
+              >
+                {/* Avatar */}
+                <div
+                  className="w-6 h-6 rounded-full flex-shrink-0 mt-0.5 flex items-center justify-center"
+                  style={{
+                    background: 'rgba(196,168,130,0.12)',
+                    border: '0.5px solid rgba(196,168,130,0.28)',
+                  }}
+                >
+                  <span
+                    className="w-1.5 h-1.5 rounded-full"
+                    style={{ background: '#C4A882', opacity: 0.85 }}
+                  />
+                </div>
+
+                {/* Bubble */}
+                <div
+                  className="max-w-[85%] px-3.5 py-3 text-[11px] leading-[1.75] rounded-[3px_14px_14px_14px] relative overflow-hidden"
+                  style={{
+                    color: 'rgba(226,223,208,0.62)',
+                    background: 'rgba(226,223,208,0.04)',
+                    border: '0.5px solid rgba(226,223,208,0.10)',
+                    backdropFilter: 'blur(12px)',
+                  }}
+                >
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{ background: 'linear-gradient(135deg, rgba(226,223,208,0.05) 0%, transparent 55%)' }}
+                  />
+                  <p
+                    className="text-[8px] tracking-[0.12em] uppercase mb-1.5 relative"
+                    style={{ color: 'rgba(196,168,130,0.5)' }}
+                  >
+                    Career Intelligence
+                  </p>
+                  <div className="relative whitespace-pre-wrap">
+                    {renderedText}
+                    {isStillTyping && (
+                      <span
+                        className="inline-block w-0.5 h-3 ml-px align-middle animate-blink"
+                        style={{ background: '#C4A882' }}
+                      />
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            )
+          })}
+
+          {/* Typing indicator */}
+          {isLoading && <TypingIndicator />}
+        </div>
+
+        {/* Quality toggle row */}
+        <div className="px-6 pb-2 flex justify-end flex-shrink-0">
+          <button
+            onClick={() => setPanelOpen(v => !v)}
+            className="inline-flex items-center gap-1.5 text-[9px] tracking-[0.12em] uppercase rounded-md px-2 py-1 transition-all duration-150"
+            style={
+              panelOpen
+                ? {
+                    color: 'rgba(196,168,130,0.8)',
+                    border: '0.5px solid rgba(196,168,130,0.25)',
+                    background: 'rgba(196,168,130,0.06)',
+                  }
+                : {
+                    color: 'rgba(226,223,208,0.3)',
+                    border: '0.5px solid rgba(226,223,208,0.08)',
+                    background: 'rgba(226,223,208,0.03)',
+                  }
+            }
+          >
+            Answer Quality Check
+            <ArrowUpRight size={10} />
+          </button>
+        </div>
+
+        {/* Input area */}
+        <div className="px-6 pb-5 flex-shrink-0">
+          <div
+            className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl transition-all duration-200"
+            style={{
+              background: 'rgba(226,223,208,0.04)',
+              border: '0.5px solid rgba(226,223,208,0.10)',
+              backdropFilter: 'blur(8px)',
+            }}
+            onFocus={e =>
+              e.currentTarget.style.cssText += '; border-color: rgba(196,168,130,0.30); background: rgba(226,223,208,0.05)'
+            }
+            onBlur={e =>
+              e.currentTarget.style.cssText += '; border-color: rgba(226,223,208,0.10); background: rgba(226,223,208,0.04)'
+            }
+          >
+            <Search size={14} style={{ color: 'rgba(226,223,208,0.18)', flexShrink: 0 }} />
+            <input
+              ref={inputRef}
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              disabled={isLoading}
+              placeholder="Ask the career knowledge base anything…"
+              className="flex-1 bg-transparent border-none outline-none text-[11px] font-sans disabled:opacity-50"
+              style={{
+                color: 'rgba(226,223,208,0.65)',
+              }}
+            />
+            <button
+              onClick={() => sendMessage()}
+              disabled={isLoading || !input.trim()}
+              className="inline-flex items-center gap-1.5 flex-shrink-0 rounded-lg px-2.5 py-1.5 cursor-pointer transition-colors disabled:opacity-50 disabled:pointer-events-none"
+              style={{
+                background: 'rgba(196,168,130,0.15)',
+                border: '0.5px solid rgba(196,168,130,0.28)',
+              }}
+              onMouseEnter={e =>
+                ((e.currentTarget as HTMLButtonElement).style.background = 'rgba(196,168,130,0.25)')
+              }
+              onMouseLeave={e =>
+                ((e.currentTarget as HTMLButtonElement).style.background = 'rgba(196,168,130,0.15)')
+              }
+            >
+              <span
+                className="text-[10px] font-medium tracking-[0.08em]"
+                style={{ color: 'rgba(196,168,130,0.85)' }}
+              >
+                ASK
+              </span>
+              <ArrowUpRight size={10} style={{ color: '#C4A882' }} />
+            </button>
           </div>
         </div>
-      </main>
 
-      <aside className="fixed right-0 top-0 w-80 h-screen bg-surface-container-low border-l border-white/5 flex flex-col p-6 z-50 overflow-y-auto custom-scrollbar">
-        <section className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">
-              Quality Metrics
-            </h3>
-            <span className="material-symbols-outlined text-on-surface-variant text-sm">info</span>
-          </div>
+      </div>
 
-          <div className="space-y-5">
-            <div className="space-y-2">
-              <div className="flex justify-between items-end">
-                <span className="text-[10px] font-mono text-on-surface-variant/70">Groundedness</span>
-                <span className="text-sm font-mono text-secondary">
-                  {lastResponse ? lastResponse.scores.groundedness.toFixed(3) : '-'}
-                </span>
-              </div>
-              <div className="h-1 bg-surface-container-highest w-full overflow-hidden">
-                <div
-                  className="h-full bg-secondary shadow-[0_0_4px_rgba(68,226,205,0.4)] transition-all duration-500"
-                  style={{
-                    width: lastResponse
-                      ? `${Math.round(lastResponse.scores.groundedness * 100)}%`
-                      : '0%',
-                  }}
-                />
-              </div>
-            </div>
+      {/* ── Right panel ────────────────────────────────────────────────────────── */}
+      <motion.div
+        className="fixed top-16 right-0 bottom-0 flex flex-col overflow-hidden z-50"
+        style={{ width: 320 }}
+        animate={{ x: panelOpen ? 0 : '100%' }}
+        transition={{ duration: 0.3, ease: EASE }}
+      >
+        <div
+          className="flex flex-col h-full"
+          style={{
+            background: 'rgba(10,10,10,0.95)',
+            borderLeft: '1px solid rgba(226,223,208,0.07)',
+            backdropFilter: 'blur(20px)',
+          }}
+        >
+          {/* Quality scores */}
+          <div
+            className="p-4 flex-shrink-0"
+            style={{ borderBottom: '1px solid rgba(226,223,208,0.05)' }}
+          >
+            <p
+              className="text-[8px] tracking-[0.16em] uppercase mb-3"
+              style={{ color: 'rgba(226,223,208,0.25)' }}
+            >
+              Answer Quality
+            </p>
 
-            <div className="space-y-2">
-              <div className="flex justify-between items-end">
-                <span className="text-[10px] font-mono text-on-surface-variant/70">Completeness</span>
-                <span className="text-sm font-mono text-primary">
-                  {lastResponse ? lastResponse.scores.completeness.toFixed(3) : '-'}
-                </span>
-              </div>
-              <div className="h-1 bg-surface-container-highest w-full overflow-hidden">
-                <div
-                  className="h-full bg-primary shadow-[0_0_4px_rgba(142,213,255,0.4)] transition-all duration-500"
-                  style={{
-                    width: lastResponse
-                      ? `${Math.round(lastResponse.scores.completeness * 100)}%`
-                      : '0%',
-                  }}
-                />
-              </div>
-            </div>
+            {lastResponse ? (
+              <>
+                <ScoreBar label="Groundedness" value={lastResponse.scores.groundedness} />
+                <ScoreBar label="Completeness" value={lastResponse.scores.completeness} />
 
-            <div className="flex justify-between items-center py-2">
-              <span className="text-[10px] font-mono text-on-surface-variant/70">Unsupported Claim</span>
-              {lastResponse ? (
-                <span
-                  className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
-                    lastResponse.scores.unsupported_claim
-                      ? 'bg-red-500/10 text-red-400 border-red-500/20'
-                      : 'bg-green-500/10 text-green-400 border-green-500/20'
-                  }`}
-                >
-                  {lastResponse.scores.unsupported_claim ? 'True' : 'False'}
-                </span>
-              ) : (
-                <span className="px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant text-[10px] font-bold border border-white/5">
-                  -
-                </span>
-              )}
-            </div>
-          </div>
-        </section>
-
-        <div className="h-[1px] bg-surface-container-highest my-8" />
-
-        <section className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">
-              Source Evidence
-            </h3>
-            <span className="px-2 py-0.5 rounded-full bg-secondary/10 text-secondary text-[9px] font-bold border border-secondary/20">
-              {lastResponse ? `${lastResponse.sources.length} SOURCES` : '0 SOURCES'}
-            </span>
-          </div>
-
-          <div className="space-y-4">
-            {lastResponse?.sources.map((source, i) => (
-              <div
-                key={i}
-                className="bg-surface-container-lowest p-3 rounded border border-white/5 hover:bg-surface-container-highest transition-colors cursor-pointer group"
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="material-symbols-outlined text-sm text-on-surface-variant">
-                    description
+                <div className="flex justify-between items-center mt-1">
+                  <span className="text-[9px]" style={{ color: 'rgba(226,223,208,0.32)' }}>
+                    Unsupported claims
                   </span>
-                  <span className="text-[11px] font-bold text-on-surface truncate">{source}</span>
+                  {lastResponse.scores.unsupported_claim ? (
+                    <span
+                      className="text-[8px] px-2 py-0.5 rounded-full"
+                      style={{
+                        background: 'rgba(239,68,68,0.1)',
+                        border: '0.5px solid rgba(239,68,68,0.22)',
+                        color: 'rgba(239,68,68,0.75)',
+                      }}
+                    >
+                      Flagged
+                    </span>
+                  ) : (
+                    <span
+                      className="text-[8px] px-2 py-0.5 rounded-full"
+                      style={{
+                        background: 'rgba(110,231,183,0.1)',
+                        border: '0.5px solid rgba(110,231,183,0.22)',
+                        color: 'rgba(110,231,183,0.75)',
+                      }}
+                    >
+                      None
+                    </span>
+                  )}
                 </div>
-                {lastResponse.evidence_snippets[i] && (
-                  <p className="font-mono text-[10px] text-on-surface-variant line-clamp-2 leading-relaxed">
-                    {lastResponse.evidence_snippets[i]}
-                  </p>
-                )}
-              </div>
-            ))}
-
-            {!lastResponse && (
-              <p className="text-[11px] font-mono text-on-surface-variant/50 text-center pt-4">
-                Ask a question to inspect source evidence
+              </>
+            ) : (
+              <p
+                className="text-[10px] text-center py-2"
+                style={{ color: 'rgba(226,223,208,0.2)' }}
+              >
+                Ask a question to see quality scores
               </p>
             )}
           </div>
-        </section>
 
-        <div className="mt-auto pt-10" />
-      </aside>
-    </>
+          {/* Evidence sources */}
+          <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-2">
+            <p
+              className="text-[8px] tracking-[0.16em] uppercase mb-1 flex-shrink-0"
+              style={{ color: 'rgba(226,223,208,0.25)' }}
+            >
+              Evidence Sources
+            </p>
+
+            {lastResponse && lastResponse.sources.length > 0 ? (
+              lastResponse.sources.map((src, i) => (
+                <div
+                  key={i}
+                  className="relative overflow-hidden rounded-lg p-2.5"
+                  style={{
+                    background: 'rgba(226,223,208,0.03)',
+                    border: '0.5px solid rgba(226,223,208,0.08)',
+                  }}
+                >
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{ background: 'linear-gradient(135deg, rgba(226,223,208,0.03) 0%, transparent 55%)' }}
+                  />
+                  <div className="flex justify-between items-center mb-1.5 relative">
+                    <span
+                      className="text-[8px] px-1.5 py-0.5 rounded"
+                      style={{
+                        background: 'rgba(196,168,130,0.10)',
+                        border: '0.5px solid rgba(196,168,130,0.20)',
+                        color: 'rgba(196,168,130,0.8)',
+                      }}
+                    >
+                      source
+                    </span>
+                    <span className="text-[9px]" style={{ color: 'rgba(226,223,208,0.3)' }}>—</span>
+                  </div>
+                  {lastResponse.evidence_snippets[i] && (
+                    <p
+                      className="text-[9px] leading-[1.55] line-clamp-3 relative"
+                      style={{ color: 'rgba(226,223,208,0.36)' }}
+                    >
+                      {lastResponse.evidence_snippets[i]}
+                    </p>
+                  )}
+                  <p
+                    className="text-[8px] mt-1.5 relative"
+                    style={{ color: 'rgba(226,223,208,0.18)' }}
+                  >
+                    {src}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p
+                className="text-[10px] text-center py-2 mt-2"
+                style={{ color: 'rgba(226,223,208,0.2)' }}
+              >
+                Sources will appear after your first question
+              </p>
+            )}
+          </div>
+        </div>
+      </motion.div>
+    </main>
   )
-}
-
-function saveSessionEntry(entry: SessionQualityEntry) {
-  if (typeof window === 'undefined') return
-
-  const raw = window.sessionStorage.getItem(SESSION_STORAGE_KEY)
-  const existing: SessionQualityEntry[] = raw ? JSON.parse(raw) : []
-  existing.push(entry)
-  window.sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(existing))
 }

@@ -10,6 +10,9 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        'surface-dark': '#080808',
+        'cream': '#E2DFD0',
+        'gold': '#C4A882',
         'error': '#ffb4ab',
         'secondary-fixed': '#62fae3',
         'surface-container-low': '#1b1c1e',
@@ -59,6 +62,7 @@ const config: Config = {
         'surface-variant': '#343537',
       },
       fontFamily: {
+        serif: ['var(--font-instrument-serif)', '"Instrument Serif"', 'serif'],
         headline: ['Inter', 'sans-serif'],
         body: ['Inter', 'sans-serif'],
         label: ['Space Grotesk', 'sans-serif'],
@@ -69,6 +73,20 @@ const config: Config = {
         lg: '0.5rem',
         xl: '0.75rem',
         full: '9999px',
+      },
+      keyframes: {
+        blink: {
+          '0%,100%': { opacity: '1' },
+          '50%': { opacity: '0' },
+        },
+        typingBounce: {
+          '0%,60%,100%': { transform: 'translateY(0)', opacity: '0.4' },
+          '30%': { transform: 'translateY(-4px)', opacity: '1' },
+        },
+      },
+      animation: {
+        blink: 'blink 0.7s infinite',
+        typingBounce: 'typingBounce 1.2s infinite ease-in-out',
       },
     },
   },

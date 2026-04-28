@@ -53,7 +53,7 @@ export default function ProjectsPage() {
     return (
       <>
         <TopNav subtitle="Technical Projects" />
-        <main className="ml-64 h-screen overflow-y-auto custom-scrollbar">
+        <main className="pl-5 h-screen overflow-y-auto custom-scrollbar">
           <div className="pt-24 pb-12 px-8 flex items-center gap-2 text-on-surface-variant font-mono text-sm">
             <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
             Loading projects...
