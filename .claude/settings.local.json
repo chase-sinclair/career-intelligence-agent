@@ -11,7 +11,9 @@
       "Bash(npm list *)",
       "Bash(npx tsc *)",
       "Bash(curl *)",
-      "Bash(python -m json.tool)"
+      "Bash(python -m json.tool)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('ANSWER:', d['answer'][:400]\\)\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('ANSWER:', d['answer'][:500]\\)\")"
     ]
   }
 }

@@ -4,7 +4,7 @@ from langgraph.graph import StateGraph, END
 
 from app.core.logging import get_logger
 from app.services.retrieval import retrieve
-from app.services.generation import generate_answer
+from app.services.generation import generate_answer, rewrite_query
 from app.models.evaluation import EvaluationScores
 from app.workflows.eval_graph import run_evaluation
 
@@ -13,6 +13,7 @@ logger = get_logger(__name__)
 
 class ChatState(TypedDict):
     query: str
+    retrieval_query: str
     conversation_history: list[dict]
     chunks: list[dict]
     answer: str
@@ -22,12 +23,19 @@ class ChatState(TypedDict):
 
 
 def retrieve_node(state: ChatState) -> ChatState:
-    chunks = retrieve(state["query"], k=5)
-    return {**state, "chunks": chunks}
+    history = state.get("conversation_history") or []
+    query = state["query"]
+    retrieval_query = rewrite_query(query, history) if history else query
+    chunks = retrieve(retrieval_query, k=12)
+    return {**state, "retrieval_query": retrieval_query, "chunks": chunks}
 
 
 def generate_node(state: ChatState) -> ChatState:
-    result = generate_answer(state["query"], state["chunks"])
+    result = generate_answer(
+        state["query"],
+        state["chunks"],
+        state.get("conversation_history"),
+    )
     return {
         **state,
         "answer": result["answer"],
@@ -70,6 +78,7 @@ def run_chat(query: str, conversation_history: list[dict] | None = None) -> dict
     """Run the Q&A workflow for a recruiter query."""
     initial_state: ChatState = {
         "query": query,
+        "retrieval_query": "",
         "conversation_history": conversation_history or [],
         "chunks": [],
         "answer": "",

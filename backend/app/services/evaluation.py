@@ -32,6 +32,11 @@ confidence (float 0.0-1.0): Your confidence in this evaluation.
 
 explanation (string): One or two sentences explaining the scores.
 
+Special cases:
+- If the answer explicitly states that the evidence does not contain enough information to answer the question, and the evidence chunks indeed lack that information, this is a CORRECT and grounded response. Score it: groundedness=1.0, completeness=1.0, unsupported_claim=false. Do NOT penalize honest admissions of missing information.
+- Only flag unsupported_claim=true if the answer makes a positive assertion about the candidate that is not found anywhere in the evidence.
+- Source filenames shown in each evidence block (e.g. "aws-ai-practitioner-professional-certificate.md", "google-ai-professional-certificate.md") are themselves evidence about what credentials or documents exist. An answer that identifies a credential from a filename is grounded, not an unsupported claim.
+
 Return only a JSON object with keys: groundedness, completeness, unsupported_claim, confidence, explanation."""
 
 

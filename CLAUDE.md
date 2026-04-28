@@ -31,7 +31,6 @@ career-intelligence-agent/
     uploads/        → Uploaded resumes and docs (always gitignored)
     scripts/        → refresh_public_profile.py
   docs/             → Architecture notes
-  CODEX.md          → Detailed project history and product direction
   README.md
 
 ## Key Backend Endpoints
@@ -72,9 +71,9 @@ PUT  /jobs/{id}/shortlist   → Update shortlist status
 - /diagnostics       → Answer Quality Check (session-based eval)
 
 ## LangGraph Workflows (4 agents)
-1. Ingestion Agent — file intake → text extraction → chunking → embedding → indexing
+1. Ingestion Agent — file intake → text extraction (+ YAML front matter parsing for .md) → chunking → embedding → indexing
 2. Profile Synthesis Agent — build candidate_profile.json and site_content.json from source materials
-3. Recruiter Q&A Agent — retrieve evidence → compose grounded answer → cite sources
+3. Recruiter Q&A Agent — query rewrite (if history) → retrieve (k=12) → compose grounded answer (with conversation history) → cite sources
 4. Evaluation Agent — LLM-as-judge using gpt-4o-mini: groundedness + completeness + unsupported claim flag
 
 ## Build Phases
@@ -121,8 +120,23 @@ NEXT_PUBLIC_API_URL=http://127.0.0.1:8765
 - Pin LangGraph at 0.2.28 — do not upgrade without explicit instruction
 - All pages with a fixed TopNav (h-16 = 64px) must have at least pt-16 top padding; use pt-24 for breathing room
 
+## Ingestion Conventions
+- All source documents in uploads/ must be .md, .pdf, .txt, or .text
+- Markdown files should include a YAML front matter block at the top with: doc_type, doc_id, project_name (if applicable), source_filename
+- Front matter values override the caller-supplied defaults (from .meta.json or extension fallback)
+- Valid doc_type values: resume, project_doc, bio_notes, case_study
+- Front matter is stripped before chunking — it never appears in chunk text
+- Retrieval k is set to 12 — do not lower without testing for retrieval regressions
+
+## Conversation History
+- The /chat endpoint accepts `conversation_history: list[{role, content}]` in the request body
+- On follow-up turns, `rewrite_query()` uses gpt-4o-mini to resolve pronouns/references into a standalone retrieval query
+- The last 3 exchanges (6 messages) of history are injected into the generation LLM call as prior context
+- The frontend sends full session history on every request (knowledge-base/page.tsx)
+
 ## OpenAI Model Assignments
 - Generation (chat answers): gpt-4o
+- Query rewriting (follow-up resolution): gpt-4o-mini
 - Embeddings: text-embedding-3-small
 - Evaluation (LLM-as-judge): gpt-4o-mini
 
@@ -154,3 +168,34 @@ Completed: Landing page rebuild + frontend housekeeping.
 - Deleted CODEX.md; merged product vision into CLAUDE.md.
 - Wrote full recruiter briefing doc + career data organization guide for RAG ingestion.
 Next: Chase to provide updated career data. Ingest files → rebuild index → regenerate profile → refresh seed assets → expand project deep dives.
+
+### Session 13 — 2026-04-28
+Completed: Knowledge base population, RAG pipeline hardening, and conversation history.
+
+**Ingestion pipeline fix:**
+- Updated `backend/app/services/ingestion.py:extract_text()` to parse YAML front matter from .md files using `_parse_front_matter()`. Front matter is stripped from chunk text; values for doc_type, doc_id, project_name, source_filename override caller-supplied defaults. .meta.json remains a fallback if front matter is absent.
+
+**Knowledge base populated:**
+- Ingested 16 career data markdown files across 4 categories: core profile (resume), Booz Allen Hamilton project/work highlight docs, personal project docs, and certification docs.
+- All files use YAML front matter for self-describing metadata.
+- chase-sinclair-core-profile.md updated to include a Certifications section (all credentials in one place) and a Target Roles / What I'm Looking For section.
+
+**RAG pipeline improvements (35-question test suite across 6 categories):**
+- Retrieval k raised from 5 → 12 (`chat_graph.py`) — fixed retrieval failures on vector databases, prompt engineering, private equity projects, React/frontend, AWS certifications.
+- Generation system prompt updated: scan every evidence snippet before concluding absence; treat source filenames as evidence; don't conflate absence of mention with absence of experience.
+- LLM judge prompt updated: honest "I don't know" answers score 1.0/1.0; source filenames count as grounding evidence; unsupported_claim only fires on positive assertions not in evidence.
+
+**Conversation history (follow-up questions):**
+- Added `rewrite_query()` to `generation.py` — uses gpt-4o-mini to resolve pronouns/references ("that", "he", "there") into standalone queries before retrieval. Only fires when history is non-empty.
+- Updated `generate_answer()` to accept `conversation_history` and inject last 3 exchanges as HumanMessage/AIMessage pairs before the evidence block.
+- Updated `chat_graph.py`: added `retrieval_query` field to `ChatState`; `retrieve_node` calls rewrite; `generate_node` passes history to generator.
+- Frontend was already sending conversation_history — it now works end-to-end.
+
+**Known remaining data gaps (add to uploads when content is ready):**
+- Education (degree, school, graduation year)
+- Security clearance status
+- Why Chase is open to new roles / motivation for leaving BAH
+- Years of experience per technology
+- Lockheed Martin internship detail doc
+
+Next: Add remaining career data docs → rebuild index → expand project deep dives → public/private route separation (Phase 11).
