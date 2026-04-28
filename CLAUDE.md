@@ -73,7 +73,7 @@ PUT  /jobs/{id}/shortlist   → Update shortlist status
 ## LangGraph Workflows (4 agents)
 1. Ingestion Agent — file intake → text extraction (+ YAML front matter parsing for .md) → chunking → embedding → indexing
 2. Profile Synthesis Agent — build candidate_profile.json and site_content.json from source materials
-3. Recruiter Q&A Agent — query rewrite (if history) → retrieve (k=12) → compose grounded answer (with conversation history) → cite sources
+3. Recruiter Q&A Agent — query rewrite (if history) → retrieve (k=12) → evidence gate → generate grounded answer (with conversation history) → cite sources → evaluate answer
 4. Evaluation Agent — LLM-as-judge using gpt-4o-mini: groundedness + completeness + unsupported claim flag
 
 ## Build Phases
@@ -127,6 +127,16 @@ NEXT_PUBLIC_API_URL=http://127.0.0.1:8765
 - Valid doc_type values: resume, project_doc, bio_notes, case_study
 - Front matter is stripped before chunking — it never appears in chunk text
 - Retrieval k is set to 12 — do not lower without testing for retrieval regressions
+
+## Evidence Gate (Pre-Generation Check)
+The chat pipeline runs an evidence sufficiency check after retrieval, before generation. A gpt-4o-mini judge reads the retrieved chunks and scores them on relevance, coverage, and source quality. If `should_answer=False`, the pipeline skips generation entirely and returns a standard "insufficient evidence" message — no fabricated answer, no post-generation evaluation. The gate fails open on error (defaults to `should_answer=True`) so a broken LLM call never silently blocks legitimate answers.
+
+- New Pydantic model: `EvidenceSufficiency` (relevance, coverage, source_quality, conflict_flag, should_answer, explanation)
+- New service function: `evaluate_evidence()` in `services/evaluation.py`
+- New graph node: `evidence_gate_node` in `chat_graph.py`, wired between retrieve and generate using a conditional edge
+- `ChatResponse` now includes `evidence_sufficiency` alongside `scores`
+- Frontend right panel shows Evidence Check scores (pre-generation) above Answer Quality scores (post-generation)
+- Diagnostics page shows gate block rate, avg relevance/coverage, and per-entry gate status
 
 ## Conversation History
 - The /chat endpoint accepts `conversation_history: list[{role, content}]` in the request body

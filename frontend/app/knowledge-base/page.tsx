@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { Search, ArrowUpRight } from 'lucide-react'
 import TopNav from '@/components/TopNav'
 import { chat as sendChat } from '@/lib/api'
-import type { ChatResponse, EvaluationScores } from '@/lib/types'
+import type { ChatResponse, EvaluationScores, EvidenceSufficiency } from '@/lib/types'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -14,6 +14,7 @@ type Message = {
   role: 'user' | 'assistant'
   content: string
   scores?: EvaluationScores
+  evidence_sufficiency?: EvidenceSufficiency
   sources?: string[]
   evidence_snippets?: string[]
 }
@@ -25,6 +26,7 @@ interface SessionQualityEntry {
   sources: string[]
   evidence_snippets: string[]
   scores: EvaluationScores
+  evidence_sufficiency: EvidenceSufficiency
   processingTime: number
   createdAt: string
 }
@@ -201,6 +203,7 @@ export default function KnowledgeBasePage() {
         role: 'assistant',
         content: response.answer,
         scores: response.scores,
+        evidence_sufficiency: response.evidence_sufficiency,
         sources: response.sources,
         evidence_snippets: response.evidence_snippets,
       }
@@ -215,6 +218,7 @@ export default function KnowledgeBasePage() {
         sources: response.sources,
         evidence_snippets: response.evidence_snippets,
         scores: response.scores,
+        evidence_sufficiency: response.evidence_sufficiency,
         processingTime: 0,
         createdAt: new Date().toISOString(),
       })
@@ -234,6 +238,9 @@ export default function KnowledgeBasePage() {
   function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter') sendMessage()
   }
+
+  const sufficiency = lastResponse?.evidence_sufficiency
+  const passed = sufficiency?.should_answer ?? true
 
   return (
     <main
@@ -505,7 +512,71 @@ export default function KnowledgeBasePage() {
             backdropFilter: 'blur(20px)',
           }}
         >
-          {/* Quality scores */}
+
+          {/* ── Evidence Check ──────────────────────────────────────────────── */}
+          <div
+            className="p-4 flex-shrink-0"
+            style={{ borderBottom: '1px solid rgba(226,223,208,0.05)' }}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <p
+                className="text-[8px] tracking-[0.16em] uppercase"
+                style={{ color: 'rgba(226,223,208,0.25)' }}
+              >
+                Evidence Check
+              </p>
+              {sufficiency && (
+                <span
+                  className="text-[8px] px-2 py-0.5 rounded-full"
+                  style={
+                    passed
+                      ? {
+                          background: 'rgba(110,231,183,0.08)',
+                          border: '0.5px solid rgba(110,231,183,0.20)',
+                          color: 'rgba(110,231,183,0.70)',
+                        }
+                      : {
+                          background: 'rgba(251,191,36,0.08)',
+                          border: '0.5px solid rgba(251,191,36,0.20)',
+                          color: 'rgba(251,191,36,0.75)',
+                        }
+                  }
+                >
+                  {passed ? 'Pass' : 'Insufficient'}
+                </span>
+              )}
+            </div>
+
+            {sufficiency ? (
+              <>
+                <ScoreBar label="Relevance" value={sufficiency.relevance} />
+                <ScoreBar label="Coverage" value={sufficiency.coverage} />
+                <ScoreBar label="Source Quality" value={sufficiency.source_quality} />
+
+                {sufficiency.conflict_flag && (
+                  <div
+                    className="mt-2 px-2 py-1.5 rounded-lg text-[9px] leading-relaxed"
+                    style={{
+                      background: 'rgba(251,191,36,0.06)',
+                      border: '0.5px solid rgba(251,191,36,0.18)',
+                      color: 'rgba(251,191,36,0.65)',
+                    }}
+                  >
+                    Conflicting information detected in sources
+                  </div>
+                )}
+              </>
+            ) : (
+              <p
+                className="text-[10px] text-center py-2"
+                style={{ color: 'rgba(226,223,208,0.2)' }}
+              >
+                Ask a question to see evidence scores
+              </p>
+            )}
+          </div>
+
+          {/* ── Answer Quality ──────────────────────────────────────────────── */}
           <div
             className="p-4 flex-shrink-0"
             style={{ borderBottom: '1px solid rgba(226,223,208,0.05)' }}
@@ -518,39 +589,48 @@ export default function KnowledgeBasePage() {
             </p>
 
             {lastResponse ? (
-              <>
-                <ScoreBar label="Groundedness" value={lastResponse.scores.groundedness} />
-                <ScoreBar label="Completeness" value={lastResponse.scores.completeness} />
+              passed ? (
+                <>
+                  <ScoreBar label="Groundedness" value={lastResponse.scores.groundedness} />
+                  <ScoreBar label="Completeness" value={lastResponse.scores.completeness} />
 
-                <div className="flex justify-between items-center mt-1">
-                  <span className="text-[9px]" style={{ color: 'rgba(226,223,208,0.32)' }}>
-                    Unsupported claims
-                  </span>
-                  {lastResponse.scores.unsupported_claim ? (
-                    <span
-                      className="text-[8px] px-2 py-0.5 rounded-full"
-                      style={{
-                        background: 'rgba(239,68,68,0.1)',
-                        border: '0.5px solid rgba(239,68,68,0.22)',
-                        color: 'rgba(239,68,68,0.75)',
-                      }}
-                    >
-                      Flagged
+                  <div className="flex justify-between items-center mt-1">
+                    <span className="text-[9px]" style={{ color: 'rgba(226,223,208,0.32)' }}>
+                      Unsupported claims
                     </span>
-                  ) : (
-                    <span
-                      className="text-[8px] px-2 py-0.5 rounded-full"
-                      style={{
-                        background: 'rgba(110,231,183,0.1)',
-                        border: '0.5px solid rgba(110,231,183,0.22)',
-                        color: 'rgba(110,231,183,0.75)',
-                      }}
-                    >
-                      None
-                    </span>
-                  )}
-                </div>
-              </>
+                    {lastResponse.scores.unsupported_claim ? (
+                      <span
+                        className="text-[8px] px-2 py-0.5 rounded-full"
+                        style={{
+                          background: 'rgba(239,68,68,0.1)',
+                          border: '0.5px solid rgba(239,68,68,0.22)',
+                          color: 'rgba(239,68,68,0.75)',
+                        }}
+                      >
+                        Flagged
+                      </span>
+                    ) : (
+                      <span
+                        className="text-[8px] px-2 py-0.5 rounded-full"
+                        style={{
+                          background: 'rgba(110,231,183,0.1)',
+                          border: '0.5px solid rgba(110,231,183,0.22)',
+                          color: 'rgba(110,231,183,0.75)',
+                        }}
+                      >
+                        None
+                      </span>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <p
+                  className="text-[10px] py-1 leading-relaxed"
+                  style={{ color: 'rgba(226,223,208,0.25)' }}
+                >
+                  Not evaluated — evidence gate blocked generation
+                </p>
+              )
             ) : (
               <p
                 className="text-[10px] text-center py-2"
@@ -561,7 +641,7 @@ export default function KnowledgeBasePage() {
             )}
           </div>
 
-          {/* Evidence sources */}
+          {/* ── Evidence Sources ────────────────────────────────────────────── */}
           <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-2">
             <p
               className="text-[8px] tracking-[0.16em] uppercase mb-1 flex-shrink-0"
@@ -622,6 +702,7 @@ export default function KnowledgeBasePage() {
               </p>
             )}
           </div>
+
         </div>
       </motion.div>
     </main>

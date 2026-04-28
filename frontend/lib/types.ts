@@ -8,6 +8,15 @@ export interface EvaluationScores {
   explanation: string
 }
 
+export interface EvidenceSufficiency {
+  relevance: number       // 0.0–1.0
+  coverage: number        // 0.0–1.0
+  source_quality: number  // 0.0–1.0
+  conflict_flag: boolean
+  should_answer: boolean
+  explanation: string
+}
+
 // ── Chat ──────────────────────────────────────────────────────────────────────
 
 export interface ConversationMessage {
@@ -25,6 +34,7 @@ export interface ChatResponse {
   sources: string[]
   evidence_snippets: string[]
   scores: EvaluationScores
+  evidence_sufficiency: EvidenceSufficiency
 }
 
 // ── Profile ───────────────────────────────────────────────────────────────────

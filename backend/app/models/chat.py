@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from .evaluation import EvaluationScores
+from .evaluation import EvaluationScores, EvidenceSufficiency
 
 
 class ChatRequest(BaseModel):
@@ -12,3 +12,4 @@ class ChatResponse(BaseModel):
     sources: list[str]
     evidence_snippets: list[str]
     scores: EvaluationScores
+    evidence_sufficiency: EvidenceSufficiency

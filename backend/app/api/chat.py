@@ -18,4 +18,5 @@ async def chat(request: ChatRequest):
         sources=result["sources"],
         evidence_snippets=result["evidence_snippets"],
         scores=result["scores"],
+        evidence_sufficiency=result["evidence_sufficiency"],
     )
