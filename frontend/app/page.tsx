@@ -4,9 +4,7 @@ import {
   User,
   MessageSquare,
   LayoutGrid,
-  Compass,
-  SlidersHorizontal,
-  FlaskConical,
+  Layers,
   ChevronRight,
 } from 'lucide-react'
 import ConstellationCanvas from '@/components/ConstellationCanvas'
@@ -32,8 +30,8 @@ const CARDS: CardDef[] = [
   {
     href: '/knowledge-base',
     icon: <MessageSquare size={20} color="#E2DFD0" strokeWidth={1.5} />,
-    title: 'Knowledge Base',
-    desc: 'Ask anything. Grounded RAG answers.',
+    title: 'Ask About Chase',
+    desc: 'Grounded answers from verified career artifacts',
   },
   {
     href: '/projects',
@@ -42,22 +40,10 @@ const CARDS: CardDef[] = [
     desc: 'Deep dives into selected work',
   },
   {
-    href: '/top-fit-jobs',
-    icon: <Compass size={20} color="#E2DFD0" strokeWidth={1.5} />,
-    title: 'Top Fit Jobs',
-    desc: 'Ranked roles by match score',
-  },
-  {
-    href: '/job-preferences',
-    icon: <SlidersHorizontal size={20} color="#E2DFD0" strokeWidth={1.5} />,
-    title: 'Job Preferences',
-    desc: 'Roles, locations & work style',
-  },
-  {
-    href: '/admin',
-    icon: <FlaskConical size={20} color="#E2DFD0" strokeWidth={1.5} />,
-    title: 'Demo Lab',
-    desc: 'Upload, rebuild & regenerate',
+    href: '/how-it-works',
+    icon: <Layers size={20} color="#E2DFD0" strokeWidth={1.5} />,
+    title: 'How It Works',
+    desc: 'The RAG pipeline, evidence engine & AI stack',
   },
 ]
 
@@ -170,7 +156,7 @@ export default function HomePage() {
       {/* ── Cards ─────────────────────────────────────────────────────────── */}
       <section className="px-4 pb-5">
         <p className="text-[9px] tracking-[0.18em] uppercase text-[#E2DFD0] opacity-25 mb-2.5 px-0.5">
-          Explore the platform
+          Explore Chase&apos;s Profile
         </p>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">

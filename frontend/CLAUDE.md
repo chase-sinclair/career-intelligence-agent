@@ -4,15 +4,16 @@
 Next.js App Router, TypeScript, Tailwind CSS
 
 ## Pages
-- /                  → Landing page (hero + 6 entry cards)
+- /                  → Landing page (hero + 4 recruiter-facing entry cards)
 - /about             → Architect Profile (structured resume view: skills, timeline, education)
-- /knowledge-base    → Career Knowledge Base (RAG chat, right panel with quality metrics + source evidence)
+- /knowledge-base    → Ask About Chase (RAG chat, right panel with evidence check + answer quality + source evidence)
 - /projects          → Project cards grid
 - /projects/[slug]   → Project deep dives (AnimatedReveal scroll sections, data from project-details.ts)
-- /job-preferences   → Job preferences editor
-- /top-fit-jobs      → Ranked jobs with fit scoring, shortlist workflow, source packs
-- /admin             → Demo Lab (file upload, rebuild index, regenerate profile)
-- /diagnostics       → Answer Quality Check (session-based, reads from sessionStorage)
+- /how-it-works      → How It Works (static page: pipeline explanation, tech stack, product vision)
+- /diagnostics       → Answer Quality Check (session-based, reads from sessionStorage — linked from knowledge-base panel)
+- /job-preferences   → Job preferences editor (HIDDEN from nav — backend intact)
+- /top-fit-jobs      → Ranked jobs with fit scoring, shortlist workflow (HIDDEN from nav — backend intact)
+- /admin             → Demo Lab (HIDDEN from nav — backend intact)
 
 ## API Calls
 All API calls go to the FastAPI backend. Base URL in env var NEXT_PUBLIC_API_URL (default: http://127.0.0.1:8765).
@@ -31,6 +32,16 @@ All API calls go to the FastAPI backend. Base URL in env var NEXT_PUBLIC_API_URL
 - POST /job-source-packs/{id}/apply → apply a pack
 - POST /jobs/refresh → live job refresh
 - GET/PUT /jobs/shortlist + /jobs/{id}/shortlist → shortlist management
+
+## Navigation (Public — Recruiter Facing)
+Sidebar shows 5 items only:
+- Overview → /
+- Architect Profile → /about
+- Ask About Chase → /knowledge-base
+- Projects → /projects
+- How It Works → /how-it-works
+
+Hidden routes (/job-preferences, /top-fit-jobs, /admin, /diagnostics) are still functional — just not in the sidebar or homepage cards.
 
 ## Layout Convention
 - Sidebar is fixed, 64px (w-64) wide on the left

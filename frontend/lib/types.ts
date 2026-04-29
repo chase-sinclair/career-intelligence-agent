@@ -19,6 +19,12 @@ export interface EvidenceSufficiency {
 
 // ── Chat ──────────────────────────────────────────────────────────────────────
 
+export interface EvidenceSnippet {
+  citation_index: number
+  source: string
+  text: string
+}
+
 export interface ConversationMessage {
   role: 'user' | 'assistant'
   content: string
@@ -32,7 +38,7 @@ export interface ChatRequest {
 export interface ChatResponse {
   answer: string
   sources: string[]
-  evidence_snippets: string[]
+  evidence_snippets: EvidenceSnippet[]
   scores: EvaluationScores
   evidence_sufficiency: EvidenceSufficiency
 }

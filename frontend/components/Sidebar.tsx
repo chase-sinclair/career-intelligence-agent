@@ -9,21 +9,17 @@ import {
   User,
   MessageSquare,
   LayoutGrid,
-  SlidersHorizontal,
-  Compass,
-  FlaskConical,
+  Layers,
 } from 'lucide-react'
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1]
 
 const NAV_ITEMS = [
-  { href: '/',                label: 'Overview',           Icon: LayoutDashboard  },
-  { href: '/about',           label: 'Architect Profile',  Icon: User             },
-  { href: '/knowledge-base',  label: 'Knowledge Base',     Icon: MessageSquare    },
-  { href: '/projects',        label: 'Projects',           Icon: LayoutGrid       },
-  { href: '/job-preferences', label: 'Job Preferences',    Icon: SlidersHorizontal },
-  { href: '/top-fit-jobs',    label: 'Top Fit Jobs',       Icon: Compass          },
-  { href: '/admin',           label: 'Demo Lab',           Icon: FlaskConical     },
+  { href: '/',               label: 'Overview',           Icon: LayoutDashboard },
+  { href: '/about',          label: 'Architect Profile',  Icon: User            },
+  { href: '/knowledge-base', label: 'Ask About Chase',    Icon: MessageSquare   },
+  { href: '/projects',       label: 'Projects',           Icon: LayoutGrid      },
+  { href: '/how-it-works',   label: 'How It Works',       Icon: Layers          },
 ]
 
 export default function Sidebar() {

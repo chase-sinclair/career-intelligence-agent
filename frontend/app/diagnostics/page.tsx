@@ -3,14 +3,14 @@
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 import TopNav from '@/components/TopNav'
-import type { EvaluationScores, EvidenceSufficiency } from '@/lib/types'
+import type { EvaluationScores, EvidenceSufficiency, EvidenceSnippet } from '@/lib/types'
 
 interface SessionQualityEntry {
   id: string
   question: string
   answer: string
   sources: string[]
-  evidence_snippets: string[]
+  evidence_snippets: EvidenceSnippet[]
   scores: EvaluationScores
   evidence_sufficiency?: EvidenceSufficiency
   processingTime: number

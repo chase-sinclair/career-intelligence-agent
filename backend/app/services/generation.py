@@ -1,3 +1,5 @@
+import re
+
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 
@@ -8,10 +10,16 @@ logger = get_logger(__name__)
 
 SYSTEM_PROMPT = """You are an AI assistant representing a job candidate to recruiters.
 Answer questions about the candidate's background, skills, and experience using ONLY the evidence provided.
-Be specific, cite the evidence, and do not invent or assume information not present in the evidence.
+Be specific and do not invent or assume information not present in the evidence.
 If the evidence does not contain enough information to answer the question, say so clearly.
 
-Important instructions:
+Citation format (required):
+- Each evidence block is labeled [1], [2], [3], etc.
+- Every factual claim you make must be followed immediately by the block number(s) it comes from, e.g. "Chase led a team of engineers [3]" or "He holds an AWS certification [5]."
+- End every answer with a single "Sources: [N], [M], ..." line listing every block number cited in the answer, in ascending order.
+- Only list block numbers you actually drew from. Do not cite blocks you did not use.
+
+Additional instructions:
 - Before concluding that a skill, tool, or credential is absent, scan EVERY evidence snippet carefully — relevant information may appear in bullet lists, skill sections, or technical detail paragraphs, not just narrative text.
 - The document name shown in each evidence block (e.g. "aws-ai-practitioner-professional-certificate.md") is itself evidence about what that document covers — treat it as such when identifying credentials, certifications, or project context.
 - Do not conflate absence of explicit mention with absence of experience — if a skill clearly appears anywhere in the evidence, acknowledge it."""
@@ -52,8 +60,8 @@ def generate_answer(query: str, chunks: list[dict], conversation_history: list[d
 
     Returns:
         answer: str
-        sources: list[str]
-        evidence_snippets: list[str]
+        sources: list[str]  — unique filenames from cited chunks only
+        evidence_snippets: list[dict]  — {citation_index, source, text} for cited chunks only
     """
     if not chunks:
         return {
@@ -63,8 +71,6 @@ def generate_answer(query: str, chunks: list[dict], conversation_history: list[d
         }
 
     formatted_evidence = _format_evidence(chunks)
-    sources = _extract_sources(chunks)
-    evidence_snippets = [c["text"][:300] for c in chunks]
 
     llm = ChatOpenAI(
         model=settings.openai_generation_model,
@@ -88,7 +94,35 @@ def generate_answer(query: str, chunks: list[dict], conversation_history: list[d
     response = llm.invoke(messages)
     answer = response.content
 
-    logger.info(f"Generated answer ({len(answer)} chars) for: {query[:60]!r}")
+    # Parse which [N] citation indices the LLM actually used in its answer.
+    # Fall back to all chunks if the model didn't use bracket notation.
+    cited_indices = {int(m) for m in re.findall(r'\[(\d+)\]', answer)}
+    if cited_indices:
+        cited_pairs = [(i, c) for i, c in enumerate(chunks) if (i + 1) in cited_indices]
+    else:
+        cited_pairs = list(enumerate(chunks))
+
+    evidence_snippets = [
+        {
+            "citation_index": i + 1,
+            "source": c["metadata"].get("source_filename", "unknown"),
+            "text": c["text"][:300],
+        }
+        for i, c in cited_pairs
+    ]
+
+    # Unique source filenames from cited chunks, preserving order of first appearance
+    seen: set[str] = set()
+    sources = []
+    for snippet in evidence_snippets:
+        if snippet["source"] not in seen:
+            seen.add(snippet["source"])
+            sources.append(snippet["source"])
+
+    logger.info(
+        f"Generated answer ({len(answer)} chars) citing {len(cited_pairs)} of {len(chunks)} "
+        f"chunks for: {query[:60]!r}"
+    )
     return {
         "answer": answer,
         "sources": sources,
@@ -108,12 +142,3 @@ def _format_evidence(chunks: list[dict]) -> str:
     return "\n\n".join(lines)
 
 
-def _extract_sources(chunks: list[dict]) -> list[str]:
-    seen = set()
-    sources = []
-    for chunk in chunks:
-        src = chunk["metadata"].get("source_filename", "unknown")
-        if src not in seen:
-            seen.add(src)
-            sources.append(src)
-    return sources

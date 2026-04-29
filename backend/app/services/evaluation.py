@@ -16,6 +16,8 @@ You will receive:
 - The AI's generated answer
 - The evidence chunks the AI was given to answer from
 
+Important: The answer may contain inline citations in [N] format (e.g. "Chase led a team [3]"). These are references to the numbered evidence blocks listed above — treat them as source pointers, not as claims to verify. Evaluate whether the substantive claims in the answer are supported by the evidence block content.
+
 Evaluate on these four dimensions and respond with JSON only:
 
 groundedness (float 0.0-1.0): Are all claims in the answer directly supported by the evidence?
@@ -49,17 +51,22 @@ You will receive:
 Evaluate on these dimensions and respond with JSON only:
 
 relevance (float 0.0-1.0): Are the retrieved chunks topically relevant to the question?
-  1.0 = all chunks directly address the question topic
-  0.0 = chunks are entirely off-topic
+  0.9-1.0 = all or nearly all chunks directly address the question topic
+  0.6-0.8 = most chunks are on-topic; a few are tangential or only loosely related
+  0.3-0.5 = some chunks touch the general domain but few directly apply to the question
+  0.0-0.2 = chunks are mostly or entirely off-topic for this question
 
-coverage (float 0.0-1.0): Do the chunks collectively contain enough specific information to answer?
-  1.0 = the evidence fully contains the facts needed
-  0.0 = the evidence lacks the key facts entirely
+coverage (float 0.0-1.0): Do the chunks collectively contain the specific facts needed to answer?
+  0.9-1.0 = the evidence fully contains the facts needed — a complete answer is possible
+  0.6-0.8 = most key facts are present; minor gaps remain but a useful answer is possible
+  0.3-0.5 = some relevant context exists but key facts are missing; answer would be partial
+  0.0-0.2 = the evidence lacks the specific information needed; answering would require fabrication
 
 source_quality (float 0.0-1.0): How authoritative are the source documents?
-  1.0 = primary sources (resume, project_doc, certifications)
-  0.5 = supporting documents
-  0.0 = no recognizable sources retrieved
+  0.9-1.0 = primary sources only (resume, project_doc, certifications)
+  0.6-0.8 = mix of primary and supporting documents
+  0.3-0.5 = mostly supporting or low-confidence documents
+  0.0-0.2 = no recognizable or authoritative sources retrieved
 
 conflict_flag (boolean): Do any chunks directly contradict each other on key facts?
 
@@ -68,7 +75,7 @@ should_answer (boolean): Should the system attempt to answer from this evidence?
   Set true for borderline cases; score bars will communicate uncertainty to the recruiter.
   When in doubt, set true — a hedged answer from partial evidence is better than refusing a legitimate question.
 
-explanation (string): One sentence explaining the gate decision.
+explanation (string): One sentence explaining the gate decision and any notable gaps.
 
 Return only a JSON object with keys: relevance, coverage, source_quality, conflict_flag, should_answer, explanation."""
 

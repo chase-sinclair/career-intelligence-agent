@@ -85,9 +85,10 @@ PUT  /jobs/{id}/shortlist   → Update shortlist status
 - [x] Phase 5: Evaluation layer (live scoring, batch test set, diagnostics page)
 - [x] Phase 6–10: IA rework, persistent public profile, Demo Lab, session-based eval, job agent, project deep dives
 - [ ] Phase 11: Recruiter-facing profile finish — expanded career data, more deep dives, public/private separation
+- [x] Phase 12: Product identity pivot — public nav trimmed to recruiter-only experience; job finder, preferences, and admin hidden; "Knowledge Base" renamed to "Ask About Chase" throughout; "How It Works" page added; homepage cards and section label updated
 
 ## Current Phase
-Phase 11 — Recruiter-Facing AI Architect Profile Finish
+Phase 12 complete. Phase 11 (career data expansion, remaining deep dives) still in progress.
 
 ## Run Commands
 Backend (run from backend/ dir, port 8765):

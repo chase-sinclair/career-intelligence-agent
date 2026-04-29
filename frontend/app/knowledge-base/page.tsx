@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { Search, ArrowUpRight } from 'lucide-react'
 import TopNav from '@/components/TopNav'
 import { chat as sendChat } from '@/lib/api'
-import type { ChatResponse, EvaluationScores, EvidenceSufficiency } from '@/lib/types'
+import type { ChatResponse, EvaluationScores, EvidenceSufficiency, EvidenceSnippet } from '@/lib/types'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -16,7 +16,7 @@ type Message = {
   scores?: EvaluationScores
   evidence_sufficiency?: EvidenceSufficiency
   sources?: string[]
-  evidence_snippets?: string[]
+  evidence_snippets?: EvidenceSnippet[]
 }
 
 interface SessionQualityEntry {
@@ -24,7 +24,7 @@ interface SessionQualityEntry {
   question: string
   answer: string
   sources: string[]
-  evidence_snippets: string[]
+  evidence_snippets: EvidenceSnippet[]
   scores: EvaluationScores
   evidence_sufficiency: EvidenceSufficiency
   processingTime: number
@@ -247,7 +247,7 @@ export default function KnowledgeBasePage() {
       className="flex flex-col h-screen bg-[#080808] overflow-hidden transition-[margin] duration-300"
       style={{ marginRight: panelOpen ? 320 : 0 }}
     >
-      <TopNav subtitle="Knowledge Base" hasRightPanel={panelOpen} />
+      <TopNav subtitle="Ask About Chase" hasRightPanel={panelOpen} />
 
       {/* Content wrapper — clears fixed TopNav */}
       <div className="flex flex-col flex-1 overflow-hidden" style={{ paddingTop: 64 }}>
@@ -258,14 +258,14 @@ export default function KnowledgeBasePage() {
             className="text-xl md:text-2xl font-light tracking-[-0.03em] leading-tight"
             style={{ color: '#E2DFD0' }}
           >
-            Career Knowledge Base:{' '}
-            <em className="font-serif not-italic" style={{ color: '#C4A882' }}>Candidate</em>
+            Ask About{' '}
+            <em className="font-serif not-italic" style={{ color: '#C4A882' }}>Chase</em>
           </h1>
           <p
             className="text-[11px] mt-1.5 leading-relaxed"
             style={{ color: 'rgba(226,223,208,0.35)' }}
           >
-            Ask grounded questions about experience, projects, skills, and impact.
+            Every answer is grounded in verified career artifacts and cited with evidence.
           </p>
         </div>
 
@@ -650,10 +650,10 @@ export default function KnowledgeBasePage() {
               Evidence Sources
             </p>
 
-            {lastResponse && lastResponse.sources.length > 0 ? (
-              lastResponse.sources.map((src, i) => (
+            {lastResponse && lastResponse.evidence_snippets.length > 0 ? (
+              lastResponse.evidence_snippets.map((snippet) => (
                 <div
-                  key={i}
+                  key={snippet.citation_index}
                   className="relative overflow-hidden rounded-lg p-2.5"
                   style={{
                     background: 'rgba(226,223,208,0.03)',
@@ -664,32 +664,39 @@ export default function KnowledgeBasePage() {
                     className="absolute inset-0 pointer-events-none"
                     style={{ background: 'linear-gradient(135deg, rgba(226,223,208,0.03) 0%, transparent 55%)' }}
                   />
-                  <div className="flex justify-between items-center mb-1.5 relative">
+                  <div className="flex items-center gap-1.5 mb-1.5 relative">
                     <span
-                      className="text-[8px] px-1.5 py-0.5 rounded"
+                      className="text-[8px] font-mono px-1.5 py-0.5 rounded"
                       style={{
                         background: 'rgba(196,168,130,0.10)',
                         border: '0.5px solid rgba(196,168,130,0.20)',
-                        color: 'rgba(196,168,130,0.8)',
+                        color: 'rgba(196,168,130,0.85)',
+                      }}
+                    >
+                      [{snippet.citation_index}]
+                    </span>
+                    <span
+                      className="text-[8px] px-1.5 py-0.5 rounded"
+                      style={{
+                        background: 'rgba(226,223,208,0.04)',
+                        border: '0.5px solid rgba(226,223,208,0.08)',
+                        color: 'rgba(226,223,208,0.35)',
                       }}
                     >
                       source
                     </span>
-                    <span className="text-[9px]" style={{ color: 'rgba(226,223,208,0.3)' }}>—</span>
                   </div>
-                  {lastResponse.evidence_snippets[i] && (
-                    <p
-                      className="text-[9px] leading-[1.55] line-clamp-3 relative"
-                      style={{ color: 'rgba(226,223,208,0.36)' }}
-                    >
-                      {lastResponse.evidence_snippets[i]}
-                    </p>
-                  )}
+                  <p
+                    className="text-[9px] leading-[1.55] line-clamp-3 relative"
+                    style={{ color: 'rgba(226,223,208,0.36)' }}
+                  >
+                    {snippet.text}
+                  </p>
                   <p
                     className="text-[8px] mt-1.5 relative"
                     style={{ color: 'rgba(226,223,208,0.18)' }}
                   >
-                    {src}
+                    {snippet.source}
                   </p>
                 </div>
               ))
