@@ -44,6 +44,17 @@ const STARTER_QUESTIONS = [
   'What kind of roles is Chase looking for?',
 ]
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function stripInlineCitations(text: string): string {
+  const sourcesIdx = text.search(/\n\nSources:/)
+  if (sourcesIdx !== -1) {
+    const body = text.slice(0, sourcesIdx).replace(/\s*\[\d+\]/g, '')
+    return body + text.slice(sourcesIdx)
+  }
+  return text.replace(/\s*\[\d+\]/g, '')
+}
+
 // ── Session storage ───────────────────────────────────────────────────────────
 
 function saveSessionEntry(entry: SessionQualityEntry) {
@@ -130,6 +141,7 @@ export default function KnowledgeBasePage() {
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [panelOpen, setPanelOpen] = useState(false)
+  const [hasAutoOpened, setHasAutoOpened] = useState(false)
   const [startersDismissed, setStartersDismissed] = useState(false)
   const [lastResponse, setLastResponse] = useState<ChatResponse | null>(null)
   const [typingId, setTypingId] = useState<string | null>(null)
@@ -201,7 +213,7 @@ export default function KnowledgeBasePage() {
       const aiMsg: Message = {
         id: aiId,
         role: 'assistant',
-        content: response.answer,
+        content: stripInlineCitations(response.answer),
         scores: response.scores,
         evidence_sufficiency: response.evidence_sufficiency,
         sources: response.sources,
@@ -210,6 +222,10 @@ export default function KnowledgeBasePage() {
       setMessages(prev => [...prev, aiMsg])
       setLastResponse(response)
       setTypingId(aiId)
+      if (!hasAutoOpened) {
+        setPanelOpen(true)
+        setHasAutoOpened(true)
+      }
 
       saveSessionEntry({
         id: aiId,
