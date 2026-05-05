@@ -16,7 +16,16 @@
       "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('ANSWER:', d['answer'][:500]\\)\")",
       "Bash(..\\\\.venv\\\\Scripts\\\\python -m pytest tests/test_evidence_gate.py::TestEvidenceSufficiencyModel tests/test_evidence_gate.py::TestFallbackConstants tests/test_evidence_gate.py::TestEmptyChunksGate tests/test_evidence_gate.py::TestChatStateShape -v --tb=short -s)",
       "PowerShell(cd \"C:\\\\Users\\\\chase\\\\Documents\\\\career-intelligence-agent\\\\backend\"; $env:PYTHONPATH = \".\"; ..\\\\.venv\\\\Scripts\\\\python scripts/test_citations.py 2>&1)",
-      "PowerShell(cd \"C:\\\\Users\\\\chase\\\\Documents\\\\career-intelligence-agent\\\\backend\"; $env:PYTHONPATH = \".\"; ..\\\\.venv\\\\Scripts\\\\python scripts/test_citations2.py 2>&1)"
+      "PowerShell(cd \"C:\\\\Users\\\\chase\\\\Documents\\\\career-intelligence-agent\\\\backend\"; $env:PYTHONPATH = \".\"; ..\\\\.venv\\\\Scripts\\\\python scripts/test_citations2.py 2>&1)",
+      "PowerShell($p = Get-Content \"C:\\\\Users\\\\chase\\\\Documents\\\\career-intelligence-agent\\\\backend\\\\data\\\\candidate_profile.json\" | ConvertFrom-Json; Write-Host \"skills count: $\\($p.skills.Count\\)\"; Write-Host \"tools count: $\\($p.tools.Count\\)\"; Write-Host \"education count: $\\($p.education.Count\\)\"; Write-Host \"keys: $\\(\\($p | Get-Member -MemberType NoteProperty\\).Name -join ', '\\)\")",
+      "PowerShell(py *)",
+      "PowerShell(Get-Command *)",
+      "PowerShell(Write-Host \"PIP_NO_BINARY: '$env:PIP_NO_BINARY'\"; Write-Host \"PIP_ONLY_BINARY: '$env:PIP_ONLY_BINARY'\"; where.exe python 2>&1)",
+      "PowerShell(C:\\\\Users\\\\chase\\\\Documents\\\\career-intelligence-agent\\\\backend\\\\.venv\\\\Scripts\\\\python.exe --version)",
+      "PowerShell(C:\\\\Users\\\\chase\\\\Documents\\\\career-intelligence-agent\\\\.venv\\\\Scripts\\\\python.exe --version)",
+      "Bash(Test-Path C:\\\\Users\\\\chase\\\\Documents\\\\career-intelligence-agent\\\\frontend\\\\app\\\\projects\\\\deallens *)",
+      "PowerShell(Invoke-RestMethod -Method POST -Uri http://127.0.0.1:8765/ingest/rebuild | ConvertTo-Json)",
+      "PowerShell(Invoke-RestMethod -Method POST -Uri http://127.0.0.1:8765/profile/generate | ConvertTo-Json)"
     ]
   }
 }

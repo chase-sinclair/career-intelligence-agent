@@ -9,7 +9,7 @@
 body {
   background-color: #121315;
   color: #e3e2e5;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 .custom-scrollbar::-webkit-scrollbar {

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard,
@@ -10,6 +10,7 @@ import {
   MessageSquare,
   LayoutGrid,
   Layers,
+  ChevronRight,
 } from 'lucide-react'
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1]
@@ -25,6 +26,40 @@ const NAV_ITEMS = [
 export default function Sidebar() {
   const pathname = usePathname()
   const [isExpanded, setIsExpanded] = useState(false)
+  // wrapperWide stays true until the close animation finishes so the wrapper
+  // never shrinks while the sidebar is still animating out — prevents the
+  // overflow gap that caused rapid mouseleave/mouseenter flicker.
+  const [wrapperWide, setWrapperWide] = useState(false)
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const wrapperTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => () => {
+    if (closeTimerRef.current) clearTimeout(closeTimerRef.current)
+    if (wrapperTimerRef.current) clearTimeout(wrapperTimerRef.current)
+  }, [])
+
+  function handleMouseEnter() {
+    if (closeTimerRef.current) { clearTimeout(closeTimerRef.current); closeTimerRef.current = null }
+    if (wrapperTimerRef.current) { clearTimeout(wrapperTimerRef.current); wrapperTimerRef.current = null }
+    setIsExpanded(true)
+    setWrapperWide(true)
+  }
+
+  function handleMouseLeave() {
+    // Small debounce prevents flicker from edge jitter
+    closeTimerRef.current = setTimeout(() => {
+      setIsExpanded(false)
+      // Keep wrapper wide until framer-motion close animation completes (220ms)
+      wrapperTimerRef.current = setTimeout(() => setWrapperWide(false), 250)
+    }, 120)
+  }
+
+  function handleBackdropClick() {
+    if (closeTimerRef.current) { clearTimeout(closeTimerRef.current); closeTimerRef.current = null }
+    if (wrapperTimerRef.current) { clearTimeout(wrapperTimerRef.current); wrapperTimerRef.current = null }
+    setIsExpanded(false)
+    wrapperTimerRef.current = setTimeout(() => setWrapperWide(false), 250)
+  }
 
   return (
     <>
@@ -38,7 +73,7 @@ export default function Sidebar() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             style={{ background: 'rgba(0,0,0,0.25)', backdropFilter: 'blur(2px)' }}
-            onClick={() => setIsExpanded(false)}
+            onClick={handleBackdropClick}
           />
         )}
       </AnimatePresence>
@@ -46,9 +81,9 @@ export default function Sidebar() {
       {/* Hover capture wrapper — always at least 20px wide */}
       <div
         className="fixed left-0 top-0 bottom-0 z-50"
-        style={{ width: isExpanded ? 240 : 20 }}
-        onMouseEnter={() => setIsExpanded(true)}
-        onMouseLeave={() => setIsExpanded(false)}
+        style={{ width: wrapperWide ? 240 : 20 }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         {/* Animated sidebar */}
         <motion.div
@@ -61,16 +96,6 @@ export default function Sidebar() {
             backdropFilter: isExpanded ? 'blur(20px)' : 'none',
           }}
         >
-          {/* Gold sliver — visible only when collapsed */}
-          {!isExpanded && (
-            <motion.div
-              className="absolute left-0 top-0 bottom-0"
-              style={{ width: 4, background: '#C4A882' }}
-              animate={{ opacity: [0.4, 0.7, 0.4] }}
-              transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-            />
-          )}
-
           {/* Expanded content */}
           <motion.div
             className="flex flex-col h-full w-60"
@@ -163,6 +188,28 @@ export default function Sidebar() {
             </div>
           </motion.div>
         </motion.div>
+
+        {/* Collapsed tab indicator */}
+        <AnimatePresence>
+          {!isExpanded && (
+            <motion.button
+              className="absolute left-0 top-1/2 -translate-y-1/2 w-5 h-16 rounded-r-xl flex items-center justify-center cursor-pointer"
+              style={{
+                background: 'rgba(14,14,14,0.95)',
+                border: '0.5px solid rgba(226,223,208,0.08)',
+                borderLeft: 'none',
+              }}
+              initial={{ opacity: 0, x: -4 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -4 }}
+              transition={{ duration: 0.15 }}
+              onClick={() => setIsExpanded(true)}
+              aria-label="Open navigation"
+            >
+              <ChevronRight size={12} style={{ color: 'rgba(226,223,208,0.45)' }} />
+            </motion.button>
+          )}
+        </AnimatePresence>
       </div>
     </>
   )

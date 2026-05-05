@@ -7,13 +7,13 @@ The current priority is Chase's public recruiter-facing profile (landing page, A
 A recruiter-facing AI Career Intelligence App. Recruiters can ask questions about Chase Sinclair's background, skills, and projects. Answers are grounded in a RAG pipeline built from a resume and career artifacts. Single-user MVP designed to demonstrate RAG, agentic workflow design, orchestration, and LLM output evaluation.
 
 ## Tech Stack
-- Frontend: Next.js (App Router), TypeScript, Tailwind CSS, shadcn/ui
+- Frontend: Next.js (App Router), TypeScript, Tailwind CSS
 - Backend: Python 3.10+, FastAPI, Uvicorn, Pydantic
 - Orchestration: LangGraph 0.2.28
 - LLM Provider: OpenAI (GPT-4o for generation, text-embedding-3-small for embeddings, gpt-4o-mini for evaluation)
 - Vector DB: Chroma
 - Schemas/Settings: Pydantic Settings (env-based config)
-- Storage: Local file storage + JSON/SQLite (dev), upgradeable to Supabase/Postgres
+- Storage: Local file storage + JSON (dev), upgradeable to Supabase/Postgres
 
 ## Repo Structure
 career-intelligence-agent/
@@ -60,15 +60,48 @@ PUT  /jobs/{id}/shortlist   → Update shortlist status
 - backend/uploads/ — Raw uploaded files
 
 ## Frontend Pages (Current)
-- /                  → Landing page (hero, 6 entry cards)
-- /about             → Architect Profile (structured resume view)
-- /knowledge-base    → Career Knowledge Base (RAG chat + quality scores panel)
-- /projects          → Project cards
-- /projects/[slug]   → Project deep dives (animated reveal sections)
-- /job-preferences   → Job preferences editor
-- /top-fit-jobs      → Ranked jobs with fit scoring and shortlist
-- /admin             → Demo Lab (upload, rebuild, regenerate)
-- /diagnostics       → Answer Quality Check (session-based eval)
+Public recruiter-facing routes (in sidebar nav):
+- /                       → Landing page (ConstellationCanvas hero, 6 entry cards, no sidebar)
+- /about                  → Architect Profile (structured resume view)
+- /knowledge-base         → Ask About Chase (RAG chat + right panel: evidence check + answer quality + sources)
+- /projects               → Project cards grid (6 cards, filter pills, deep-dive overlay)
+- /projects/[slug]        → Redirects to /projects?open=<slug> — auto-opens overlay for that project
+- /projects/deallens      → Dedicated full-screen product demo page (8 story sections, interactive hotspots, gallery, CTA)
+- /how-it-works           → How It Works (pipeline explanation, tech stack, product vision)
+
+Hidden routes (functional, not in nav):
+- /diagnostics            → Answer Quality Check (session-based eval, linked from knowledge-base panel)
+- /job-preferences        → Job preferences editor
+- /top-fit-jobs           → Ranked jobs with fit scoring and shortlist
+- /admin                  → Demo Lab (upload, rebuild, regenerate)
+
+## Project Cards System
+Six cards in `frontend/app/projects/page.tsx`:
+1. KB Agent — Proposal Intelligence Platform (rag)
+2. RentalShield NYC (full-stack)
+3. AI Venture Architect (multi-agent)
+4. PEAI Chat Assistant (rag)
+5. DealLens — PE CIM Intelligence Workflow (automation)
+6. PEAI Book — ML Model Matrix (published)
+
+Each card has a `bgImage` prop pointing to `frontend/public/images/projects/<slug>.(png|jpg)`.
+Cards 1–5 open the deep-dive overlay (`ProjectDeepDive` component). DealLens (card 5) is a routing exception — its click handler calls `router.push('/projects/deallens')` instead of the overlay.
+
+Deep-dive overlay content lives in `frontend/lib/project-details.ts` — all 6 projects populated.
+
+## DealLens Product Demo Page
+`frontend/app/projects/deallens/page.tsx` — self-contained, full-screen (position: fixed, z-index: 60).
+- Sticky scroll progress bar (gold gradient)
+- Sticky back nav ("← Back to Projects")
+- 8 story sections with useInView scroll animations (split and full-width alternating)
+- Section 3: Zapier workflow diagram with 13 interactive pulsing hotspots
+- Section 4: Airtable workspace with 8 interactive pulsing hotspots
+- Section 7: Slack/memo image with 3 annotation pill overlays
+- Section 8: closing attribution strip
+- Section 9: gallery (14 screenshots, thumbnail strip with prev/next, click-to-select)
+- Section 10: CTA (GitHub link + scroll-to-top)
+
+Requires image assets in `frontend/public/images/deallens/` (8 section images) and `frontend/public/images/deallens/gallery/` (14 gallery images: gallery-01.png, gallery-02.png, gallery-03.jpeg through gallery-14.jpeg).
 
 ## LangGraph Workflows (4 agents)
 1. Ingestion Agent — file intake → text extraction (+ YAML front matter parsing for .md) → chunking → embedding → indexing
@@ -84,11 +117,14 @@ PUT  /jobs/{id}/shortlist   → Update shortlist status
 - [x] Phase 4: Admin + rebuild flow (upload page, rebuild button, status)
 - [x] Phase 5: Evaluation layer (live scoring, batch test set, diagnostics page)
 - [x] Phase 6–10: IA rework, persistent public profile, Demo Lab, session-based eval, job agent, project deep dives
-- [ ] Phase 11: Recruiter-facing profile finish — expanded career data, more deep dives, public/private separation
-- [x] Phase 12: Product identity pivot — public nav trimmed to recruiter-only experience; job finder, preferences, and admin hidden; "Knowledge Base" renamed to "Ask About Chase" throughout; "How It Works" page added; homepage cards and section label updated
+- [x] Phase 11: Knowledge base population, RAG hardening, conversation history
+- [x] Phase 12: Product identity pivot — public nav trimmed; job/admin pages hidden; "How It Works" added; landing page rebuilt
+- [x] Phase 13: Project cards overhaul — 3D tilt/parallax cards, bgImage support, deep-dive overlay system (all 6 projects), DealLens card, sidebar flicker fix
+- [x] Phase 14: DealLens product demo page — dedicated /projects/deallens with 8 story sections, interactive hotspots, scroll progress, gallery
+- [ ] Phase 15: Remaining project deep dive refinements + public/private route separation
 
 ## Current Phase
-Phase 12 complete. Phase 11 (career data expansion, remaining deep dives) still in progress.
+Phase 14 complete. Pending: image assets for deallens page, remaining knowledge base data gaps (see Session 15 notes), public/private route separation.
 
 ## Run Commands
 Backend (run from backend/ dir, port 8765):
@@ -108,6 +144,8 @@ Frontend .env.local must have:
 NEXT_PUBLIC_API_URL=http://127.0.0.1:8765
 ```
 
+Backend venv uses Python 3.11.9 (not 3.13 — no pre-built numpy wheels exist for 3.13). Venv path: `C:\Users\chase\Documents\career-intelligence-agent\.venv`.
+
 ## Important Conventions
 - All secrets in environment variables via Pydantic Settings (never hardcoded)
 - Admin routes must be restricted (not public)
@@ -120,6 +158,7 @@ NEXT_PUBLIC_API_URL=http://127.0.0.1:8765
 - OpenAI is the sole LLM provider for v1 — do not abstract for multi-provider until v2
 - Pin LangGraph at 0.2.28 — do not upgrade without explicit instruction
 - All pages with a fixed TopNav (h-16 = 64px) must have at least pt-16 top padding; use pt-24 for breathing room
+- Full-screen overlay pages (ProjectDeepDive, DealLens demo) use position: fixed, inset: 0, z-index: 60
 
 ## Ingestion Conventions
 - All source documents in uploads/ must be .md, .pdf, .txt, or .text
@@ -132,10 +171,10 @@ NEXT_PUBLIC_API_URL=http://127.0.0.1:8765
 ## Evidence Gate (Pre-Generation Check)
 The chat pipeline runs an evidence sufficiency check after retrieval, before generation. A gpt-4o-mini judge reads the retrieved chunks and scores them on relevance, coverage, and source quality. If `should_answer=False`, the pipeline skips generation entirely and returns a standard "insufficient evidence" message — no fabricated answer, no post-generation evaluation. The gate fails open on error (defaults to `should_answer=True`) so a broken LLM call never silently blocks legitimate answers.
 
-- New Pydantic model: `EvidenceSufficiency` (relevance, coverage, source_quality, conflict_flag, should_answer, explanation)
-- New service function: `evaluate_evidence()` in `services/evaluation.py`
-- New graph node: `evidence_gate_node` in `chat_graph.py`, wired between retrieve and generate using a conditional edge
-- `ChatResponse` now includes `evidence_sufficiency` alongside `scores`
+- Pydantic model: `EvidenceSufficiency` (relevance, coverage, source_quality, conflict_flag, should_answer, explanation)
+- Service function: `evaluate_evidence()` in `services/evaluation.py`
+- Graph node: `evidence_gate_node` in `chat_graph.py`, wired between retrieve and generate using a conditional edge
+- `ChatResponse` includes `evidence_sufficiency` alongside `scores`
 - Frontend right panel shows Evidence Check scores (pre-generation) above Answer Quality scores (post-generation)
 - Diagnostics page shows gate block rate, avg relevance/coverage, and per-entry gate status
 
@@ -152,61 +191,50 @@ The chat pipeline runs an evidence sufficiency check after retrieval, before gen
 - Evaluation (LLM-as-judge): gpt-4o-mini
 
 ## Session Notes
-<!-- Claude: update this section at the end of every session with what was completed and what is next -->
 
-### Sessions 1–6 Summary (2026-03-23)
-Full MVP built across 6 sessions: backend core (ingestion, chunking, Chroma, RAG, generation), structured profile synthesis, Next.js frontend shell, admin rebuild flow, Chroma stale-data fix, LLM-as-judge evaluation layer.
-
-### Sessions 7–10 Summary (condensed in CODEX.md — 2026-04-21)
-Major rework: IA/naming changes (Career Knowledge Base, Architect Profile, Demo Lab), persistent public profile with seed assets + bootstrap logic, job agent foundation (preferences, top-fit jobs, sources, packs, shortlist, scan history), project deep-dive system with AnimatedReveal component, session-based Answer Quality Check replacing static batch eval, backend port standardized to 8765.
-
-### Session 11 — 2026-04-21
-Completed: Pre-career-data code review and layout fixes.
-- Fixed content-under-nav bug on 3 pages: `about/page.tsx`, `diagnostics/page.tsx`, `job-preferences/page.tsx` — all used `p-10` (40px) as top padding but the fixed TopNav is 64px, causing the top portion of page content to be hidden. Changed to `px-10 pb-10 pt-24` to match the pattern used by all other pages.
-- Reviewed full codebase: all backend routes, LangGraph workflows, frontend pages, types, and API client are consistent and correct.
-- Identified remaining gaps: only 1 of many project deep dives populated (`oss-dependency-risk-agent`), gold eval set has only 3 questions, no public/private route separation yet.
-- Updated CLAUDE.md with current state; removed stale session history.
-Next: Intake Chase's updated career data, ingest into knowledge base, expand project deep dives.
-
-### Session 12 — 2026-04-28
-Completed: Landing page rebuild + frontend housekeeping.
-- Rebuilt `frontend/app/page.tsx` — full-viewport landing with ConstellationCanvas hero, bottom-anchored headline ("The Career / *Architect.*"), pill CTA linking to /knowledge-base, and 6 glassmorphism cards (2-col mobile / 3-col desktop).
-- Created `frontend/components/ConstellationCanvas.tsx` — 44-node animated canvas with mouse proximity glow, edge rendering, and pulsing nodes.
-- Created `frontend/components/ConditionalSidebar.tsx` — hides sidebar on `/` only; all other pages unaffected.
-- Updated `frontend/app/layout.tsx` — added Instrument Serif via next/font/google (CSS variable `--font-instrument-serif`), swapped Sidebar for ConditionalSidebar.
-- Updated `frontend/tailwind.config.ts` — added `surface-dark`, `cream`, `gold` color tokens + `serif` font family.
-- Installed `lucide-react`.
-- Deleted CODEX.md; merged product vision into CLAUDE.md.
-- Wrote full recruiter briefing doc + career data organization guide for RAG ingestion.
-Next: Chase to provide updated career data. Ingest files → rebuild index → regenerate profile → refresh seed assets → expand project deep dives.
+### Sessions 1–12 Summary (2026-03-23 → 2026-04-28)
+Full backend and frontend built: ingestion pipeline, Chroma RAG, LangGraph workflows, evaluation layer, structured profile synthesis, landing page rebuild (ConstellationCanvas), knowledge base population (16 career docs), RAG hardening (k=12, evidence gate, conversation history), product identity pivot (recruiter-only nav, How It Works page).
 
 ### Session 13 — 2026-04-28
-Completed: Knowledge base population, RAG pipeline hardening, and conversation history.
+Completed: Knowledge base population, RAG pipeline hardening, conversation history.
+- Ingestion pipeline updated to parse YAML front matter from .md files
+- 16 career data markdown files ingested across 4 categories
+- Retrieval k raised from 5 → 12; generation and judge prompts hardened
+- `rewrite_query()` added to resolve follow-up pronouns before retrieval
+- Conversation history injected into generation (last 3 exchanges)
 
-**Ingestion pipeline fix:**
-- Updated `backend/app/services/ingestion.py:extract_text()` to parse YAML front matter from .md files using `_parse_front_matter()`. Front matter is stripped from chunk text; values for doc_type, doc_id, project_name, source_filename override caller-supplied defaults. .meta.json remains a fallback if front matter is absent.
+### Session 14 — 2026-05-03
+Completed: Project cards overhaul, deep-dive overlay system, DealLens card, sidebar fix.
+- `ProjectCard.tsx` rebuilt with 3D tilt/parallax on hover, `bgImage` prop for background images
+- `ProjectDeepDive.tsx` created — overlay slides up over the project grid, animated reveal, prev/next navigation, all 6 projects populated in `lib/project-details.ts`
+- DealLens added as project card #05 (PEAI Book moved to #06)
+- `AI Automation` filter added to projects page
+- Sidebar flicker fix: `wrapperWide` state outlives `isExpanded` by 250ms, eliminating hover jitter during close animation
+- `frontend/app/projects/[slug]/page.tsx` created — redirects to `/projects?open=<slug>`
 
-**Knowledge base populated:**
-- Ingested 16 career data markdown files across 4 categories: core profile (resume), Booz Allen Hamilton project/work highlight docs, personal project docs, and certification docs.
-- All files use YAML front matter for self-describing metadata.
-- chase-sinclair-core-profile.md updated to include a Certifications section (all credentials in one place) and a Target Roles / What I'm Looking For section.
+### Session 15 — 2026-05-03/04
+Completed: Background images wired to project cards, DealLens product demo page.
+- `bgImage` paths added to all 6 project entries in `projects/page.tsx` (mixed .png/.jpg extensions)
+- DealLens routing exception: card click calls `router.push('/projects/deallens')` instead of overlay
+- `frontend/app/projects/deallens/page.tsx` created — self-contained full-screen product demo:
+  - 8 story sections (split + full-width) with useInView scroll animations
+  - Sections 3 + 4: interactive pulsing hotspot overlays (13 + 8 hotspots) with hover tooltips
+  - Section 7: image annotation pill overlays
+  - Section 8: attribution closing strip
+  - Section 9: 14-image gallery with thumbnail carousel and prev/next
+  - Section 10: GitHub CTA + scroll-to-top
+  - Sticky scroll progress bar + sticky back nav
 
-**RAG pipeline improvements (35-question test suite across 6 categories):**
-- Retrieval k raised from 5 → 12 (`chat_graph.py`) — fixed retrieval failures on vector databases, prompt engineering, private equity projects, React/frontend, AWS certifications.
-- Generation system prompt updated: scan every evidence snippet before concluding absence; treat source filenames as evidence; don't conflate absence of mention with absence of experience.
-- LLM judge prompt updated: honest "I don't know" answers score 1.0/1.0; source filenames count as grounding evidence; unsupported_claim only fires on positive assertions not in evidence.
+**Pending before deallens page is live:**
+- Place 8 section images in `frontend/public/images/deallens/`
+- Place 14 gallery images in `frontend/public/images/deallens/gallery/`
+- Place 6 project card background images in `frontend/public/images/projects/`
 
-**Conversation history (follow-up questions):**
-- Added `rewrite_query()` to `generation.py` — uses gpt-4o-mini to resolve pronouns/references ("that", "he", "there") into standalone queries before retrieval. Only fires when history is non-empty.
-- Updated `generate_answer()` to accept `conversation_history` and inject last 3 exchanges as HumanMessage/AIMessage pairs before the evidence block.
-- Updated `chat_graph.py`: added `retrieval_query` field to `ChatState`; `retrieve_node` calls rewrite; `generate_node` passes history to generator.
-- Frontend was already sending conversation_history — it now works end-to-end.
-
-**Known remaining data gaps (add to uploads when content is ready):**
+**Known remaining knowledge base data gaps:**
 - Education (degree, school, graduation year)
 - Security clearance status
 - Why Chase is open to new roles / motivation for leaving BAH
 - Years of experience per technology
 - Lockheed Martin internship detail doc
 
-Next: Add remaining career data docs → rebuild index → expand project deep dives → public/private route separation (Phase 11).
+Next: Place image assets → verify deallens page → remaining KB data gaps → public/private route separation (Phase 15).
