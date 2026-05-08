@@ -25,7 +25,12 @@
       "PowerShell(C:\\\\Users\\\\chase\\\\Documents\\\\career-intelligence-agent\\\\.venv\\\\Scripts\\\\python.exe --version)",
       "Bash(Test-Path C:\\\\Users\\\\chase\\\\Documents\\\\career-intelligence-agent\\\\frontend\\\\app\\\\projects\\\\deallens *)",
       "PowerShell(Invoke-RestMethod -Method POST -Uri http://127.0.0.1:8765/ingest/rebuild | ConvertTo-Json)",
-      "PowerShell(Invoke-RestMethod -Method POST -Uri http://127.0.0.1:8765/profile/generate | ConvertTo-Json)"
+      "PowerShell(Invoke-RestMethod -Method POST -Uri http://127.0.0.1:8765/profile/generate | ConvertTo-Json)",
+      "WebFetch(domain:api.anthropic.com)",
+      "Bash(python *)",
+      "PowerShell(Invoke-WebRequest -Uri \"http://localhost:3000/about\" -UseBasicParsing -TimeoutSec 5 2>&1 | Select-Object StatusCode, StatusDescription)",
+      "PowerShell(try { $r = Invoke-WebRequest -Uri \"http://localhost:3000/about\" -UseBasicParsing -TimeoutSec 5; \"Status: $\\($r.StatusCode\\)\" } catch { \"Error: $_\" })",
+      "PowerShell(try { $r = Invoke-WebRequest -Uri \"http://localhost:3000/projects\" -UseBasicParsing -TimeoutSec 5; \"Status: $\\($r.StatusCode\\)\" } catch { \"Error: $_\" })"
     ]
   }
 }

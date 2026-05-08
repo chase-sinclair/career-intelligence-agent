@@ -10,152 +10,119 @@ import { PROJECT_DETAILS } from '@/lib/project-details'
 // ── Filter definitions ────────────────────────────────────────────────────────
 
 const FILTERS = [
-  { label: 'All Projects',   value: 'all' },
-  { label: 'RAG System',     value: 'rag' },
-  { label: 'Full-Stack AI',  value: 'full-stack' },
-  { label: 'Multi-Agent',    value: 'multi-agent' },
-  { label: 'AI Automation',  value: 'automation' },
-  { label: 'Published',      value: 'published' },
+  { label: 'All Projects',  value: 'all' },
+  { label: 'RAG System',    value: 'rag' },
+  { label: 'Full-Stack AI', value: 'full-stack' },
+  { label: 'Multi-Agent',   value: 'multi-agent' },
+  { label: 'AI Workflow',   value: 'workflow' },
+  { label: 'AI + Data Eng', value: 'data-eng' },
+  { label: 'Published',     value: 'published' },
 ]
 
 // ── Project data ──────────────────────────────────────────────────────────────
 
 const PROJECTS: ProjectCardProps[] = [
   {
-    number: '01',
     title: 'KB Agent — Proposal Intelligence Platform',
     category: 'Agentic RAG',
     categoryTag: 'rag',
-    badge: '★ Winner',
-    description:
-      'Production Slack bot that turns a document library into a queryable AI proposal intelligence system — automated ingestion, hybrid dense+sparse search, and six purpose-built LLM analytical workflows for government proposal teams.',
-    highlights: [
-      'Manual RRF implementation after diagnosing Qdrant client v1.17.1 serialization bug — dense + BM25-style sparse vectors merged via custom formula',
-      'Six Claude-powered analytical functions including gap analysis, RFP scoring, proposal narrative drafting with [EVIDENCE MISSING] flags, and thread-aware conversation',
-      'Fault-tolerant ingestion with typed quarantine system (LOCKED_FILE, CORRUPT_FILE, TRANSIENT_ERROR) and SHA-256 change detection',
+    tagline: 'AI research assistant that turns dense proposal repositories into cited, decision-ready answers.',
+    stack: ['RAG', 'Hybrid Search', 'Custom RRF', 'Streamlit', 'Claude 3.5'],
+    bullets: [
+      'Reduced proposal research from hours to seconds for a live consulting team',
+      'Built hybrid dense + sparse retrieval with custom RRF merge and source-grounded responses',
     ],
-    tags: ['Python', 'Qdrant', 'Claude Opus', 'FastMCP', 'Slack Bolt SDK', 'MS Graph API'],
-    impactLine: 'Hours → seconds for proposal research',
     slug: 'kb-agent',
     bgImage: '/images/projects/kb-agent.png',
   },
   {
-    number: '02',
     title: 'RentalShield NYC',
     category: 'Full-Stack AI',
     categoryTag: 'full-stack',
-    description:
-      'AI-powered rental scam screening for Manhattan apartment seekers — multimodal screenshot analysis, live rent comparison, broker license verification, and explainable risk scoring with ranked contributing factors.',
-    highlights: [
-      '7-service MCP-style tool orchestration pipeline with independently executable services — listing parser, screenshot AI, address verification, rent comparison, broker lookup',
-      'Claude Sonnet 4 via AWS Bedrock for image byte multimodal reasoning over uploaded screenshots',
-      'Iteratively calibrated scam scoring across real test cases with careful false-positive handling',
+    tagline: 'Multimodal risk-scoring pipeline that detects fraudulent NYC rental listings from screenshots and listing data.',
+    stack: ['Next.js', 'AWS Bedrock', 'Claude 3.5', 'MCP', 'TypeScript'],
+    bullets: [
+      'Built a 7-service AI pipeline with real external integrations and production-ready error handling',
+      'Uses multimodal Claude via Bedrock to analyze listing screenshots and score scam risk with evidence',
     ],
-    tags: ['Next.js 15', 'TypeScript', 'AWS Bedrock', 'Claude Sonnet 4', 'Supabase', 'RentCast API'],
-    impactLine: 'Production-ready with real external integrations',
     slug: 'rentalshield-nyc',
     bgImage: '/images/projects/rentalshield-nyc.jpg',
   },
   {
-    number: '03',
     title: 'AI Venture Architect',
     category: 'Multi-Agent',
     categoryTag: 'multi-agent',
-    description:
-      'Multi-agent platform that transforms rough AI product ideas into structured opportunity reports — market analysis, technical architecture, feasibility scoring, and evaluation guidance with a clarification gate and live SSE progress streaming.',
-    highlights: [
-      'Clarification gate pauses the workflow on low-clarity inputs and routes users through targeted questions before analysis begins',
-      'Market research and solution architecture agents run in parallel via asyncio.gather, synthesized by a third agent into a final report',
-      'Deterministic scoring utility for uniqueness, feasibility, risk, and confidence — computed separately from LLM generation for reproducible outputs',
+    tagline: 'Multi-agent system that turns a rough AI product idea into a full market, technical, and opportunity analysis.',
+    stack: ['LangGraph', 'FastAPI', 'AWS Bedrock', 'Tavily', 'SSE'],
+    bullets: [
+      'Parallel market research + architecture agents with a clarification gate for vague inputs',
+      'Deterministic opportunity scoring separate from LLM generation for reproducible results',
     ],
-    tags: ['LangGraph', 'FastAPI', 'Next.js', 'AWS Bedrock', 'Tavily', 'Langfuse', 'PostgreSQL'],
-    impactLine: 'Eval infrastructure built in from day one',
     slug: 'ai-venture-architect',
     bgImage: '/images/projects/ai-venture-architect.jpg',
   },
   {
-    number: '04',
     title: 'PEAI Chat Assistant',
     category: 'RAG System',
     categoryTag: 'rag',
-    description:
-      'Two-pass source prioritization RAG system for the AI Operating Partners website — enforces proprietary content priority that Pinecone Assistant doesn\'t natively support, with a custom citation framework per source type.',
-    highlights: [
-      'Pass 1 restricts retrieval to book content via metadata filter; programmatic evaluation layer detects insufficient answers and triggers Pass 2 fallback to broader corpus',
-      'Custom citation framework strips Pinecone default markers on fallback answers and applies chapter/page citations on book answers',
-      'Flask proxy app built to fully simulate and debug the chatbot before production integration',
+    tagline: 'Deployed RAG chatbot on aioperatingpartners.ai answering questions grounded in proprietary PE content.',
+    stack: ['RAG', 'Two-Pass Routing', 'Next.js', 'OpenAI'],
+    bullets: [
+      'Live in production — two-pass retrieval enforces proprietary content priority over general knowledge',
+      "Serves real users on a published book's homepage with source-grounded, cited answers",
     ],
-    tags: ['Python', 'Flask', 'Pinecone Assistant', 'RAG', 'Prompt Engineering'],
-    impactLine: 'Live on aioperatingpartners.ai',
     slug: 'peai-chat-assistant',
     bgImage: '/images/projects/peai-chat-assistant.jpg',
   },
   {
-    number: '05',
     title: 'DealLens — PE CIM Intelligence Workflow',
-    category: 'AI Automation',
-    categoryTag: 'automation',
-    description:
-      'Fully automated private equity CIM intake pipeline — PDF upload triggers structured extraction, risk flagging, diligence question generation, IC memo drafting, and Slack alerts, with a polished Airtable deal operating system as the analyst-facing review surface.',
-    highlights: [
-      'Three-Zap separation of concerns: intake pipeline, diligence builder, and investment criteria scorer operate as independent workflows triggered by Airtable view membership',
-      'OpenAI structured JSON extraction with custom schema — generalizes across CIM formats, industries, and deal structures without hardcoded logic, validated across 3 synthetic CIMs',
-      'Full loop from PDF upload to structured Airtable record to Slack alert to Google Docs IC memo runs in minutes with zero manual analyst input',
+    category: 'AI Workflow',
+    categoryTag: 'workflow',
+    tagline: 'Automated first-pass CIM intake pipeline that turns raw PE deal PDFs into structured deal records, IC memos, and Slack alerts — in minutes.',
+    stack: ['OpenAI', 'Zapier', 'Airtable', 'PDF.co', 'Google Docs'],
+    bullets: [
+      'Reduced first-pass CIM intake from hours of manual analyst work to a fully automated pipeline',
+      'Three-Zap separation of concerns: deal records, diligence questions, scoring, and IC memos across 7 Airtable tables',
     ],
-    tags: ['Zapier', 'OpenAI API', 'Airtable', 'PDF.co', 'Google Drive', 'Slack'],
-    impactLine: 'Hours of manual CIM review → fully automated in minutes',
     slug: 'deallens',
     bgImage: '/images/projects/deallens.jpg',
   },
   {
-    number: '06',
     title: 'PEAI Book — ML Model Matrix',
     category: 'Published Work',
     categoryTag: 'published',
-    badge: 'Published',
-    description:
-      'Authored the AI Model Capability Matrix chapter in The Private Equity AI Operating Partner — a 12-category framework mapping atomic AI abilities to ML model types and training paradigms for finance and operations professionals.',
-    highlights: [
-      '12-category Atomic Abilities framework mapping core business problems to AI model types (XGBoost, CNNs, GPT, ARIMA, etc.) and training paradigms',
-      'Designed as a decision-support tool first — enabling non-technical PE operators to identify the right modeling approach without ML background',
-      'Published practitioner-level strategy guide written for operations leaders making live investment and operational decisions',
+    tagline: 'Co-authored chapter in The Private Equity AI Operating Partner mapping business problems to ML model types.',
+    stack: ['AI Strategy', 'Framework Design', 'Published 2024'],
+    bullets: [
+      'Published author — strategic framework used by PE operators to evaluate AI use cases',
+      'Authored the AI Model Capability Matrix chapter in a commercially released book',
     ],
-    tags: ['AI Strategy', 'Framework Design', 'Published 2024'],
-    impactLine: 'Available at aioperatingpartners.ai/peai-book',
     slug: 'peai-book-ml-model-matrix',
     bgImage: '/images/projects/peai-book-ml-model-matrix.jpg',
   },
   {
-    number: '07',
     title: 'Career Radar — Labor Market Intelligence',
     category: 'Full-Stack AI',
     categoryTag: 'full-stack',
-    description:
-      'Full-stack labor market intelligence app that ingests real job postings, normalizes and enriches them via an n8n automation pipeline, and presents AI-powered insights across seven purpose-built dashboard views — with a grounded OpenAI narrative layer that summarizes deterministic data without inventing facts.',
-    highlights: [
-      'n8n orchestration pipeline moves postings from raw sources through deduplication, role classification, skill extraction, and Supabase transformation into normalized market evidence',
-      'Supabase serves as both the storage and transformation reliability layer — handling deduplication logic, canonical job records, company dictionary mapping, and role family normalization across ~1,000 real postings',
-      'OpenAI narrative layer deliberately constrained to summarize deterministic data only — all counts, rankings, and company references come from the structured data layer, never from AI generation',
+    tagline: 'Full-stack app that ingests real job postings and surfaces structured intelligence on how AI is reshaping roles.',
+    stack: ['Next.js', 'Supabase', 'n8n', 'OpenAI', 'TypeScript'],
+    bullets: [
+      'Automated ingestion pipeline processing ~1,000 real postings into normalized market intelligence',
+      'AI constrained to summarize deterministic data only — rankings never come from generation',
     ],
-    tags: ['Next.js', 'TypeScript', 'Supabase', 'PostgreSQL', 'n8n', 'OpenAI API', 'SerpAPI'],
-    impactLine: '~1,000 real postings → structured labor market intelligence',
     slug: 'career-radar',
     bgImage: '/images/projects/career-radar.jpg',
   },
   {
-    number: '08',
     title: 'OSS Dependency Risk Agent',
-    category: 'Multi-Agent',
-    categoryTag: 'multi-agent',
-    description:
-      'Daily automated health monitoring pipeline for 800+ open-source dependencies — GitHub Archive ingestion, multi-hop lakehouse transformation, 7-signal composite scoring, and a LangGraph agent powered by Claude Sonnet that synthesizes risk assessments and flags repos for upgrade or replacement.',
-    highlights: [
-      '7-signal composite health score (commit frequency, issue resolution, PR throughput, contributor diversity, governance, security) with logarithmic normalization across a 48-day rolling Databricks/dbt lakehouse pipeline',
-      '5-node LangGraph agent (Monitor → Investigate → Synthesize → Recommend → Deliver) calls Claude Sonnet per flagged repo and indexes AI-written risk assessments into Pinecone for semantic search',
-      'Scoring model iterated through multiple data-driven design decisions: PR formula refactored from ratio to log-scale for window stability; bus-factor weight zeroed after identifying 48-day window bias',
+    category: 'AI + Data Engineering',
+    categoryTag: 'data-eng',
+    tagline: 'Monitors 800+ open-source projects daily, scores them across 7 health signals, and uses a LangGraph agent to write actionable risk assessments.',
+    stack: ['LangGraph', 'Claude Sonnet', 'Databricks', 'Pinecone', 'Next.js'],
+    bullets: [
+      'Monitors 705 actively scored repos across 15 OSS categories with zero manual input',
+      'Full lakehouse pipeline (S3 → PySpark → Delta Lake → dbt) feeding a 5-node AI agent with tiered recommendations',
     ],
-    tags: ['Python', 'LangGraph', 'Claude Sonnet', 'Databricks', 'dbt', 'Pinecone', 'FastAPI', 'Next.js 14'],
-    impactLine: '705 repos scored daily — end-to-end automated',
     slug: 'oss-dependency-risk-agent',
     bgImage: '/images/projects/oss-dependency-risk-agent.jpg',
   },
@@ -322,9 +289,9 @@ export default function ProjectsPage() {
               Technical{' '}
               <span style={{ color: '#C4A882' }}>Projects</span>
             </h2>
-            <p className="text-base max-w-2xl font-body"
-              style={{ color: 'rgba(226,223,208,0.45)' }}>
-              A curated selection of high-impact AI and data science initiatives.
+            <p className="text-base max-w-3xl"
+              style={{ color: 'rgba(226,223,208,0.5)', lineHeight: 1.6 }}>
+              Side projects built to expand my hands-on experience with AI, data, and full-stack tools beyond my day-to-day client work — spanning RAG systems, agentic workflows, and modern AI application stacks.
             </p>
           </header>
 
@@ -368,7 +335,7 @@ export default function ProjectsPage() {
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: 12,
+              gap: 16,
             }}
           >
             {PROJECTS.map(project => (
