@@ -558,6 +558,109 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
     },
   },
 
+  'career-radar': {
+    slug: 'career-radar',
+    title: 'Career Radar — Labor Market Intelligence',
+    category: 'Full-Stack AI',
+    categoryTag: 'full-stack',
+    tags: ['Next.js', 'TypeScript', 'Supabase', 'PostgreSQL', 'n8n', 'OpenAI API', 'SerpAPI'],
+    summary:
+      'Full-stack labor market intelligence app that ingests real job postings, normalizes and enriches them via an n8n automation pipeline, and presents structured insights across seven purpose-built dashboard views — with a grounded OpenAI narrative layer that explains deterministic data without inventing facts.',
+    stats: [
+      { label: 'Postings processed', value: '~1,000' },
+      { label: 'Dashboard views', value: '7' },
+    ],
+    problem: {
+      heading: 'Labor market signals for AI and automation roles are scattered with no intelligence layer',
+      body: [
+        'Job postings contain useful signals about how roles are changing — which skills are rising, which segments are hiring, how traditional jobs are evolving as AI and automation reshape work. But that information is scattered across job boards, career sites, and recruiter listings with no analytical layer that turns raw listings into structured market intelligence.',
+        'The goal was not to collect job listings. It was to answer the questions that actually matter for understanding where the market is going: which roles are emerging, which tools are rising, which industries are driving demand, and how AI and automation are reshaping work across sectors.',
+        'Existing job boards surface listings but not patterns. Answering "what are the fastest-growing AI operations roles this quarter?" requires a data product with ingestion, normalization, classification, enrichment, and analysis — not a search box.',
+      ],
+    },
+    solution: {
+      heading: 'n8n ingestion pipeline feeding a Supabase intelligence layer with a grounded AI narrative',
+      body: 'Career Radar collects real job postings via an n8n orchestration pipeline, normalizes and enriches them through a Supabase transformation layer, and presents structured labor market intelligence across seven purpose-built dashboard views. A deliberately constrained OpenAI narrative layer summarizes deterministic data rather than generating its own — all counts, rankings, and company references come from the structured data layer.',
+      features: [
+        {
+          title: 'n8n Ingestion Pipeline',
+          description:
+            'Workflow orchestrated via n8n: collects listings from external sources, structures raw data, deduplicates postings, classifies roles by family, extracts tools and skills, and delivers cleaned records into Supabase for app-facing views.',
+        },
+        {
+          title: 'Supabase as Transformation Layer',
+          description:
+            'Supabase serves as more than a database — it handles deduplication logic, canonical job records, enrichment versioning, company dictionary mapping, URL quality metadata, role family normalization, and app-facing views for consistent frontend reads.',
+        },
+        {
+          title: 'Grounded OpenAI Narrative',
+          description:
+            'OpenAI acts as an interpretation layer over deterministic data, not as the source of truth. AI-generated copy is treated as optional enhancement — the app falls back to deterministic text if the AI layer is unavailable, and all counts and rankings come from the structured data layer.',
+        },
+        {
+          title: 'Seven Analytics Views',
+          description:
+            'Market Briefing, Job Evidence, Emerging Roles, Rising Skills and Tools, Market Segments, Companies, and Methodology — purpose-built views that turn normalized job evidence into actionable labor market intelligence.',
+        },
+        {
+          title: 'Real-World Data Reliability',
+          description:
+            'Designed for messy real-world job data: agency listings, missing company names, inconsistent URLs, weak role classifications. Company fields separated into listing, hiring, canonical, and company type dimensions. Role family filtering tightened to prevent over-inclusion from weak keyword matches.',
+        },
+        {
+          title: 'Focused Market Coverage',
+          description:
+            'Scope constrained to roles tied to AI adoption, workflow automation, business systems, RevOps, finance transformation, data analytics, AI governance, and software engineering — maximizing signal quality over breadth.',
+        },
+      ],
+    },
+    architecture: {
+      heading: 'From raw job postings to structured market intelligence in one automated pipeline',
+      steps: [
+        {
+          number: '01',
+          title: 'Job Discovery',
+          description:
+            'SerpAPI and job-source connectors fetch listings from external sources. n8n orchestrates the collection and initial structuring of raw job data.',
+        },
+        {
+          number: '02',
+          title: 'n8n Processing Pipeline',
+          description:
+            'n8n workflow deduplicates postings, classifies roles by family, extracts tools and skills, normalizes company fields, and delivers cleaned records into Supabase with enrichment metadata.',
+        },
+        {
+          number: '03',
+          title: 'Supabase Transformation Layer',
+          description:
+            'Supabase views expose app-ready job evidence. Deduplication logic, canonical record management, company dictionary mapping, and role family normalization all live here — preserving raw source evidence while providing normalized market data.',
+        },
+        {
+          number: '04',
+          title: 'OpenAI Narrative Generation',
+          description:
+            'Server-side API routes call OpenAI with deterministic data as context to generate explanatory summaries. Output is optional — the app falls back to deterministic text if the AI layer fails or returns invalid output.',
+        },
+        {
+          number: '05',
+          title: 'Next.js Dashboard',
+          description:
+            'Seven purpose-built views render structured market intelligence from Supabase views. TypeScript throughout for typed data contracts between the API layer and the UI.',
+        },
+      ],
+      stack: ['Next.js', 'TypeScript', 'Supabase', 'PostgreSQL', 'n8n', 'OpenAI API', 'SerpAPI'],
+    },
+    impact: {
+      stats: [
+        { label: 'Real postings processed', value: '~1,000' },
+        { label: 'Dashboard views', value: '7' },
+        { label: 'AI integration', value: 'Grounded only' },
+      ],
+      takeaway:
+        'Career Radar demonstrates the ability to build more than a frontend demo — it is a full data product with ingestion, transformation, enrichment, analysis, and presentation layers. The project shows practical experience with n8n automation, Supabase data modeling, and responsible AI integration — using OpenAI as an interpretation layer over deterministic data rather than as the source of truth.',
+    },
+  },
+
   'oss-dependency-risk-agent': {
     slug: 'oss-dependency-risk-agent',
     title: 'OSS Dependency Risk Agent',

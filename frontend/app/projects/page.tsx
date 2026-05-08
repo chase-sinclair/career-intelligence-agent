@@ -127,6 +127,23 @@ const PROJECTS: ProjectCardProps[] = [
   },
   {
     number: '07',
+    title: 'Career Radar — Labor Market Intelligence',
+    category: 'Full-Stack AI',
+    categoryTag: 'full-stack',
+    description:
+      'Full-stack labor market intelligence app that ingests real job postings, normalizes and enriches them via an n8n automation pipeline, and presents AI-powered insights across seven purpose-built dashboard views — with a grounded OpenAI narrative layer that summarizes deterministic data without inventing facts.',
+    highlights: [
+      'n8n orchestration pipeline moves postings from raw sources through deduplication, role classification, skill extraction, and Supabase transformation into normalized market evidence',
+      'Supabase serves as both the storage and transformation reliability layer — handling deduplication logic, canonical job records, company dictionary mapping, and role family normalization across ~1,000 real postings',
+      'OpenAI narrative layer deliberately constrained to summarize deterministic data only — all counts, rankings, and company references come from the structured data layer, never from AI generation',
+    ],
+    tags: ['Next.js', 'TypeScript', 'Supabase', 'PostgreSQL', 'n8n', 'OpenAI API', 'SerpAPI'],
+    impactLine: '~1,000 real postings → structured labor market intelligence',
+    slug: 'career-radar',
+    bgImage: '/images/projects/career-radar.jpg',
+  },
+  {
+    number: '08',
     title: 'OSS Dependency Risk Agent',
     category: 'Multi-Agent',
     categoryTag: 'multi-agent',
