@@ -18,9 +18,9 @@ type Job = FulltimeJob | InternJob
 
 // ─── Colors ───────────────────────────────────────────────────────────────────
 
-const PURPLE = '#A88CDC'
-const GREEN  = '#5DDD9C'
-const GOLD   = '#C4A882'
+const PURPLE = 'var(--viz-bah)'
+const GREEN  = 'var(--viz-intern)'
+const GOLD   = 'var(--accent)'
 
 // ─── Trajectory data ──────────────────────────────────────────────────────────
 
@@ -159,12 +159,12 @@ const SKILLS = [
 ]
 
 const SKILL_COLORS: Record<string, string> = {
-  ai:       '#C4A882',
-  data:     '#8ed5ff',
-  viz:      '#44e2cd',
-  lead:     'rgba(226,223,208,0.7)',
-  platform: '#E8956D',
-  auto:     '#A78BFA',
+  ai:       'var(--sk-ai)',
+  data:     'var(--sk-data)',
+  viz:      'var(--sk-viz)',
+  lead:     'var(--sk-lead)',
+  platform: 'var(--sk-platform)',
+  auto:     'var(--sk-auto)',
 }
 
 // ─── Cert data ────────────────────────────────────────────────────────────────
@@ -745,8 +745,8 @@ function ConstellationSection() {
       </svg>
 
       <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginTop: 10, fontFamily: "'JetBrains Mono', monospace", fontSize: 9 }}>
-        {[['#C4A882', 'AI / GenAI'], ['#8ed5ff', 'Data & Cloud'], ['#44e2cd', 'Visualization'], ['rgba(226,223,208,0.45)', 'Leadership'], ['#E8956D', 'AI Platforms & APIs'], ['#A78BFA', 'Automation']].map(([c, l]) => (
-          <span key={l} style={{ display: 'flex', gap: 6, alignItems: 'center', color: 'rgba(226,223,208,0.45)' }}>
+        {[['var(--sk-ai)', 'AI / GenAI'], ['var(--sk-data)', 'Data & Cloud'], ['var(--sk-viz)', 'Visualization'], ['var(--sk-lead)', 'Leadership'], ['var(--sk-platform)', 'AI Platforms & APIs'], ['var(--sk-auto)', 'Automation']].map(([c, l]) => (
+          <span key={l} style={{ display: 'flex', gap: 6, alignItems: 'center', color: 'rgba(var(--ink-rgb),0.52)' }}>
             <span style={{ width: 8, height: 8, borderRadius: 9999, background: c, flexShrink: 0 }} />
             {l}
           </span>
