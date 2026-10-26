@@ -334,25 +334,25 @@ function TrajectorySection() {
     let grid = ''
     for (let g = 0; g < 4; g++) {
       const y = 30 + g * 70
-      grid += `<line x1="40" x2="${W - 20}" y1="${y}" y2="${y}" stroke="rgba(226,223,208,0.04)" stroke-dasharray="2 4"/>`
+      grid += `<line x1="40" x2="${W - 20}" y1="${y}" y2="${y}" stroke="rgba(var(--ink-rgb),0.07)" stroke-dasharray="2 4"/>`
     }
 
     svg.innerHTML = `
       <defs>
         <linearGradient id="tFill"   x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%"   stop-color="rgba(196,168,130,0.22)"/>
-          <stop offset="100%" stop-color="rgba(196,168,130,0)"/>
+          <stop offset="0%"   stop-color="rgba(var(--accent-rgb),0.13)"/>
+          <stop offset="100%" stop-color="rgba(var(--accent-rgb),0)"/>
         </linearGradient>
         <linearGradient id="tLine"   x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%"   stop-color="rgba(196,168,130,0.5)"/>
+          <stop offset="0%"   stop-color="rgba(var(--accent-rgb),0.5)"/>
           <stop offset="100%" stop-color="${GOLD}"/>
         </linearGradient>
         <linearGradient id="tBah"    x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%"   stop-color="rgba(168,140,220,0.7)"/>
+          <stop offset="0%"   stop-color="rgba(var(--viz-bah-rgb),0.7)"/>
           <stop offset="100%" stop-color="${PURPLE}"/>
         </linearGradient>
         <linearGradient id="tGreen"  x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%"   stop-color="rgba(93,221,156,0.7)"/>
+          <stop offset="0%"   stop-color="rgba(var(--viz-intern-rgb),0.7)"/>
           <stop offset="100%" stop-color="${GREEN}"/>
         </linearGradient>
         <filter id="fGlow"  x="-50%" y="-50%" width="200%" height="200%">
@@ -427,7 +427,7 @@ function TrajectorySection() {
       // ring
       const ring = document.createElementNS(ns, 'circle')
       ring.setAttribute('r', String(ringR))
-      ring.setAttribute('fill', 'rgba(13,14,16,0.95)')
+      ring.setAttribute('fill', 'var(--panel-solid)')
       ring.setAttribute('stroke', color)
       ring.setAttribute('stroke-width', isNext ? '1.5' : '1.2')
       g.appendChild(ring)
@@ -443,7 +443,7 @@ function TrajectorySection() {
       lbl.setAttribute('x', '0')
       lbl.setAttribute('y', String(isBah ? -18 : isNext ? 30 : 28))
       lbl.setAttribute('text-anchor', 'middle')
-      lbl.setAttribute('fill', isNext ? GOLD : isBah ? PURPLE : isIntern ? GREEN : 'rgba(226,223,208,0.65)')
+      lbl.setAttribute('fill', isNext ? GOLD : isBah ? PURPLE : isIntern ? GREEN : 'rgba(var(--ink-rgb),0.65)')
       lbl.setAttribute('font-family', 'JetBrains Mono, monospace')
       lbl.setAttribute('font-size', '10')
       lbl.textContent = m.label
@@ -520,10 +520,10 @@ function TrajectorySection() {
   const lt = legendTip ? LEGEND_TIPS[legendTip.key] : null
 
   return (
-    <section style={{ background: 'rgba(10,10,12,0.90)', border: '0.5px solid rgba(226,223,208,0.08)', borderRadius: 12, padding: 18, position: 'relative', overflow: 'hidden' }}>
+    <section style={{ background: 'var(--panel)', border: '0.5px solid rgba(var(--ink-rgb),0.10)', borderRadius: 12, padding: 18, position: 'relative', overflow: 'hidden' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-        <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(226,223,208,0.55)', margin: 0 }}>Career Trajectory</p>
-        <p className="font-mono" style={{ fontSize: 9, color: 'rgba(226,223,208,0.28)', letterSpacing: '0.04em', margin: 0 }}>Hover a milestone</p>
+        <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(var(--ink-rgb),0.55)', margin: 0 }}>Career Trajectory</p>
+        <p className="font-mono" style={{ fontSize: 9, color: 'rgba(var(--ink-rgb),0.42)', letterSpacing: '0.04em', margin: 0 }}>Hover a milestone</p>
       </div>
 
       {/* Legend */}
@@ -534,12 +534,12 @@ function TrajectorySection() {
             onMouseEnter={e => handleLegendEnter(key, e.currentTarget)}
             onMouseLeave={() => setLegendTip(null)}>
             <span style={{ position: 'relative', width: 11, height: 11, borderRadius: 9999,
-              background: 'rgba(13,14,16,0.95)', border: `1px solid ${color}`, flexShrink: 0, display: 'inline-block' }}>
+              background: 'var(--panel-solid)', border: `1px solid ${color}`, flexShrink: 0, display: 'inline-block' }}>
               <span style={{ position: 'absolute', inset: 2, borderRadius: 9999, background: color, display: 'block' }} />
               <span style={{ position: 'absolute', left: '100%', top: '50%', width: 14, height: 1.5,
                 background: color, transform: 'translateY(-50%)', display: 'block' }} />
             </span>
-            <span style={{ fontSize: 10, letterSpacing: '0.05em', color: 'rgba(226,223,208,0.7)', marginLeft: 12 }}>
+            <span style={{ fontSize: 10, letterSpacing: '0.05em', color: 'rgba(var(--ink-rgb),0.7)', marginLeft: 12 }}>
               {key === 'internships' ? 'Internships' : 'Booz Allen Hamilton'}
             </span>
           </div>
