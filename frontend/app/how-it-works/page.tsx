@@ -13,10 +13,10 @@ const KB_DOCS = [
     detail: 'Resume, skills summary, and target roles',
     icon: (
       <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-        <rect x="1.5" y="1" width="9" height="12" rx="1" stroke="rgba(196,168,130,0.55)" strokeWidth="0.75" />
-        <line x1="3.5" y1="4.5" x2="8.5" y2="4.5" stroke="rgba(196,168,130,0.35)" strokeWidth="0.75" />
-        <line x1="3.5" y1="6.5" x2="8.5" y2="6.5" stroke="rgba(196,168,130,0.35)" strokeWidth="0.75" />
-        <line x1="3.5" y1="8.5" x2="6.5" y2="8.5" stroke="rgba(196,168,130,0.25)" strokeWidth="0.75" />
+        <rect x="1.5" y="1" width="9" height="12" rx="1" stroke="rgba(var(--accent-rgb),0.55)" strokeWidth="0.75" />
+        <line x1="3.5" y1="4.5" x2="8.5" y2="4.5" stroke="rgba(var(--accent-rgb),0.35)" strokeWidth="0.75" />
+        <line x1="3.5" y1="6.5" x2="8.5" y2="6.5" stroke="rgba(var(--accent-rgb),0.35)" strokeWidth="0.75" />
+        <line x1="3.5" y1="8.5" x2="6.5" y2="8.5" stroke="rgba(var(--accent-rgb),0.25)" strokeWidth="0.75" />
       </svg>
     ),
   },
@@ -25,7 +25,7 @@ const KB_DOCS = [
     detail: 'Deep-dive write-ups per project',
     icon: (
       <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-        <path d="M1.5 4C1.5 3.17 2.17 2.5 3 2.5H6L7.5 4.5H12C12.83 4.5 13.5 5.17 13.5 6V11C13.5 11.83 12.83 12.5 12 12.5H3C2.17 12.5 1.5 11.83 1.5 11V4Z" stroke="rgba(196,168,130,0.55)" strokeWidth="0.75" fill="rgba(196,168,130,0.04)" />
+        <path d="M1.5 4C1.5 3.17 2.17 2.5 3 2.5H6L7.5 4.5H12C12.83 4.5 13.5 5.17 13.5 6V11C13.5 11.83 12.83 12.5 12 12.5H3C2.17 12.5 1.5 11.83 1.5 11V4Z" stroke="rgba(var(--accent-rgb),0.55)" strokeWidth="0.75" fill="rgba(var(--accent-rgb),0.04)" />
       </svg>
     ),
   },
@@ -34,9 +34,9 @@ const KB_DOCS = [
     detail: 'Engagement summaries by client and deliverable',
     icon: (
       <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-        <rect x="1.5" y="4.5" width="12" height="9" rx="1" stroke="rgba(196,168,130,0.55)" strokeWidth="0.75" fill="rgba(196,168,130,0.04)" />
-        <path d="M4.5 4.5V3.5C4.5 3.22 4.72 3 5 3H10C10.28 3 10.5 3.22 10.5 3.5V4.5" stroke="rgba(196,168,130,0.4)" strokeWidth="0.75" />
-        <line x1="1.5" y1="8.5" x2="13.5" y2="8.5" stroke="rgba(196,168,130,0.2)" strokeWidth="0.75" />
+        <rect x="1.5" y="4.5" width="12" height="9" rx="1" stroke="rgba(var(--accent-rgb),0.55)" strokeWidth="0.75" fill="rgba(var(--accent-rgb),0.04)" />
+        <path d="M4.5 4.5V3.5C4.5 3.22 4.72 3 5 3H10C10.28 3 10.5 3.22 10.5 3.5V4.5" stroke="rgba(var(--accent-rgb),0.4)" strokeWidth="0.75" />
+        <line x1="1.5" y1="8.5" x2="13.5" y2="8.5" stroke="rgba(var(--accent-rgb),0.2)" strokeWidth="0.75" />
       </svg>
     ),
   },
@@ -45,8 +45,8 @@ const KB_DOCS = [
     detail: 'AWS, Google, Anthropic, IBM credentials',
     icon: (
       <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-        <circle cx="7.5" cy="6.5" r="3.5" stroke="rgba(196,168,130,0.55)" strokeWidth="0.75" />
-        <path d="M4.5 9.5L3 13L7.5 11.5L12 13L10.5 9.5" stroke="rgba(196,168,130,0.4)" strokeWidth="0.75" fill="none" />
+        <circle cx="7.5" cy="6.5" r="3.5" stroke="rgba(var(--accent-rgb),0.55)" strokeWidth="0.75" />
+        <path d="M4.5 9.5L3 13L7.5 11.5L12 13L10.5 9.5" stroke="rgba(var(--accent-rgb),0.4)" strokeWidth="0.75" fill="none" />
       </svg>
     ),
   },
@@ -147,7 +147,7 @@ const STACK = [
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <p className="font-mono text-[9px] tracking-[0.22em] uppercase mb-4" style={{ color: 'rgba(196,168,130,0.55)' }}>
+    <p className="font-mono text-[9px] tracking-[0.22em] uppercase mb-4" style={{ color: 'var(--accent)' }}>
       {children}
     </p>
   )
@@ -155,14 +155,14 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
 
 function Heading2({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
-    <h2 className={`text-2xl font-light tracking-[-0.04em] leading-tight ${className}`} style={{ color: '#E2DFD0' }}>
+    <h2 className={`text-2xl font-light tracking-[-0.04em] leading-tight ${className}`} style={{ color: 'var(--ink)' }}>
       {children}
     </h2>
   )
 }
 
 function Divider() {
-  return <div className="my-16 h-px" style={{ background: 'rgba(226,223,208,0.06)' }} />
+  return <div className="my-16 h-px" style={{ background: 'rgba(var(--ink-rgb),0.10)' }} />
 }
 
 // ── Page ───────────────────────────────────────────────────────────────────────
@@ -193,7 +193,7 @@ export default function HowItWorksPage() {
               <Eyebrow>Under the hood</Eyebrow>
               <h1
                 className="text-4xl md:text-5xl font-light tracking-[-0.04em] leading-tight mb-6 max-w-xl"
-                style={{ color: '#E2DFD0' }}
+                style={{ color: 'var(--ink)' }}
               >
                 An AI-native candidate profile built on real evidence
               </h1>
@@ -202,12 +202,12 @@ export default function HowItWorksPage() {
               <div className="flex flex-col md:flex-row gap-8 mt-8 mb-14">
                 {/* Left: problem copy */}
                 <div className="flex-1 max-w-md">
-                  <p className="text-sm leading-relaxed mb-3" style={{ color: 'rgba(226,223,208,0.45)' }}>
+                  <p className="text-sm leading-relaxed mb-3" style={{ color: 'rgba(var(--ink-rgb),0.62)' }}>
                     Traditional resumes are static snapshots. This profile is conversational,
                     evidence-backed, and evaluated in real time. Every answer is traced to a
                     specific career document — not generated from training data.
                   </p>
-                  <p className="text-sm leading-relaxed" style={{ color: 'rgba(226,223,208,0.45)' }}>
+                  <p className="text-sm leading-relaxed" style={{ color: 'rgba(var(--ink-rgb),0.62)' }}>
                     A recruiter evaluating systems architecture experience has different questions
                     than one evaluating team leadership or client impact. This profile answers
                     both — grounded in evidence, not inference.
@@ -219,8 +219,8 @@ export default function HowItWorksPage() {
                   ref={calloutRef}
                   className={`w-full md:w-60 flex-shrink-0 rounded-xl p-5 transition-all duration-700 ease-out ${calloutIn ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'}`}
                   style={{
-                    background: 'rgba(196,168,130,0.05)',
-                    border: '0.5px solid rgba(196,168,130,0.2)',
+                    background: 'rgba(var(--accent-rgb),0.05)',
+                    border: '0.5px solid rgba(var(--accent-rgb),0.2)',
                     transitionDelay: '120ms',
                   }}
                 >
@@ -237,9 +237,9 @@ export default function HowItWorksPage() {
                     >
                       <span
                         className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-[5px]"
-                        style={{ background: 'rgba(196,168,130,0.65)' }}
+                        style={{ background: 'rgba(var(--accent-rgb),0.65)' }}
                       />
-                      <p className="text-[11px] leading-relaxed" style={{ color: 'rgba(226,223,208,0.62)' }}>
+                      <p className="text-[11px] leading-relaxed" style={{ color: 'rgba(var(--ink-rgb),0.62)' }}>
                         {line}
                       </p>
                     </div>
@@ -257,10 +257,10 @@ export default function HowItWorksPage() {
               <div className={`transition-all duration-600 ease-out ${kbIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
                 <Eyebrow>The knowledge base</Eyebrow>
                 <Heading2 className="mb-4">16+ career artifacts, ingested and indexed</Heading2>
-                <p className="text-sm leading-relaxed mb-7 max-w-lg" style={{ color: 'rgba(226,223,208,0.45)' }}>
+                <p className="text-sm leading-relaxed mb-7 max-w-lg" style={{ color: 'rgba(var(--ink-rgb),0.62)' }}>
                   The profile is built from structured markdown documents parsed, chunked to
                   preserve section structure, embedded with{' '}
-                  <span style={{ color: 'rgba(226,223,208,0.68)' }}>text-embedding-3-small</span>,
+                  <span style={{ color: 'rgba(var(--ink-rgb),0.68)' }}>text-embedding-3-small</span>,
                   and stored in a Chroma vector index.
                 </p>
               </div>
@@ -272,8 +272,8 @@ export default function HowItWorksPage() {
                     key={label}
                     className={`rounded-xl p-4 transition-all duration-500 ease-out ${kbIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
                     style={{
-                      background: 'rgba(226,223,208,0.03)',
-                      border: '0.5px solid rgba(226,223,208,0.08)',
+                      background: 'var(--panel-2)',
+                      border: '0.5px solid rgba(var(--ink-rgb),0.10)',
                       transitionDelay: kbIn ? `${i * 80}ms` : '0ms',
                     }}
                   >
@@ -281,12 +281,12 @@ export default function HowItWorksPage() {
                       {icon}
                       <span
                         className="font-mono text-[8px] tracking-[0.14em] uppercase"
-                        style={{ color: 'rgba(196,168,130,0.6)' }}
+                        style={{ color: 'var(--accent)' }}
                       >
                         {label}
                       </span>
                     </div>
-                    <p className="text-[10px] leading-relaxed" style={{ color: 'rgba(226,223,208,0.33)' }}>
+                    <p className="text-[10px] leading-relaxed" style={{ color: 'rgba(var(--ink-rgb),0.60)' }}>
                       {detail}
                     </p>
                   </div>
@@ -297,8 +297,8 @@ export default function HowItWorksPage() {
               <div
                 className={`rounded-xl px-5 py-3 transition-all duration-600 ease-out ${kbIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}
                 style={{
-                  background: 'rgba(226,223,208,0.02)',
-                  border: '0.5px solid rgba(226,223,208,0.06)',
+                  background: 'var(--panel-2)',
+                  border: '0.5px solid rgba(var(--ink-rgb),0.10)',
                   transitionDelay: kbIn ? '320ms' : '0ms',
                 }}
               >
@@ -306,11 +306,11 @@ export default function HowItWorksPage() {
                   {['.md files', 'parse', 'chunk', 'embed (text-embedding-3-small)', 'Chroma index'].map(
                     (step, i, arr) => (
                       <span key={i} className="flex items-center gap-2">
-                        <span className="font-mono text-[10px]" style={{ color: 'rgba(226,223,208,0.48)' }}>
+                        <span className="font-mono text-[10px]" style={{ color: 'rgba(var(--ink-rgb),0.60)' }}>
                           {step}
                         </span>
                         {i < arr.length - 1 && (
-                          <span className="font-mono text-[10px]" style={{ color: 'rgba(196,168,130,0.45)' }}>
+                          <span className="font-mono text-[10px]" style={{ color: 'var(--accent)' }}>
                             →
                           </span>
                         )}
@@ -330,7 +330,7 @@ export default function HowItWorksPage() {
               <div className={`transition-all duration-600 ease-out ${pipeIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
                 <Eyebrow>The pipeline</Eyebrow>
                 <Heading2 className="mb-2">Five-node LangGraph workflow</Heading2>
-                <p className="text-sm leading-relaxed mb-8 max-w-lg" style={{ color: 'rgba(226,223,208,0.45)' }}>
+                <p className="text-sm leading-relaxed mb-8 max-w-lg" style={{ color: 'rgba(var(--ink-rgb),0.62)' }}>
                   Every question runs through a stateful graph. Each node has a single
                   responsibility. The evidence gate uses a conditional edge — if evidence
                   is insufficient, generation is skipped and no answer is fabricated.
@@ -355,11 +355,11 @@ export default function HowItWorksPage() {
                           className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 cursor-pointer transition-all duration-200"
                           style={{
                             background: isExpanded
-                              ? 'rgba(196,168,130,0.15)'
-                              : 'rgba(196,168,130,0.06)',
+                              ? 'rgba(var(--accent-rgb),0.15)'
+                              : 'rgba(var(--accent-rgb),0.06)',
                             border: isExpanded
-                              ? '1px solid rgba(196,168,130,0.55)'
-                              : '0.5px solid rgba(196,168,130,0.22)',
+                              ? '1px solid rgba(var(--accent-rgb),0.55)'
+                              : '0.5px solid rgba(var(--accent-rgb),0.22)',
                           }}
                           aria-label={`${isExpanded ? 'Collapse' : 'Expand'} step ${step.index}`}
                         >
@@ -367,8 +367,8 @@ export default function HowItWorksPage() {
                             className="font-mono text-[9px]"
                             style={{
                               color: isExpanded
-                                ? 'rgba(196,168,130,1)'
-                                : 'rgba(196,168,130,0.65)',
+                                ? 'var(--accent)'
+                                : 'rgba(var(--accent-rgb),0.80)',
                             }}
                           >
                             {step.index}
@@ -381,8 +381,8 @@ export default function HowItWorksPage() {
                             className="w-px flex-1 mt-1 mb-0 min-h-[24px] transition-all duration-700 ease-out"
                             style={{
                               background: isExpanded
-                                ? 'rgba(196,168,130,0.35)'
-                                : 'rgba(196,168,130,0.1)',
+                                ? 'rgba(var(--accent-rgb),0.35)'
+                                : 'rgba(var(--accent-rgb),0.1)',
                               transformOrigin: 'top',
                               transform: pipeIn ? 'scaleY(1)' : 'scaleY(0)',
                               transitionDelay: pipeIn ? `${i * 120 + 200}ms` : '0ms',
@@ -399,8 +399,8 @@ export default function HowItWorksPage() {
                             className="text-[12px] font-medium text-left cursor-pointer transition-colors duration-150"
                             style={{
                               color: isExpanded
-                                ? 'rgba(226,223,208,0.92)'
-                                : 'rgba(226,223,208,0.7)',
+                                ? 'rgba(var(--ink-rgb),0.92)'
+                                : 'rgba(var(--ink-rgb),0.7)',
                             }}
                           >
                             {step.title}
@@ -408,9 +408,9 @@ export default function HowItWorksPage() {
                           <span
                             className="font-mono text-[8px] px-1.5 py-[2px] rounded"
                             style={{
-                              background: 'rgba(226,223,208,0.04)',
-                              border: '0.5px solid rgba(226,223,208,0.08)',
-                              color: 'rgba(226,223,208,0.28)',
+                              background: 'var(--panel-2)',
+                              border: '0.5px solid rgba(var(--ink-rgb),0.10)',
+                              color: 'rgba(var(--ink-rgb),0.60)',
                             }}
                           >
                             {step.model}
@@ -422,7 +422,7 @@ export default function HowItWorksPage() {
                           className="overflow-hidden transition-all duration-300 ease-out"
                           style={{ maxHeight: isExpanded ? '160px' : '36px' }}
                         >
-                          <p className="text-[10px] leading-relaxed" style={{ color: 'rgba(226,223,208,0.38)' }}>
+                          <p className="text-[10px] leading-relaxed" style={{ color: 'rgba(var(--ink-rgb),0.62)' }}>
                             {isExpanded ? step.description : step.summary}
                           </p>
                         </div>
@@ -431,9 +431,9 @@ export default function HowItWorksPage() {
                           <button
                             onClick={() => setExpandedStep(i)}
                             className="font-mono text-[8px] mt-1 transition-colors duration-150"
-                            style={{ color: 'rgba(196,168,130,0.35)' }}
-                            onMouseEnter={e => (e.currentTarget.style.color = 'rgba(196,168,130,0.65)')}
-                            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(196,168,130,0.35)')}
+                            style={{ color: 'rgba(var(--accent-rgb),0.75)' }}
+                            onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
+                            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(var(--accent-rgb),0.75)')}
                           >
                             expand ↓
                           </button>
@@ -460,14 +460,14 @@ export default function HowItWorksPage() {
               <div
                 className={`border-l-2 pl-5 mb-7 transition-all duration-600 ease-out ${metricsIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
                 style={{
-                  borderColor: 'rgba(196,168,130,0.45)',
+                  borderColor: 'rgba(var(--accent-rgb),0.45)',
                   transitionDelay: metricsIn ? '100ms' : '0ms',
                 }}
               >
-                <p className="text-sm leading-relaxed italic mb-1" style={{ color: 'rgba(226,223,208,0.68)' }}>
+                <p className="text-sm leading-relaxed italic mb-1" style={{ color: 'rgba(var(--ink-rgb),0.68)' }}>
                   Most AI systems generate an answer and stop. This one evaluates it.
                 </p>
-                <p className="text-[11px] leading-relaxed" style={{ color: 'rgba(226,223,208,0.35)' }}>
+                <p className="text-[11px] leading-relaxed" style={{ color: 'rgba(var(--ink-rgb),0.62)' }}>
                   The quality panel on the Ask page shows live scores for every response.
                 </p>
               </div>
@@ -479,17 +479,17 @@ export default function HowItWorksPage() {
                     key={label}
                     className={`rounded-xl px-4 py-3 transition-all duration-500 ease-out ${metricsIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
                     style={{
-                      background: 'rgba(226,223,208,0.03)',
-                      border: '0.5px solid rgba(226,223,208,0.07)',
+                      background: 'var(--panel-2)',
+                      border: '0.5px solid rgba(var(--ink-rgb),0.10)',
                       transitionDelay: metricsIn ? `${i * 100}ms` : '0ms',
                     }}
                   >
                     <div className="flex items-start justify-between gap-4 mb-1.5">
                       <div className="flex-1">
-                        <p className="text-[11px] font-medium" style={{ color: 'rgba(226,223,208,0.72)' }}>
+                        <p className="text-[11px] font-medium" style={{ color: 'rgba(var(--ink-rgb),0.72)' }}>
                           {label}
                         </p>
-                        <p className="text-[10px] leading-relaxed mt-0.5" style={{ color: 'rgba(226,223,208,0.33)' }}>
+                        <p className="text-[10px] leading-relaxed mt-0.5" style={{ color: 'rgba(var(--ink-rgb),0.60)' }}>
                           {detail}
                         </p>
                       </div>
@@ -498,14 +498,14 @@ export default function HowItWorksPage() {
                         style={
                           phase === 'Pre-generation'
                             ? {
-                                background: 'rgba(196,168,130,0.08)',
-                                border: '0.5px solid rgba(196,168,130,0.2)',
-                                color: 'rgba(196,168,130,0.6)',
+                                background: 'rgba(var(--accent-rgb),0.08)',
+                                border: '0.5px solid rgba(var(--accent-rgb),0.2)',
+                                color: 'var(--accent)',
                               }
                             : {
-                                background: 'rgba(226,223,208,0.04)',
-                                border: '0.5px solid rgba(226,223,208,0.10)',
-                                color: 'rgba(226,223,208,0.35)',
+                                background: 'var(--panel-2)',
+                                border: '0.5px solid rgba(var(--ink-rgb),0.10)',
+                                color: 'rgba(var(--ink-rgb),0.60)',
                               }
                         }
                       >
@@ -517,21 +517,21 @@ export default function HowItWorksPage() {
                       <div>
                         <div
                           className="h-px rounded-full overflow-hidden"
-                          style={{ background: 'rgba(226,223,208,0.07)' }}
+                          style={{ background: 'rgba(var(--ink-rgb),0.10)' }}
                         >
                           <div
                             className="h-full rounded-full transition-all duration-1000 ease-out"
                             style={{
                               width: metricsIn ? `${fill}%` : '0%',
                               background:
-                                'linear-gradient(to right, rgba(196,168,130,0.4), rgba(196,168,130,0.65))',
+                                'linear-gradient(to right, rgba(var(--accent-rgb),0.4), rgba(var(--accent-rgb),0.65))',
                               transitionDelay: metricsIn ? `${200 + i * 100}ms` : '0ms',
                             }}
                           />
                         </div>
                         <p
                           className="font-mono text-[8px] mt-1"
-                          style={{ color: 'rgba(196,168,130,0.38)' }}
+                          style={{ color: 'var(--accent)' }}
                         >
                           {fill}% avg
                         </p>
@@ -540,9 +540,9 @@ export default function HowItWorksPage() {
                       <span
                         className="font-mono text-[8px] px-2 py-0.5 rounded"
                         style={{
-                          background: 'rgba(226,223,208,0.04)',
-                          border: '0.5px solid rgba(226,223,208,0.08)',
-                          color: 'rgba(226,223,208,0.3)',
+                          background: 'var(--panel-2)',
+                          border: '0.5px solid rgba(var(--ink-rgb),0.10)',
+                          color: 'rgba(var(--ink-rgb),0.60)',
                         }}
                       >
                         flag rate: low
@@ -570,18 +570,18 @@ export default function HowItWorksPage() {
                     key={label}
                     className={`rounded-xl p-4 transition-all duration-500 ease-out ${stackIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
                     style={{
-                      background: 'rgba(226,223,208,0.03)',
-                      border: '0.5px solid rgba(226,223,208,0.07)',
+                      background: 'var(--panel-2)',
+                      border: '0.5px solid rgba(var(--ink-rgb),0.10)',
                       transitionDelay: stackIn ? `${i * 80}ms` : '0ms',
                     }}
                   >
                     <p
                       className="font-mono text-[8px] tracking-[0.14em] uppercase mb-1"
-                      style={{ color: 'rgba(196,168,130,0.6)' }}
+                      style={{ color: 'var(--accent)' }}
                     >
                       {label}
                     </p>
-                    <p className="text-[11px] leading-relaxed" style={{ color: 'rgba(226,223,208,0.5)' }}>
+                    <p className="text-[11px] leading-relaxed" style={{ color: 'rgba(var(--ink-rgb),0.60)' }}>
                       {value}
                     </p>
                   </div>
@@ -601,11 +601,11 @@ export default function HowItWorksPage() {
               >
                 <div
                   className="h-px mb-8 mx-auto"
-                  style={{ maxWidth: 200, background: 'rgba(196,168,130,0.18)' }}
+                  style={{ maxWidth: 200, background: 'rgba(var(--accent-rgb),0.18)' }}
                 />
                 <p
                   className="text-2xl md:text-3xl font-serif italic leading-snug"
-                  style={{ color: 'rgba(196,168,130,0.82)' }}
+                  style={{ color: 'var(--accent)' }}
                 >
                   &ldquo;This profile is Chase&apos;s.
                   <br />
@@ -613,7 +613,7 @@ export default function HowItWorksPage() {
                 </p>
                 <div
                   className="h-px mt-8 mx-auto"
-                  style={{ maxWidth: 200, background: 'rgba(196,168,130,0.18)' }}
+                  style={{ maxWidth: 200, background: 'rgba(var(--accent-rgb),0.18)' }}
                 />
               </div>
 
@@ -625,11 +625,11 @@ export default function HowItWorksPage() {
                 <div className="pr-8">
                   <p
                     className="font-mono text-[8px] tracking-[0.14em] uppercase mb-3"
-                    style={{ color: 'rgba(196,168,130,0.4)' }}
+                    style={{ color: 'var(--accent)' }}
                   >
                     What exists today
                   </p>
-                  <p className="text-sm leading-relaxed" style={{ color: 'rgba(226,223,208,0.45)' }}>
+                  <p className="text-sm leading-relaxed" style={{ color: 'rgba(var(--ink-rgb),0.62)' }}>
                     This profile is Chase&apos;s. But the underlying system is
                     document-agnostic. The ingestion pipeline, retrieval graph, evidence
                     gate, and evaluation layer are designed to work with any
@@ -638,15 +638,15 @@ export default function HowItWorksPage() {
                 </div>
                 <div
                   className="pl-8 md:border-l mt-6 md:mt-0"
-                  style={{ borderColor: 'rgba(226,223,208,0.06)' }}
+                  style={{ borderColor: 'rgba(var(--ink-rgb),0.10)' }}
                 >
                   <p
                     className="font-mono text-[8px] tracking-[0.14em] uppercase mb-3"
-                    style={{ color: 'rgba(196,168,130,0.4)' }}
+                    style={{ color: 'var(--accent)' }}
                   >
                     Where it&apos;s going
                   </p>
-                  <p className="text-sm leading-relaxed" style={{ color: 'rgba(226,223,208,0.45)' }}>
+                  <p className="text-sm leading-relaxed" style={{ color: 'rgba(var(--ink-rgb),0.62)' }}>
                     A future version would let any candidate upload their resume and
                     supporting documents, then generate a fully interactive,
                     evidence-backed AI profile — replacing the traditional resume with
@@ -664,17 +664,17 @@ export default function HowItWorksPage() {
                   href="/knowledge-base"
                   className="text-[11px] px-4 py-2 rounded-lg transition-all duration-200"
                   style={{
-                    background: 'rgba(196,168,130,0.09)',
-                    border: '0.5px solid rgba(196,168,130,0.28)',
-                    color: 'rgba(196,168,130,0.88)',
+                    background: 'rgba(var(--accent-rgb),0.09)',
+                    border: '0.5px solid rgba(var(--accent-rgb),0.28)',
+                    color: 'var(--accent)',
                   }}
                   onMouseEnter={e => {
                     ;(e.currentTarget as HTMLAnchorElement).style.background =
-                      'rgba(196,168,130,0.15)'
+                      'rgba(var(--accent-rgb),0.15)'
                   }}
                   onMouseLeave={e => {
                     ;(e.currentTarget as HTMLAnchorElement).style.background =
-                      'rgba(196,168,130,0.09)'
+                      'rgba(var(--accent-rgb),0.09)'
                   }}
                 >
                   Ask About Chase →
@@ -683,21 +683,21 @@ export default function HowItWorksPage() {
                   href="/projects"
                   className="text-[11px] px-4 py-2 rounded-lg transition-all duration-200"
                   style={{
-                    background: 'rgba(226,223,208,0.04)',
-                    border: '0.5px solid rgba(226,223,208,0.12)',
-                    color: 'rgba(226,223,208,0.5)',
+                    background: 'var(--panel-2)',
+                    border: '0.5px solid rgba(var(--ink-rgb),0.16)',
+                    color: 'rgba(var(--ink-rgb),0.60)',
                   }}
                   onMouseEnter={e => {
                     ;(e.currentTarget as HTMLAnchorElement).style.background =
-                      'rgba(226,223,208,0.08)'
+                      'var(--panel)'
                     ;(e.currentTarget as HTMLAnchorElement).style.color =
-                      'rgba(226,223,208,0.75)'
+                      'rgba(var(--ink-rgb),0.75)'
                   }}
                   onMouseLeave={e => {
                     ;(e.currentTarget as HTMLAnchorElement).style.background =
-                      'rgba(226,223,208,0.04)'
+                      'var(--panel-2)'
                     ;(e.currentTarget as HTMLAnchorElement).style.color =
-                      'rgba(226,223,208,0.5)'
+                      'rgba(var(--ink-rgb),0.60)'
                   }}
                 >
                   View Projects →
