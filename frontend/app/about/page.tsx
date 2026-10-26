@@ -671,7 +671,7 @@ function buildEdges() {
       if (j <= i) return
       const d = Math.hypot(a.cx - b.cx, a.cy - b.cy)
       if (a.cat === b.cat && d < 160) out.push({ x1: a.cx, y1: a.cy, x2: b.cx, y2: b.cy, stroke: SKILL_COLORS[a.cat], op: 0.18 })
-      else if (d < 100)               out.push({ x1: a.cx, y1: a.cy, x2: b.cx, y2: b.cy, stroke: 'rgba(226,223,208,0.5)', op: 0.032 })
+      else if (d < 100)               out.push({ x1: a.cx, y1: a.cy, x2: b.cx, y2: b.cy, stroke: 'rgba(var(--ink-rgb),0.5)', op: 0.032 })
     })
   })
   return out
@@ -703,10 +703,10 @@ function ConstellationSection() {
   }, [])
 
   return (
-    <section style={{ background: 'rgba(10,10,12,0.90)', border: '0.5px solid rgba(226,223,208,0.08)', borderRadius: 12, padding: 18 }}>
+    <section style={{ background: 'var(--panel)', border: '0.5px solid rgba(var(--ink-rgb),0.10)', borderRadius: 12, padding: 18 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 0 }}>
-        <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(226,223,208,0.55)', margin: 0 }}>Skills Constellation</p>
-        <p className="font-mono" style={{ fontSize: 10, color: 'rgba(226,223,208,0.5)', margin: 0, height: 18 }}>
+        <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(var(--ink-rgb),0.55)', margin: 0 }}>Skills Constellation</p>
+        <p className="font-mono" style={{ fontSize: 10, color: 'rgba(var(--ink-rgb),0.5)', margin: 0, height: 18 }}>
           <span ref={infoRef}>Hover a node</span>
         </p>
       </div>
@@ -723,21 +723,21 @@ function ConstellationSection() {
               const ch = e.currentTarget.children
               ;(ch[0] as SVGCircleElement).setAttribute('opacity', '0.16')
               ;(ch[1] as SVGCircleElement).setAttribute('fill-opacity', '0.55')
-              ;(ch[2] as SVGTextElement).setAttribute('fill', '#E2DFD0')
+              ;(ch[2] as SVGTextElement).setAttribute('fill', 'var(--ink)')
               if (infoRef.current) infoRef.current.innerHTML = `<b style="color:${SKILL_COLORS[s.cat]}">${s.name}</b> · ${s.cat.toUpperCase()}`
             }}
             onMouseLeave={e => {
               const ch = e.currentTarget.children
               ;(ch[0] as SVGCircleElement).setAttribute('opacity', '0')
               ;(ch[1] as SVGCircleElement).setAttribute('fill-opacity', '0.25')
-              ;(ch[2] as SVGTextElement).setAttribute('fill', 'rgba(226,223,208,0.55)')
+              ;(ch[2] as SVGTextElement).setAttribute('fill', 'rgba(var(--ink-rgb),0.55)')
               if (infoRef.current) infoRef.current.textContent = 'Hover a node'
             }}>
             <circle r={s.size + 6} fill={SKILL_COLORS[s.cat]} opacity={0} />
             <circle r={s.size / 2} fill={SKILL_COLORS[s.cat]} fillOpacity={0.25}
               stroke={SKILL_COLORS[s.cat]} strokeWidth={1} strokeOpacity={0.85} />
             <text x={0} y={s.size / 2 + 13} textAnchor="middle"
-              fill="rgba(226,223,208,0.55)" fontFamily="JetBrains Mono, monospace" fontSize={9.5}>
+              fill="rgba(var(--ink-rgb),0.55)" fontFamily="JetBrains Mono, monospace" fontSize={9.5}>
               {s.name}
             </text>
           </g>
@@ -763,10 +763,10 @@ function CertificationsSection() {
   const group = CERT_GROUPS.find(g => g.id === activeId)!
 
   return (
-    <section style={{ background: 'rgba(10,10,12,0.90)', border: '0.5px solid rgba(226,223,208,0.08)', borderRadius: 12, padding: 18 }}>
+    <section style={{ background: 'var(--panel)', border: '0.5px solid rgba(var(--ink-rgb),0.10)', borderRadius: 12, padding: 18 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-        <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(226,223,208,0.55)', margin: 0 }}>Certifications · 14 total</p>
-        <p className="font-mono" style={{ fontSize: 9, color: 'rgba(226,223,208,0.28)', letterSpacing: '0.04em', margin: 0 }}>Filter by issuer</p>
+        <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(var(--ink-rgb),0.55)', margin: 0 }}>Certifications · 14 total</p>
+        <p className="font-mono" style={{ fontSize: 9, color: 'rgba(var(--ink-rgb),0.42)', letterSpacing: '0.04em', margin: 0 }}>Filter by issuer</p>
       </div>
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
@@ -777,14 +777,14 @@ function CertificationsSection() {
               style={{ fontSize: 10, letterSpacing: '0.10em', textTransform: 'uppercase',
                 padding: '5px 11px', borderRadius: 9999, border: '0.5px solid',
                 display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer',
-                borderColor: active ? GOLD : 'rgba(196,168,130,0.20)',
-                color: active ? '#0d0e10' : 'rgba(196,168,130,0.6)',
+                borderColor: active ? GOLD : 'rgba(var(--accent-rgb),0.20)',
+                color: active ? 'var(--accent-ink)' : 'rgba(var(--accent-rgb),0.6)',
                 background: active ? GOLD : 'transparent',
                 transition: 'all .18s ease' }}>
               {g.name}
               <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 4,
-                background: active ? 'rgba(13,14,16,0.25)' : 'rgba(226,223,208,0.06)',
-                color: active ? 'rgba(13,14,16,0.85)' : 'rgba(226,223,208,0.4)' }}>
+                background: active ? 'rgba(var(--accent-ink-rgb),0.25)' : 'rgba(var(--ink-rgb),0.10)',
+                color: active ? 'rgba(var(--accent-ink-rgb),0.85)' : 'rgba(var(--ink-rgb),0.4)' }}>
                 {g.items.length}
               </span>
             </button>
@@ -792,24 +792,24 @@ function CertificationsSection() {
         })}
       </div>
 
-      <div style={{ background: 'rgba(13,14,16,0.45)', border: '0.5px solid rgba(226,223,208,0.06)', borderRadius: 10, padding: '14px 16px', minHeight: 180 }}>
+      <div style={{ background: 'var(--panel-2)', border: '0.5px solid rgba(var(--ink-rgb),0.10)', borderRadius: 10, padding: '14px 16px', minHeight: 180 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 10 }}>
-          <span className="font-serif" style={{ fontSize: 22, color: '#E2DFD0', letterSpacing: '-0.01em' }}>{group.name}</span>
-          <span className="font-mono" style={{ fontSize: 9, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(196,168,130,0.55)' }}>
+          <span className="font-serif" style={{ fontSize: 22, color: 'var(--ink)', letterSpacing: '-0.01em' }}>{group.name}</span>
+          <span className="font-mono" style={{ fontSize: 9, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(var(--accent-rgb),0.55)' }}>
             {group.items.length} {group.items.length === 1 ? 'Certification' : 'Certifications'}
           </span>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px 24px' }}>
           {group.items.map(item => (
-            <div key={item} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0', borderBottom: '1px solid rgba(226,223,208,0.04)' }}>
+            <div key={item} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0', borderBottom: '1px solid rgba(var(--ink-rgb),0.07)' }}>
               <span style={{ flexShrink: 0, width: 14, height: 14, borderRadius: 9999,
-                border: '0.5px solid rgba(196,168,130,0.45)', background: 'rgba(196,168,130,0.10)',
+                border: '0.5px solid rgba(var(--accent-rgb),0.45)', background: 'rgba(var(--accent-rgb),0.10)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
               </span>
-              <p style={{ fontSize: 11.5, lineHeight: 1.4, color: 'rgba(226,223,208,0.7)', margin: 0, flex: 1 }}>{item}</p>
+              <p style={{ fontSize: 11.5, lineHeight: 1.4, color: 'rgba(var(--ink-rgb),0.7)', margin: 0, flex: 1 }}>{item}</p>
             </div>
           ))}
         </div>
