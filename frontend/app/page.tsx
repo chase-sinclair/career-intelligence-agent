@@ -79,7 +79,7 @@ function Card({ card }: { card: CardDef }) {
         {card.title}
       </span>
 
-      <span className="text-[10px] text-[var(--ink)] opacity-[0.42] leading-relaxed flex-1">
+      <span className="text-[10px] text-[var(--ink)] opacity-[0.60] leading-relaxed flex-1">
         {card.desc}
       </span>
 
@@ -116,7 +116,7 @@ export default function HomePage() {
           {/* Eyebrow */}
           <div className="inline-flex items-center gap-1.5 mb-4">
             <span className="w-[5px] h-[5px] rounded-full bg-[var(--accent)] opacity-80" />
-            <span className="text-[10px] tracking-[0.18em] uppercase text-[var(--ink)] opacity-40">
+            <span className="text-[10px] tracking-[0.18em] uppercase text-[var(--ink)] opacity-[0.62]">
               AI-Powered Candidate Profile
             </span>
           </div>
@@ -132,7 +132,7 @@ export default function HomePage() {
           </h1>
 
           {/* Body copy */}
-          <p className="text-sm text-[var(--ink)] opacity-50 leading-relaxed max-w-[32rem] mb-6">
+          <p className="text-sm text-[var(--ink)] opacity-[0.62] leading-relaxed max-w-[32rem] mb-6">
             <strong className="opacity-[0.75] font-medium not-italic">
               You&apos;re looking at an intelligent portfolio — not a résumé.
             </strong>{' '}
@@ -168,7 +168,7 @@ export default function HomePage() {
           }}
         />
 
-        <p className="text-[9px] tracking-[0.18em] uppercase text-[var(--ink)] opacity-[0.42] mb-2.5 px-0.5">
+        <p className="text-[9px] tracking-[0.18em] uppercase text-[var(--ink)] opacity-[0.62] mb-2.5 px-0.5">
           Explore Chase&apos;s Profile
         </p>
 

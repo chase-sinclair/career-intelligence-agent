@@ -18,7 +18,7 @@ export default function TopNav({ hasRightPanel = false, subtitle }: TopNavProps)
       <div className="flex items-center gap-3">
         <span
           className="text-[11px] font-medium tracking-[0.04em]"
-          style={{ color: 'rgba(var(--ink-rgb),0.55)' }}
+          style={{ color: 'rgba(var(--ink-rgb),0.62)' }}
         >
           Career Architect
         </span>

@@ -251,7 +251,7 @@ function IdentitySection() {
               color: 'rgba(var(--accent-rgb),0.9)', textTransform: 'uppercase' }}>Open to opportunities</span>
           </div>
           <span style={{ width: 1, height: 11, background: 'rgba(var(--ink-rgb),0.16)', flexShrink: 0 }} />
-          <span style={{ fontSize: 10, color: 'rgba(var(--ink-rgb),0.52)' }}>New York, NY</span>
+          <span style={{ fontSize: 10, color: 'rgba(var(--ink-rgb),0.60)' }}>New York, NY</span>
           <span style={{ width: 1, height: 11, background: 'rgba(var(--ink-rgb),0.16)', flexShrink: 0 }} />
           <a href="https://www.linkedin.com/in/chase-sinclair" target="_blank" rel="noreferrer"
             style={{ fontSize: 11, color: 'rgba(var(--accent-rgb),0.85)', textDecoration: 'underline',
@@ -290,7 +290,7 @@ function IdentitySection() {
           <p style={{ fontSize: 14, fontWeight: 500, color: 'rgba(var(--ink-rgb),0.85)', margin: 0, lineHeight: 1.3 }}>
             B.S. — Computational Modeling &amp; Data Analytics (CMDA)
           </p>
-          <p style={{ fontSize: 11, color: 'rgba(var(--ink-rgb),0.5)', margin: '4px 0 0' }}>Virginia Tech</p>
+          <p style={{ fontSize: 11, color: 'rgba(var(--ink-rgb),0.60)', margin: '4px 0 0' }}>Virginia Tech</p>
           <p className="font-mono" style={{ fontSize: 10, color: 'rgba(var(--accent-rgb),0.7)', margin: '6px 0 0' }}>2021</p>
         </div>
         <div style={{ width: 22, height: 22, borderRadius: 9999, border: '0.5px solid rgba(var(--accent-rgb),0.25)',
@@ -302,7 +302,7 @@ function IdentitySection() {
           <p style={{ fontSize: 12.5, fontWeight: 500, color: 'rgba(var(--ink-rgb),0.85)', margin: 0, lineHeight: 1.3 }}>
             Minor in Statistics
           </p>
-          <p style={{ fontSize: 10.5, color: 'rgba(var(--ink-rgb),0.5)', margin: '4px 0 0' }}>Virginia Tech</p>
+          <p style={{ fontSize: 10.5, color: 'rgba(var(--ink-rgb),0.60)', margin: '4px 0 0' }}>Virginia Tech</p>
           <p className="font-mono" style={{ fontSize: 9, color: 'rgba(var(--accent-rgb),0.7)', margin: '6px 0 0' }}>2021</p>
         </div>
       </div>
@@ -522,8 +522,8 @@ function TrajectorySection() {
   return (
     <section style={{ background: 'var(--panel)', border: '0.5px solid rgba(var(--ink-rgb),0.10)', borderRadius: 12, padding: 18, position: 'relative', overflow: 'hidden' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-        <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(var(--ink-rgb),0.55)', margin: 0 }}>Career Trajectory</p>
-        <p className="font-mono" style={{ fontSize: 9, color: 'rgba(var(--ink-rgb),0.42)', letterSpacing: '0.04em', margin: 0 }}>Hover a milestone</p>
+        <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(var(--ink-rgb),0.60)', margin: 0 }}>Career Trajectory</p>
+        <p className="font-mono" style={{ fontSize: 9, color: 'rgba(var(--ink-rgb),0.60)', letterSpacing: '0.04em', margin: 0 }}>Hover a milestone</p>
       </div>
 
       {/* Legend */}
@@ -580,7 +580,7 @@ function ExperienceSection() {
       {/* Job list */}
       <section style={{ background: 'var(--panel)', border: '0.5px solid rgba(var(--ink-rgb),0.10)', borderRadius: 12, padding: 18 }}>
         <div style={{ marginBottom: 14 }}>
-          <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(var(--ink-rgb),0.55)', margin: 0 }}>Professional Experience</p>
+          <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(var(--ink-rgb),0.60)', margin: 0 }}>Professional Experience</p>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           {JOBS.map(j => {
@@ -600,8 +600,8 @@ function ExperienceSection() {
                   <span style={{ fontSize: 13, fontWeight: 500, color: active ? 'var(--ink)' : 'rgba(var(--ink-rgb),0.85)' }}>{j.title}</span>
                   <span className="font-mono" style={{ fontSize: 9, color: 'rgba(var(--accent-rgb),0.55)', flexShrink: 0 }}>{j.period}</span>
                 </div>
-                <p style={{ fontSize: 11, color: active ? 'rgba(var(--accent-rgb),0.85)' : 'rgba(var(--ink-rgb),0.5)', margin: '3px 0 0' }}>{j.co}</p>
-                <p className="font-mono" style={{ fontSize: 9, color: 'rgba(var(--ink-rgb),0.42)', margin: '3px 0 0' }}>{j.loc}</p>
+                <p style={{ fontSize: 11, color: active ? 'rgba(var(--accent-rgb),0.85)' : 'rgba(var(--ink-rgb),0.60)', margin: '3px 0 0' }}>{j.co}</p>
+                <p className="font-mono" style={{ fontSize: 9, color: 'rgba(var(--ink-rgb),0.60)', margin: '3px 0 0' }}>{j.loc}</p>
               </div>
             )
           })}
@@ -614,7 +614,7 @@ function ExperienceSection() {
           <>
             <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(var(--accent-rgb),0.55)', margin: '0 0 6px' }}>Current Role</p>
             <h2 style={{ fontSize: 22, fontWeight: 500, color: 'var(--ink)', letterSpacing: '-0.01em', margin: 0, lineHeight: 1.2 }}>{job.title} · {job.co}</h2>
-            <p style={{ margin: '6px 0 0', fontSize: 11, color: 'rgba(var(--ink-rgb),0.4)' }}>{job.loc}</p>
+            <p style={{ margin: '6px 0 0', fontSize: 11, color: 'rgba(var(--ink-rgb),0.60)' }}>{job.loc}</p>
             <p className="font-mono" style={{ marginTop: 10, fontSize: 10, color: 'rgba(var(--accent-rgb),0.65)' }}>{job.period}</p>
             <div style={{ marginTop: 16, flex: 1 }}>
               <div style={{ display: 'inline-flex', background: 'var(--panel-2)', border: '0.5px solid rgba(var(--accent-rgb),0.24)', borderRadius: 9999, padding: 3, marginBottom: 12 }}>
@@ -643,7 +643,7 @@ function ExperienceSection() {
           <>
             <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(var(--accent-rgb),0.55)', margin: '0 0 6px' }}>Internship · Earlier Career</p>
             <h2 style={{ fontSize: 22, fontWeight: 500, color: 'var(--ink)', letterSpacing: '-0.01em', margin: 0, lineHeight: 1.2 }}>{job.title} · {job.co}</h2>
-            <p style={{ margin: '6px 0 0', fontSize: 11, color: 'rgba(var(--ink-rgb),0.4)' }}>{job.loc}</p>
+            <p style={{ margin: '6px 0 0', fontSize: 11, color: 'rgba(var(--ink-rgb),0.60)' }}>{job.loc}</p>
             <p className="font-mono" style={{ marginTop: 10, fontSize: 10, color: 'rgba(var(--accent-rgb),0.65)' }}>{job.period}</p>
             <div style={{ marginTop: 16, flex: 1 }}>
               <ul style={{ listStyle: 'none', padding: 0, margin: '6px 0 0', display: 'flex', flexDirection: 'column' }}>
@@ -705,8 +705,8 @@ function ConstellationSection() {
   return (
     <section style={{ background: 'var(--panel)', border: '0.5px solid rgba(var(--ink-rgb),0.10)', borderRadius: 12, padding: 18 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 0 }}>
-        <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(var(--ink-rgb),0.55)', margin: 0 }}>Skills Constellation</p>
-        <p className="font-mono" style={{ fontSize: 10, color: 'rgba(var(--ink-rgb),0.5)', margin: 0, height: 18 }}>
+        <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(var(--ink-rgb),0.60)', margin: 0 }}>Skills Constellation</p>
+        <p className="font-mono" style={{ fontSize: 10, color: 'rgba(var(--ink-rgb),0.60)', margin: 0, height: 18 }}>
           <span ref={infoRef}>Hover a node</span>
         </p>
       </div>
@@ -730,14 +730,14 @@ function ConstellationSection() {
               const ch = e.currentTarget.children
               ;(ch[0] as SVGCircleElement).setAttribute('opacity', '0')
               ;(ch[1] as SVGCircleElement).setAttribute('fill-opacity', '0.25')
-              ;(ch[2] as SVGTextElement).setAttribute('fill', 'rgba(var(--ink-rgb),0.55)')
+              ;(ch[2] as SVGTextElement).setAttribute('fill', 'rgba(var(--ink-rgb),0.60)')
               if (infoRef.current) infoRef.current.textContent = 'Hover a node'
             }}>
             <circle r={s.size + 6} fill={SKILL_COLORS[s.cat]} opacity={0} />
             <circle r={s.size / 2} fill={SKILL_COLORS[s.cat]} fillOpacity={0.25}
               stroke={SKILL_COLORS[s.cat]} strokeWidth={1} strokeOpacity={0.85} />
             <text x={0} y={s.size / 2 + 13} textAnchor="middle"
-              fill="rgba(var(--ink-rgb),0.55)" fontFamily="JetBrains Mono, monospace" fontSize={9.5}>
+              fill="rgba(var(--ink-rgb),0.60)" fontFamily="JetBrains Mono, monospace" fontSize={9.5}>
               {s.name}
             </text>
           </g>
@@ -746,7 +746,7 @@ function ConstellationSection() {
 
       <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginTop: 10, fontFamily: "'JetBrains Mono', monospace", fontSize: 9 }}>
         {[['var(--sk-ai)', 'AI / GenAI'], ['var(--sk-data)', 'Data & Cloud'], ['var(--sk-viz)', 'Visualization'], ['var(--sk-lead)', 'Leadership'], ['var(--sk-platform)', 'AI Platforms & APIs'], ['var(--sk-auto)', 'Automation']].map(([c, l]) => (
-          <span key={l} style={{ display: 'flex', gap: 6, alignItems: 'center', color: 'rgba(var(--ink-rgb),0.52)' }}>
+          <span key={l} style={{ display: 'flex', gap: 6, alignItems: 'center', color: 'rgba(var(--ink-rgb),0.60)' }}>
             <span style={{ width: 8, height: 8, borderRadius: 9999, background: c, flexShrink: 0 }} />
             {l}
           </span>
@@ -765,8 +765,8 @@ function CertificationsSection() {
   return (
     <section style={{ background: 'var(--panel)', border: '0.5px solid rgba(var(--ink-rgb),0.10)', borderRadius: 12, padding: 18 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-        <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(var(--ink-rgb),0.55)', margin: 0 }}>Certifications · 14 total</p>
-        <p className="font-mono" style={{ fontSize: 9, color: 'rgba(var(--ink-rgb),0.42)', letterSpacing: '0.04em', margin: 0 }}>Filter by issuer</p>
+        <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(var(--ink-rgb),0.60)', margin: 0 }}>Certifications · 14 total</p>
+        <p className="font-mono" style={{ fontSize: 9, color: 'rgba(var(--ink-rgb),0.60)', letterSpacing: '0.04em', margin: 0 }}>Filter by issuer</p>
       </div>
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
@@ -784,7 +784,7 @@ function CertificationsSection() {
               {g.name}
               <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 4,
                 background: active ? 'rgba(var(--accent-ink-rgb),0.25)' : 'rgba(var(--ink-rgb),0.10)',
-                color: active ? 'rgba(var(--accent-ink-rgb),0.85)' : 'rgba(var(--ink-rgb),0.4)' }}>
+                color: active ? 'rgba(var(--accent-ink-rgb),0.85)' : 'rgba(var(--ink-rgb),0.60)' }}>
                 {g.items.length}
               </span>
             </button>
@@ -881,14 +881,14 @@ export default function AboutPage() {
         .traj-tip.pos-right::after  { left: -6px;  top: 50%;   transform: translateY(-50%) rotate(135deg); }
         .tt-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(var(--accent-rgb),0.6); margin: 0 0 6px; }
         .traj-tip.traj-tip-purple .tt-eyebrow { color: rgba(var(--viz-bah-rgb),0.85); }
-        .traj-tip.traj-tip-green  .tt-eyebrow { color: rgba(var(--viz-intern-rgb),0.85); }
+        .traj-tip.traj-tip-green  .tt-eyebrow { color: rgba(var(--viz-intern-rgb),0.90); }
         .tt-title  { font-size: 13px; font-weight: 500; color: var(--ink); margin: 0; line-height: 1.25; }
-        .tt-sub    { font-size: 11px; color: rgba(var(--ink-rgb),0.55); margin: 4px 0 0; line-height: 1.4; }
+        .tt-sub    { font-size: 11px; color: rgba(var(--ink-rgb),0.60); margin: 4px 0 0; line-height: 1.4; }
         .tt-period { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: rgba(var(--accent-rgb),0.7); margin-top: 6px; }
         .traj-tip.traj-tip-purple .tt-period { color: rgba(var(--viz-bah-rgb),0.85); }
-        .traj-tip.traj-tip-green  .tt-period { color: rgba(var(--viz-intern-rgb),0.85); }
+        .traj-tip.traj-tip-green  .tt-period { color: rgba(var(--viz-intern-rgb),0.90); }
         .tt-list { padding-left: 0; list-style: none; margin: 8px 0 0; }
-        .tt-list li { font-size: 11px; line-height: 1.5; color: rgba(var(--ink-rgb),0.55); padding: 3px 0 3px 14px; position: relative; }
+        .tt-list li { font-size: 11px; line-height: 1.5; color: rgba(var(--ink-rgb),0.60); padding: 3px 0 3px 14px; position: relative; }
         .tt-list li::before { content: '→'; position: absolute; left: 0; color: rgba(var(--accent-rgb),0.55); font-family: 'JetBrains Mono', monospace; font-size: 9px; }
 
         /* Legend tooltip */
@@ -896,7 +896,7 @@ export default function AboutPage() {
         .legend-tip-green  { border-color: rgba(var(--viz-intern-rgb),0.5); }
         .legend-tip-purple { border-color: rgba(var(--viz-bah-rgb),0.5); }
         .lt-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 0.18em; text-transform: uppercase; margin: 0 0 6px; color: rgba(var(--accent-rgb),0.6); }
-        .legend-tip-green  .lt-eyebrow { color: rgba(var(--viz-intern-rgb),0.85); }
+        .legend-tip-green  .lt-eyebrow { color: rgba(var(--viz-intern-rgb),0.90); }
         .legend-tip-purple .lt-eyebrow { color: rgba(var(--viz-bah-rgb),0.85); }
         .lt-title { font-size: 12px; font-weight: 500; color: var(--ink); margin: 0 0 4px; }
         .lt-body  { font-size: 10.5px; line-height: 1.5; color: rgba(var(--ink-rgb),0.6); margin: 0; }

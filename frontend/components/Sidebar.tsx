@@ -138,7 +138,7 @@ export default function Sidebar() {
                               border: '0.5px solid rgba(var(--accent-rgb),0.24)',
                               color: 'rgba(var(--accent-rgb),0.9)',
                             }
-                          : { color: 'rgba(var(--ink-rgb),0.52)' }
+                          : { color: 'rgba(var(--ink-rgb),0.62)' }
                       }
                       onMouseEnter={e => {
                         if (!isActive) {
@@ -152,7 +152,7 @@ export default function Sidebar() {
                         if (!isActive) {
                           ;(e.currentTarget as HTMLDivElement).style.background = ''
                           ;(e.currentTarget as HTMLDivElement).style.color =
-                            'rgba(var(--ink-rgb),0.52)'
+                            'rgba(var(--ink-rgb),0.62)'
                         }
                       }}
                     >
@@ -165,7 +165,7 @@ export default function Sidebar() {
                       )}
                       <Icon
                         size={15}
-                        style={{ color: isActive ? 'var(--accent)' : 'rgba(var(--ink-rgb),0.42)', flexShrink: 0 }}
+                        style={{ color: isActive ? 'var(--accent)' : 'rgba(var(--ink-rgb),0.62)', flexShrink: 0 }}
                       />
                       {label}
                     </div>
@@ -181,7 +181,7 @@ export default function Sidebar() {
             >
               <p
                 className="text-[8px] uppercase tracking-[0.1em] whitespace-nowrap"
-                style={{ color: 'rgba(var(--ink-rgb),0.42)' }}
+                style={{ color: 'rgba(var(--ink-rgb),0.62)' }}
               >
                 v1 · Career Architect
               </p>
@@ -206,7 +206,7 @@ export default function Sidebar() {
               onClick={() => setIsExpanded(true)}
               aria-label="Open navigation"
             >
-              <ChevronRight size={12} style={{ color: 'rgba(var(--ink-rgb),0.52)' }} />
+              <ChevronRight size={12} style={{ color: 'rgba(var(--ink-rgb),0.60)' }} />
             </motion.button>
           )}
         </AnimatePresence>
