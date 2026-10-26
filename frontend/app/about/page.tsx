@@ -578,9 +578,9 @@ function ExperienceSection() {
     <div style={{ display: 'grid', gridTemplateColumns: '0.55fr 1.45fr', gap: 16 }}>
 
       {/* Job list */}
-      <section style={{ background: 'rgba(10,10,12,0.90)', border: '0.5px solid rgba(226,223,208,0.08)', borderRadius: 12, padding: 18 }}>
+      <section style={{ background: 'var(--panel)', border: '0.5px solid rgba(var(--ink-rgb),0.10)', borderRadius: 12, padding: 18 }}>
         <div style={{ marginBottom: 14 }}>
-          <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(226,223,208,0.55)', margin: 0 }}>Professional Experience</p>
+          <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(var(--ink-rgb),0.55)', margin: 0 }}>Professional Experience</p>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           {JOBS.map(j => {
@@ -588,20 +588,20 @@ function ExperienceSection() {
             return (
               <div key={j.id} onClick={() => { setActiveId(j.id); setBahFilter('client') }}
                 style={{ position: 'relative', padding: '14px 14px 14px 28px', cursor: 'pointer',
-                  borderLeft: `2px solid ${active ? GOLD : 'rgba(196,168,130,0.10)'}`,
-                  background: active ? 'rgba(196,168,130,0.06)' : 'transparent',
+                  borderLeft: `2px solid ${active ? GOLD : 'rgba(var(--accent-rgb),0.10)'}`,
+                  background: active ? 'rgba(var(--accent-rgb),0.06)' : 'transparent',
                   transition: 'background .2s ease, border-color .2s ease' }}>
                 <div style={{ position: 'absolute', left: -6, top: 22, width: 10, height: 10, borderRadius: 9999,
-                  background: active ? GOLD : 'rgba(13,14,16,0.95)',
-                  border: `1px solid ${active ? GOLD : 'rgba(196,168,130,0.4)'}`,
-                  boxShadow: active ? '0 0 10px rgba(196,168,130,0.55)' : 'none',
+                  background: active ? GOLD : 'var(--panel-solid)',
+                  border: `1px solid ${active ? GOLD : 'rgba(var(--accent-rgb),0.4)'}`,
+                  boxShadow: active ? '0 0 10px rgba(var(--accent-rgb),0.55)' : 'none',
                   transition: 'all .2s ease' }} />
                 <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 }}>
-                  <span style={{ fontSize: 13, fontWeight: 500, color: active ? '#E2DFD0' : 'rgba(226,223,208,0.85)' }}>{j.title}</span>
-                  <span className="font-mono" style={{ fontSize: 9, color: 'rgba(196,168,130,0.55)', flexShrink: 0 }}>{j.period}</span>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: active ? 'var(--ink)' : 'rgba(var(--ink-rgb),0.85)' }}>{j.title}</span>
+                  <span className="font-mono" style={{ fontSize: 9, color: 'rgba(var(--accent-rgb),0.55)', flexShrink: 0 }}>{j.period}</span>
                 </div>
-                <p style={{ fontSize: 11, color: active ? 'rgba(196,168,130,0.85)' : 'rgba(226,223,208,0.5)', margin: '3px 0 0' }}>{j.co}</p>
-                <p className="font-mono" style={{ fontSize: 9, color: 'rgba(226,223,208,0.32)', margin: '3px 0 0' }}>{j.loc}</p>
+                <p style={{ fontSize: 11, color: active ? 'rgba(var(--accent-rgb),0.85)' : 'rgba(var(--ink-rgb),0.5)', margin: '3px 0 0' }}>{j.co}</p>
+                <p className="font-mono" style={{ fontSize: 9, color: 'rgba(var(--ink-rgb),0.42)', margin: '3px 0 0' }}>{j.loc}</p>
               </div>
             )
           })}
@@ -609,21 +609,21 @@ function ExperienceSection() {
       </section>
 
       {/* Detail panel */}
-      <section style={{ background: 'rgba(10,10,12,0.90)', border: '0.5px solid rgba(226,223,208,0.08)', borderRadius: 12, padding: 18, minHeight: 420, display: 'flex', flexDirection: 'column' }}>
+      <section style={{ background: 'var(--panel)', border: '0.5px solid rgba(var(--ink-rgb),0.10)', borderRadius: 12, padding: 18, minHeight: 420, display: 'flex', flexDirection: 'column' }}>
         {job.type === 'fulltime' ? (
           <>
-            <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(196,168,130,0.55)', margin: '0 0 6px' }}>Current Role</p>
-            <h2 style={{ fontSize: 22, fontWeight: 500, color: '#E2DFD0', letterSpacing: '-0.01em', margin: 0, lineHeight: 1.2 }}>{job.title} · {job.co}</h2>
-            <p style={{ margin: '6px 0 0', fontSize: 11, color: 'rgba(226,223,208,0.4)' }}>{job.loc}</p>
-            <p className="font-mono" style={{ marginTop: 10, fontSize: 10, color: 'rgba(196,168,130,0.65)' }}>{job.period}</p>
+            <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(var(--accent-rgb),0.55)', margin: '0 0 6px' }}>Current Role</p>
+            <h2 style={{ fontSize: 22, fontWeight: 500, color: 'var(--ink)', letterSpacing: '-0.01em', margin: 0, lineHeight: 1.2 }}>{job.title} · {job.co}</h2>
+            <p style={{ margin: '6px 0 0', fontSize: 11, color: 'rgba(var(--ink-rgb),0.4)' }}>{job.loc}</p>
+            <p className="font-mono" style={{ marginTop: 10, fontSize: 10, color: 'rgba(var(--accent-rgb),0.65)' }}>{job.period}</p>
             <div style={{ marginTop: 16, flex: 1 }}>
-              <div style={{ display: 'inline-flex', background: 'rgba(13,14,16,0.6)', border: '0.5px solid rgba(196,168,130,0.18)', borderRadius: 9999, padding: 3, marginBottom: 12 }}>
+              <div style={{ display: 'inline-flex', background: 'var(--panel-2)', border: '0.5px solid rgba(var(--accent-rgb),0.24)', borderRadius: 9999, padding: 3, marginBottom: 12 }}>
                 {(['client', 'internal'] as const).map(f => (
                   <button key={f} onClick={() => setBahFilter(f)} className="font-mono"
                     style={{ fontSize: 9, letterSpacing: '0.10em', textTransform: 'uppercase',
                       padding: '6px 14px', borderRadius: 9999, border: 'none', cursor: 'pointer',
                       background: bahFilter === f ? GOLD : 'transparent',
-                      color: bahFilter === f ? '#0d0e10' : 'rgba(196,168,130,0.6)',
+                      color: bahFilter === f ? 'var(--accent-ink)' : 'rgba(var(--accent-rgb),0.6)',
                       transition: 'all .18s ease' }}>
                     {f === 'client' ? 'Client Work' : 'Internal Work'}
                   </button>
@@ -631,8 +631,8 @@ function ExperienceSection() {
               </div>
               <ul style={{ listStyle: 'none', padding: 0, margin: '6px 0 0', display: 'flex', flexDirection: 'column' }}>
                 {job.bahWork[bahFilter].map((b, bi) => (
-                  <li key={bi} style={{ position: 'relative', padding: '4px 0 4px 18px', fontSize: 12, lineHeight: 1.5, color: 'rgba(226,223,208,0.7)' }}>
-                    <span style={{ position: 'absolute', left: 4, top: 11, width: 4, height: 4, borderRadius: 9999, background: 'rgba(196,168,130,0.7)' }} />
+                  <li key={bi} style={{ position: 'relative', padding: '4px 0 4px 18px', fontSize: 12, lineHeight: 1.5, color: 'rgba(var(--ink-rgb),0.7)' }}>
+                    <span style={{ position: 'absolute', left: 4, top: 11, width: 4, height: 4, borderRadius: 9999, background: 'rgba(var(--accent-rgb),0.7)' }} />
                     {b}
                   </li>
                 ))}
@@ -641,15 +641,15 @@ function ExperienceSection() {
           </>
         ) : (
           <>
-            <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(196,168,130,0.55)', margin: '0 0 6px' }}>Internship · Earlier Career</p>
-            <h2 style={{ fontSize: 22, fontWeight: 500, color: '#E2DFD0', letterSpacing: '-0.01em', margin: 0, lineHeight: 1.2 }}>{job.title} · {job.co}</h2>
-            <p style={{ margin: '6px 0 0', fontSize: 11, color: 'rgba(226,223,208,0.4)' }}>{job.loc}</p>
-            <p className="font-mono" style={{ marginTop: 10, fontSize: 10, color: 'rgba(196,168,130,0.65)' }}>{job.period}</p>
+            <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(var(--accent-rgb),0.55)', margin: '0 0 6px' }}>Internship · Earlier Career</p>
+            <h2 style={{ fontSize: 22, fontWeight: 500, color: 'var(--ink)', letterSpacing: '-0.01em', margin: 0, lineHeight: 1.2 }}>{job.title} · {job.co}</h2>
+            <p style={{ margin: '6px 0 0', fontSize: 11, color: 'rgba(var(--ink-rgb),0.4)' }}>{job.loc}</p>
+            <p className="font-mono" style={{ marginTop: 10, fontSize: 10, color: 'rgba(var(--accent-rgb),0.65)' }}>{job.period}</p>
             <div style={{ marginTop: 16, flex: 1 }}>
               <ul style={{ listStyle: 'none', padding: 0, margin: '6px 0 0', display: 'flex', flexDirection: 'column' }}>
                 {job.bullets.map((b, bi) => (
-                  <li key={bi} style={{ position: 'relative', padding: '4px 0 4px 18px', fontSize: 12, lineHeight: 1.5, color: 'rgba(226,223,208,0.7)' }}>
-                    <span style={{ position: 'absolute', left: 4, top: 11, width: 4, height: 4, borderRadius: 9999, background: 'rgba(196,168,130,0.7)' }} />
+                  <li key={bi} style={{ position: 'relative', padding: '4px 0 4px 18px', fontSize: 12, lineHeight: 1.5, color: 'rgba(var(--ink-rgb),0.7)' }}>
+                    <span style={{ position: 'absolute', left: 4, top: 11, width: 4, height: 4, borderRadius: 9999, background: 'rgba(var(--accent-rgb),0.7)' }} />
                     {b}
                   </li>
                 ))}
