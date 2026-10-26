@@ -43,6 +43,7 @@ export default function ConstellationCanvas({ className }: { className?: string 
   const mouseRef = useRef({ x: -9999, y: -9999 })
   const rafRef = useRef<number>(0)
   const nodesRef = useRef<Node[]>([])
+  const themeRef = useRef({ bg: '#DDE2E5', node: '19, 23, 26', accent: '14, 122, 114' })
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -51,6 +52,16 @@ export default function ConstellationCanvas({ className }: { className?: string 
     if (!ctx) return
 
     function init() {
+      // Read the Slate palette off the cascade once per init rather than per
+      // frame — the tokens never change at runtime and getComputedStyle in the
+      // draw loop forces a style recalc on every frame.
+      const cs = getComputedStyle(canvas!)
+      themeRef.current = {
+        bg:     cs.getPropertyValue('--bg').trim() || '#DDE2E5',
+        node:   cs.getPropertyValue('--ink-rgb').trim() || '19, 23, 26',
+        accent: cs.getPropertyValue('--accent-rgb').trim() || '14, 122, 114',
+      }
+
       const w = canvas!.offsetWidth || window.innerWidth
       const h = canvas!.offsetHeight || window.innerHeight
       nodesRef.current = Array.from({ length: NODE_COUNT }, () => {
@@ -96,7 +107,8 @@ export default function ConstellationCanvas({ className }: { className?: string 
         canvas!.height = ch
       }
 
-      ctx!.fillStyle = '#080808'
+      const theme = themeRef.current
+      ctx!.fillStyle = theme.bg
       ctx!.fillRect(0, 0, cw, ch)
 
       const nodes = nodesRef.current
@@ -129,11 +141,11 @@ export default function ConstellationCanvas({ className }: { className?: string 
           const dist = Math.sqrt(dx * dx + dy * dy)
           if (dist < EDGE_DIST) {
             const g = Math.max(a.glowCurrent, b.glowCurrent)
-            const alpha = Math.min(0.85, (1 - dist / EDGE_DIST) * 0.155 + g * 0.55)
+            const alpha = Math.min(0.50, (1 - dist / EDGE_DIST) * 0.10 + g * 0.34)
             ctx!.beginPath()
             ctx!.moveTo(a.x, a.y)
             ctx!.lineTo(b.x, b.y)
-            ctx!.strokeStyle = `rgba(226,223,208,${alpha.toFixed(3)})`
+            ctx!.strokeStyle = `rgba(${theme.node},${alpha.toFixed(3)})`
             ctx!.lineWidth = 0.5 + g * 0.9
             ctx!.stroke()
           }
@@ -144,15 +156,15 @@ export default function ConstellationCanvas({ className }: { className?: string 
       for (const node of nodes) {
         const p = 0.5 + 0.5 * Math.sin(t * node.pulseSpeed + node.pulse)
         const r = node.r * (0.75 + 0.4 * p) + node.glowCurrent * 3.2
-        const alpha = Math.min(1, 0.26 + 0.46 * p + node.glowCurrent * 0.85)
+        const alpha = Math.min(0.72, 0.16 + 0.30 * p + node.glowCurrent * 0.60)
 
-        // Soft gold halo on the ~22% active nodes — breathes slowly
+        // Soft accent halo on the ~22% active nodes — breathes slowly
         if (node.active) {
           const breathe = 0.5 + 0.5 * Math.sin(t * 0.6 + node.activePhase)
-          const haloAlpha = 0.05 + 0.04 * breathe
+          const haloAlpha = 0.05 + 0.05 * breathe
           ctx!.beginPath()
           ctx!.arc(node.x, node.y, r + 5, 0, Math.PI * 2)
-          ctx!.fillStyle = `rgba(196,168,130,${haloAlpha.toFixed(3)})`
+          ctx!.fillStyle = `rgba(${theme.accent},${haloAlpha.toFixed(3)})`
           ctx!.fill()
         }
 
@@ -160,13 +172,13 @@ export default function ConstellationCanvas({ className }: { className?: string 
         if (node.glowCurrent > 0.05) {
           ctx!.beginPath()
           ctx!.arc(node.x, node.y, r + 6, 0, Math.PI * 2)
-          ctx!.fillStyle = `rgba(226,223,208,${(node.glowCurrent * 0.18).toFixed(3)})`
+          ctx!.fillStyle = `rgba(${theme.node},${(node.glowCurrent * 0.12).toFixed(3)})`
           ctx!.fill()
         }
 
         ctx!.beginPath()
         ctx!.arc(node.x, node.y, r, 0, Math.PI * 2)
-        ctx!.fillStyle = `rgba(226,223,208,${alpha.toFixed(3)})`
+        ctx!.fillStyle = `rgba(${theme.node},${alpha.toFixed(3)})`
         ctx!.fill()
       }
 

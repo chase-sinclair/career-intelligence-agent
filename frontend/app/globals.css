@@ -18,6 +18,7 @@
   --accent:        #0E7A72;
   --accent-rgb:    14, 122, 114;
   --accent-ink:    #F4FBFA;                    /* text ON an accent fill */
+  --accent-ink-rgb: 244, 251, 250;
 
   /* Data-viz — career trajectory */
   --viz-bah:        #5B4BA8;
