@@ -91,8 +91,8 @@ export default function Sidebar() {
           animate={{ width: isExpanded ? 240 : 12 }}
           transition={{ duration: 0.22, ease: EASE }}
           style={{
-            background: isExpanded ? 'rgba(8,8,8,0.97)' : 'transparent',
-            borderRight: isExpanded ? '1px solid rgba(226,223,208,0.07)' : 'none',
+            background: isExpanded ? 'rgba(var(--bg-rgb),0.97)' : 'transparent',
+            borderRight: isExpanded ? '1px solid rgba(var(--ink-rgb),0.10)' : 'none',
             backdropFilter: isExpanded ? 'blur(20px)' : 'none',
           }}
         >
@@ -107,16 +107,16 @@ export default function Sidebar() {
             {/* Header */}
             <div
               className="px-4 pt-5 pb-4 flex-shrink-0"
-              style={{ borderBottom: '1px solid rgba(226,223,208,0.06)' }}
+              style={{ borderBottom: '1px solid rgba(var(--ink-rgb),0.10)' }}
             >
               <div className="flex items-center gap-2">
                 <span
                   className="w-2 h-2 rounded-full flex-shrink-0"
-                  style={{ background: '#C4A882', opacity: 0.7 }}
+                  style={{ background: 'var(--accent)', opacity: 0.7 }}
                 />
                 <span
                   className="text-[11px] font-medium tracking-[0.04em] whitespace-nowrap"
-                  style={{ color: 'rgba(226,223,208,0.7)' }}
+                  style={{ color: 'rgba(var(--ink-rgb),0.7)' }}
                 >
                   Career Architect
                 </span>
@@ -134,25 +134,25 @@ export default function Sidebar() {
                       style={
                         isActive
                           ? {
-                              background: 'rgba(180,158,120,0.08)',
-                              border: '0.5px solid rgba(180,158,120,0.18)',
-                              color: 'rgba(196,168,130,0.9)',
+                              background: 'rgba(var(--accent-rgb),0.08)',
+                              border: '0.5px solid rgba(var(--accent-rgb),0.24)',
+                              color: 'rgba(var(--accent-rgb),0.9)',
                             }
-                          : { color: 'rgba(226,223,208,0.45)' }
+                          : { color: 'rgba(var(--ink-rgb),0.52)' }
                       }
                       onMouseEnter={e => {
                         if (!isActive) {
                           ;(e.currentTarget as HTMLDivElement).style.background =
-                            'rgba(226,223,208,0.05)'
+                            'rgba(var(--ink-rgb),0.05)'
                           ;(e.currentTarget as HTMLDivElement).style.color =
-                            'rgba(226,223,208,0.75)'
+                            'rgba(var(--ink-rgb),0.75)'
                         }
                       }}
                       onMouseLeave={e => {
                         if (!isActive) {
                           ;(e.currentTarget as HTMLDivElement).style.background = ''
                           ;(e.currentTarget as HTMLDivElement).style.color =
-                            'rgba(226,223,208,0.45)'
+                            'rgba(var(--ink-rgb),0.52)'
                         }
                       }}
                     >
@@ -160,12 +160,12 @@ export default function Sidebar() {
                       {isActive && (
                         <span
                           className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 rounded-full"
-                          style={{ background: '#C4A882' }}
+                          style={{ background: 'var(--accent)' }}
                         />
                       )}
                       <Icon
                         size={15}
-                        style={{ color: isActive ? '#C4A882' : 'rgba(226,223,208,0.3)', flexShrink: 0 }}
+                        style={{ color: isActive ? 'var(--accent)' : 'rgba(var(--ink-rgb),0.42)', flexShrink: 0 }}
                       />
                       {label}
                     </div>
@@ -177,11 +177,11 @@ export default function Sidebar() {
             {/* Footer */}
             <div
               className="mt-auto px-4 pb-5 pt-3 flex-shrink-0"
-              style={{ borderTop: '1px solid rgba(226,223,208,0.05)' }}
+              style={{ borderTop: '1px solid rgba(var(--ink-rgb),0.07)' }}
             >
               <p
                 className="text-[8px] uppercase tracking-[0.1em] whitespace-nowrap"
-                style={{ color: 'rgba(226,223,208,0.18)' }}
+                style={{ color: 'rgba(var(--ink-rgb),0.42)' }}
               >
                 v1 · Career Architect
               </p>
@@ -195,8 +195,8 @@ export default function Sidebar() {
             <motion.button
               className="absolute left-0 top-1/2 -translate-y-1/2 w-5 h-16 rounded-r-xl flex items-center justify-center cursor-pointer"
               style={{
-                background: 'rgba(14,14,14,0.95)',
-                border: '0.5px solid rgba(226,223,208,0.08)',
+                background: 'var(--panel-solid)',
+                border: '0.5px solid rgba(var(--ink-rgb),0.10)',
                 borderLeft: 'none',
               }}
               initial={{ opacity: 0, x: -4 }}
@@ -206,7 +206,7 @@ export default function Sidebar() {
               onClick={() => setIsExpanded(true)}
               aria-label="Open navigation"
             >
-              <ChevronRight size={12} style={{ color: 'rgba(226,223,208,0.45)' }} />
+              <ChevronRight size={12} style={{ color: 'rgba(var(--ink-rgb),0.52)' }} />
             </motion.button>
           )}
         </AnimatePresence>
