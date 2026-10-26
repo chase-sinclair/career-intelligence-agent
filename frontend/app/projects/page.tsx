@@ -281,16 +281,16 @@ export default function ProjectsPage() {
           {/* Page header */}
           <header className="mb-8">
             <p className="font-mono text-[9px] tracking-[0.28em] uppercase mb-3"
-              style={{ color: 'rgba(226,223,208,0.22)' }}>
+              style={{ color: 'rgba(var(--ink-rgb),0.62)' }}>
               Portfolio — 2023–2025
             </p>
             <h2 className="text-4xl font-extrabold tracking-tight mb-2"
-              style={{ color: '#e3e2e5' }}>
+              style={{ color: 'var(--ink)' }}>
               Technical{' '}
-              <span style={{ color: '#C4A882' }}>Projects</span>
+              <span style={{ color: 'var(--accent)' }}>Projects</span>
             </h2>
             <p className="text-base max-w-3xl"
-              style={{ color: 'rgba(226,223,208,0.5)', lineHeight: 1.6 }}>
+              style={{ color: 'rgba(var(--ink-rgb),0.62)', lineHeight: 1.6 }}>
               Side projects built to expand my hands-on experience with AI, data, and full-stack tools beyond my day-to-day client work — spanning RAG systems, agentic workflows, and modern AI application stacks.
             </p>
           </header>
@@ -306,21 +306,21 @@ export default function ProjectsPage() {
                   className="font-mono text-[10px] tracking-[0.12em] uppercase px-3 py-1.5 rounded-full transition-colors duration-150"
                   style={
                     isActive
-                      ? { background: '#C4A882', color: '#0d0e10', border: '1px solid #C4A882' }
-                      : { background: 'transparent', color: 'rgba(196,168,130,0.45)', border: '1px solid rgba(196,168,130,0.2)' }
+                      ? { background: 'var(--accent)', color: 'var(--accent-ink)', border: '1px solid var(--accent)' }
+                      : { background: 'transparent', color: 'rgba(var(--accent-rgb),0.72)', border: '1px solid rgba(var(--accent-rgb),0.24)' }
                   }
                   onMouseEnter={e => {
                     if (!isActive) {
                       const el = e.currentTarget
-                      el.style.color = '#C4A882'
-                      el.style.borderColor = 'rgba(196,168,130,0.5)'
+                      el.style.color = 'var(--accent)'
+                      el.style.borderColor = 'rgba(var(--accent-rgb),0.5)'
                     }
                   }}
                   onMouseLeave={e => {
                     if (!isActive) {
                       const el = e.currentTarget
-                      el.style.color = 'rgba(196,168,130,0.45)'
-                      el.style.borderColor = 'rgba(196,168,130,0.2)'
+                      el.style.color = 'rgba(var(--accent-rgb),0.72)'
+                      el.style.borderColor = 'rgba(var(--accent-rgb),0.24)'
                     }
                   }}
                 >
