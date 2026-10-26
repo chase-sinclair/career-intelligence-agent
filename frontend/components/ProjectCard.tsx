@@ -21,7 +21,7 @@ const CAT_COLORS: Record<string, { color: string; bg: string; border: string }> 
   'full-stack':   { color: '#5fd9c6', bg: 'rgba(68,226,205,0.07)',  border: 'rgba(68,226,205,0.22)'  },
   workflow:       { color: '#ffb877', bg: 'rgba(255,165,90,0.08)',  border: 'rgba(255,165,90,0.22)'  },
   'data-eng':     { color: '#5fd9c6', bg: 'rgba(68,226,205,0.07)',  border: 'rgba(68,226,205,0.22)'  },
-  published:      { color: '#d6b988', bg: 'rgba(196,168,130,0.10)', border: 'rgba(196,168,130,0.30)' },
+  published:      { color: 'var(--accent)', bg: 'rgba(var(--accent-rgb),0.10)', border: 'rgba(var(--accent-rgb),0.30)' },
 }
 const DEFAULT_CAT = { color: '#8ed5ff', bg: 'rgba(142,213,255,0.07)', border: 'rgba(142,213,255,0.22)' }
 
@@ -45,17 +45,17 @@ export default function ProjectCard({
     >
       <div
         style={{
-          background: '#141414',
-          border: `0.5px solid ${isHovered ? 'rgba(196,168,130,0.30)' : 'rgba(255,255,255,0.09)'}`,
+          background: 'var(--panel)',
+          border: `0.5px solid ${isHovered ? 'rgba(var(--accent-rgb),0.30)' : 'rgba(var(--ink-rgb),0.10)'}`,
           borderRadius: 12,
           overflow: 'hidden',
           transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
-          boxShadow: isHovered ? '0 16px 40px rgba(0,0,0,0.5)' : 'none',
+          boxShadow: isHovered ? '0 16px 40px rgba(var(--ink-rgb),0.16)' : 'none',
           transition: 'border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease',
         }}
       >
         {/* Empty visual zone */}
-        <div style={{ height: 220, background: '#0e0e0e' }} />
+        <div style={{ height: 220, background: 'var(--panel-2)' }} />
 
         {/* Card body */}
         <div style={{ padding: '18px 18px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -89,9 +89,9 @@ export default function ProjectCard({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: ghHovered ? 'rgba(196,168,130,0.05)' : 'transparent',
-                border: `0.5px solid ${ghHovered ? 'rgba(196,168,130,0.55)' : 'rgba(226,223,208,0.16)'}`,
-                color: ghHovered ? '#C4A882' : 'rgba(226,223,208,0.6)',
+                background: ghHovered ? 'rgba(var(--accent-rgb),0.05)' : 'transparent',
+                border: `0.5px solid ${ghHovered ? 'rgba(var(--accent-rgb),0.55)' : 'rgba(var(--ink-rgb),0.16)'}`,
+                color: ghHovered ? 'var(--accent)' : 'rgba(var(--ink-rgb),0.6)',
                 textDecoration: 'none',
                 transition: 'border-color 0.18s ease, color 0.18s ease, background 0.18s ease',
                 flexShrink: 0,
@@ -109,7 +109,7 @@ export default function ProjectCard({
               fontSize: 19,
               fontWeight: 700,
               lineHeight: 1.25,
-              color: '#f0ede0',
+              color: 'var(--ink)',
               margin: 0,
               letterSpacing: '-0.012em',
             }}>
@@ -118,7 +118,7 @@ export default function ProjectCard({
             <p style={{
               fontSize: 13.5,
               lineHeight: 1.55,
-              color: 'rgba(226,223,208,0.72)',
+              color: 'rgba(var(--ink-rgb),0.72)',
               margin: 0,
             }}>
               {tagline}
@@ -132,9 +132,9 @@ export default function ProjectCard({
                 fontSize: 11,
                 padding: '4px 10px',
                 borderRadius: 6,
-                border: '0.5px solid rgba(255,255,255,0.10)',
-                background: 'rgba(255,255,255,0.015)',
-                color: 'rgba(226,223,208,0.55)',
+                border: '0.5px solid rgba(var(--ink-rgb),0.10)',
+                background: 'rgba(var(--ink-rgb),0.04)',
+                color: 'rgba(var(--ink-rgb),0.60)',
                 whiteSpace: 'nowrap',
               }}>
                 {s}
@@ -143,7 +143,7 @@ export default function ProjectCard({
           </div>
 
           {/* Divider */}
-          <div style={{ height: 1, background: 'rgba(255,255,255,0.06)' }} />
+          <div style={{ height: 1, background: 'rgba(var(--ink-rgb),0.10)' }} />
 
           {/* Bullets */}
           <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -153,13 +153,13 @@ export default function ProjectCard({
                 paddingLeft: 18,
                 fontSize: 12.5,
                 lineHeight: 1.5,
-                color: 'rgba(226,223,208,0.65)',
+                color: 'rgba(var(--ink-rgb),0.65)',
               }}>
                 <span style={{
                   position: 'absolute',
                   left: 0,
                   top: 0,
-                  color: '#c4a882',
+                  color: 'var(--accent)',
                   fontWeight: 700,
                   fontSize: 14,
                   lineHeight: 1.4,
