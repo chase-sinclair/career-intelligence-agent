@@ -307,7 +307,7 @@ export default function ProjectsPage() {
                   style={
                     isActive
                       ? { background: 'var(--accent)', color: 'var(--accent-ink)', border: '1px solid var(--accent)' }
-                      : { background: 'transparent', color: 'rgba(var(--accent-rgb),0.72)', border: '1px solid rgba(var(--accent-rgb),0.24)' }
+                      : { background: 'transparent', color: 'var(--accent)', border: '1px solid rgba(var(--accent-rgb),0.24)' }
                   }
                   onMouseEnter={e => {
                     if (!isActive) {
@@ -319,7 +319,7 @@ export default function ProjectsPage() {
                   onMouseLeave={e => {
                     if (!isActive) {
                       const el = e.currentTarget
-                      el.style.color = 'rgba(var(--accent-rgb),0.72)'
+                      el.style.color = 'var(--accent)'
                       el.style.borderColor = 'rgba(var(--accent-rgb),0.24)'
                     }
                   }}
