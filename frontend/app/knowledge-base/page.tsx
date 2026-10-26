@@ -78,17 +78,17 @@ function TypingIndicator() {
       <div
         className="w-6 h-6 rounded-full flex-shrink-0 mt-0.5 flex items-center justify-center"
         style={{
-          background: 'rgba(196,168,130,0.12)',
-          border: '0.5px solid rgba(196,168,130,0.28)',
+          background: 'rgba(var(--accent-rgb),0.12)',
+          border: '0.5px solid rgba(var(--accent-rgb),0.28)',
         }}
       >
-        <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#C4A882', opacity: 0.85 }} />
+        <span className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--accent)', opacity: 0.85 }} />
       </div>
       <div
         className="px-3.5 py-3 rounded-[3px_14px_14px_14px] flex items-center gap-2"
         style={{
-          background: 'rgba(226,223,208,0.04)',
-          border: '0.5px solid rgba(226,223,208,0.10)',
+          background: 'var(--panel-2)',
+          border: '0.5px solid rgba(var(--ink-rgb),0.10)',
           backdropFilter: 'blur(12px)',
         }}
       >
@@ -97,7 +97,7 @@ function TypingIndicator() {
             key={i}
             className="w-1.5 h-1.5 rounded-full animate-typingBounce"
             style={{
-              background: 'rgba(196,168,130,0.5)',
+              background: 'rgba(var(--accent-rgb),0.5)',
               animationDelay: `${i * 0.2}s`,
             }}
           />
@@ -116,15 +116,15 @@ function ScoreBar({ label, value }: ScoreBarProps) {
   return (
     <div className="flex flex-col gap-1 mb-2">
       <div className="flex justify-between">
-        <span className="text-[9px]" style={{ color: 'rgba(226,223,208,0.42)' }}>{label}</span>
-        <span className="text-[10px] font-medium" style={{ color: '#C4A882' }}>
+        <span className="text-[9px]" style={{ color: 'rgba(var(--ink-rgb),0.60)' }}>{label}</span>
+        <span className="text-[10px] font-medium" style={{ color: 'var(--accent)' }}>
           {(value * 100).toFixed(0)}%
         </span>
       </div>
-      <div className="h-0.5 rounded-full overflow-hidden" style={{ background: 'rgba(226,223,208,0.07)' }}>
+      <div className="h-0.5 rounded-full overflow-hidden" style={{ background: 'rgba(var(--ink-rgb),0.10)' }}>
         <motion.div
           className="h-full rounded-full"
-          style={{ background: 'linear-gradient(90deg, rgba(196,168,130,0.4), rgba(196,168,130,0.85))' }}
+          style={{ background: 'linear-gradient(90deg, rgba(var(--accent-rgb),0.4), rgba(var(--accent-rgb),0.85))' }}
           initial={{ width: '0%' }}
           animate={{ width: `${value * 100}%` }}
           transition={{ duration: 0.8, ease: EASE }}
@@ -260,7 +260,7 @@ export default function KnowledgeBasePage() {
 
   return (
     <main
-      className="flex flex-col h-screen bg-[#080808] overflow-hidden transition-[margin] duration-300"
+      className="flex flex-col h-screen bg-[var(--bg)] overflow-hidden transition-[margin] duration-300"
       style={{ marginRight: panelOpen ? 320 : 0 }}
     >
       <TopNav subtitle="Ask About Chase" hasRightPanel={panelOpen} />
@@ -272,14 +272,14 @@ export default function KnowledgeBasePage() {
         <div className="pt-6 px-6 pb-0 flex-shrink-0">
           <h1
             className="text-xl md:text-2xl font-light tracking-[-0.03em] leading-tight"
-            style={{ color: '#E2DFD0' }}
+            style={{ color: 'var(--ink)' }}
           >
             Ask About{' '}
-            <em className="font-serif not-italic" style={{ color: '#C4A882' }}>Chase</em>
+            <em className="font-serif not-italic" style={{ color: 'var(--accent)' }}>Chase</em>
           </h1>
           <p
             className="text-[11px] mt-1.5 leading-relaxed"
-            style={{ color: 'rgba(226,223,208,0.35)' }}
+            style={{ color: 'rgba(var(--ink-rgb),0.62)' }}
           >
             Every answer is grounded in verified career artifacts and cited with evidence.
           </p>
@@ -296,7 +296,7 @@ export default function KnowledgeBasePage() {
             <div className="mt-auto flex flex-col gap-3 pb-2">
               <p
                 className="text-[9px] tracking-[0.16em] uppercase text-center mb-1"
-                style={{ color: 'rgba(226,223,208,0.22)' }}
+                style={{ color: 'rgba(var(--ink-rgb),0.62)' }}
               >
                 Suggested questions
               </p>
@@ -307,27 +307,27 @@ export default function KnowledgeBasePage() {
                     onClick={() => sendMessage(q)}
                     className="relative overflow-hidden rounded-xl p-2.5 text-[10px] leading-relaxed text-left transition-all duration-150 group"
                     style={{
-                      background: 'rgba(226,223,208,0.03)',
-                      border: '0.5px solid rgba(226,223,208,0.09)',
-                      color: 'rgba(226,223,208,0.42)',
+                      background: 'var(--panel-2)',
+                      border: '0.5px solid rgba(var(--ink-rgb),0.10)',
+                      color: 'rgba(var(--ink-rgb),0.60)',
                       backdropFilter: 'blur(8px)',
                     }}
                     onMouseEnter={e => {
                       const el = e.currentTarget
-                      el.style.background = 'rgba(226,223,208,0.06)'
-                      el.style.borderColor = 'rgba(226,223,208,0.18)'
-                      el.style.color = 'rgba(226,223,208,0.7)'
+                      el.style.background = 'var(--panel)'
+                      el.style.borderColor = 'rgba(var(--ink-rgb),0.18)'
+                      el.style.color = 'rgba(var(--ink-rgb),0.7)'
                     }}
                     onMouseLeave={e => {
                       const el = e.currentTarget
-                      el.style.background = 'rgba(226,223,208,0.03)'
-                      el.style.borderColor = 'rgba(226,223,208,0.09)'
-                      el.style.color = 'rgba(226,223,208,0.42)'
+                      el.style.background = 'var(--panel-2)'
+                      el.style.borderColor = 'rgba(var(--ink-rgb),0.10)'
+                      el.style.color = 'rgba(var(--ink-rgb),0.60)'
                     }}
                   >
                     <div
                       className="absolute inset-0 pointer-events-none"
-                      style={{ background: 'linear-gradient(135deg, rgba(226,223,208,0.04) 0%, transparent 60%)' }}
+                      style={{ background: 'linear-gradient(135deg, rgba(var(--ink-rgb),0.04) 0%, transparent 60%)' }}
                     />
                     {q}
                   </button>
@@ -352,15 +352,15 @@ export default function KnowledgeBasePage() {
                   <div
                     className="max-w-[72%] px-3.5 py-2.5 text-[11px] leading-relaxed rounded-[14px_14px_3px_14px] relative overflow-hidden"
                     style={{
-                      color: 'rgba(226,223,208,0.82)',
-                      background: 'rgba(196,168,130,0.10)',
-                      border: '0.5px solid rgba(196,168,130,0.22)',
+                      color: 'rgba(var(--ink-rgb),0.82)',
+                      background: 'rgba(var(--accent-rgb),0.10)',
+                      border: '0.5px solid rgba(var(--accent-rgb),0.22)',
                       backdropFilter: 'blur(12px)',
                     }}
                   >
                     <div
                       className="absolute inset-0 rounded-[14px_14px_3px_14px] pointer-events-none"
-                      style={{ background: 'linear-gradient(135deg, rgba(196,168,130,0.08) 0%, transparent 60%)' }}
+                      style={{ background: 'linear-gradient(135deg, rgba(var(--accent-rgb),0.08) 0%, transparent 60%)' }}
                     />
                     <span className="relative">{msg.content}</span>
                   </div>
@@ -384,13 +384,13 @@ export default function KnowledgeBasePage() {
                 <div
                   className="w-6 h-6 rounded-full flex-shrink-0 mt-0.5 flex items-center justify-center"
                   style={{
-                    background: 'rgba(196,168,130,0.12)',
-                    border: '0.5px solid rgba(196,168,130,0.28)',
+                    background: 'rgba(var(--accent-rgb),0.12)',
+                    border: '0.5px solid rgba(var(--accent-rgb),0.28)',
                   }}
                 >
                   <span
                     className="w-1.5 h-1.5 rounded-full"
-                    style={{ background: '#C4A882', opacity: 0.85 }}
+                    style={{ background: 'var(--accent)', opacity: 0.85 }}
                   />
                 </div>
 
@@ -398,19 +398,19 @@ export default function KnowledgeBasePage() {
                 <div
                   className="max-w-[85%] px-3.5 py-3 text-[11px] leading-[1.75] rounded-[3px_14px_14px_14px] relative overflow-hidden"
                   style={{
-                    color: 'rgba(226,223,208,0.62)',
-                    background: 'rgba(226,223,208,0.04)',
-                    border: '0.5px solid rgba(226,223,208,0.10)',
+                    color: 'rgba(var(--ink-rgb),0.62)',
+                    background: 'var(--panel-2)',
+                    border: '0.5px solid rgba(var(--ink-rgb),0.10)',
                     backdropFilter: 'blur(12px)',
                   }}
                 >
                   <div
                     className="absolute inset-0 pointer-events-none"
-                    style={{ background: 'linear-gradient(135deg, rgba(226,223,208,0.05) 0%, transparent 55%)' }}
+                    style={{ background: 'linear-gradient(135deg, rgba(var(--ink-rgb),0.05) 0%, transparent 55%)' }}
                   />
                   <p
                     className="text-[8px] tracking-[0.12em] uppercase mb-1.5 relative"
-                    style={{ color: 'rgba(196,168,130,0.5)' }}
+                    style={{ color: 'var(--accent)' }}
                   >
                     Career Intelligence
                   </p>
@@ -419,7 +419,7 @@ export default function KnowledgeBasePage() {
                     {isStillTyping && (
                       <span
                         className="inline-block w-0.5 h-3 ml-px align-middle animate-blink"
-                        style={{ background: '#C4A882' }}
+                        style={{ background: 'var(--accent)' }}
                       />
                     )}
                   </div>
@@ -440,14 +440,14 @@ export default function KnowledgeBasePage() {
             style={
               panelOpen
                 ? {
-                    color: 'rgba(196,168,130,0.8)',
-                    border: '0.5px solid rgba(196,168,130,0.25)',
-                    background: 'rgba(196,168,130,0.06)',
+                    color: 'var(--accent)',
+                    border: '0.5px solid rgba(var(--accent-rgb),0.25)',
+                    background: 'rgba(var(--accent-rgb),0.06)',
                   }
                 : {
-                    color: 'rgba(226,223,208,0.3)',
-                    border: '0.5px solid rgba(226,223,208,0.08)',
-                    background: 'rgba(226,223,208,0.03)',
+                    color: 'rgba(var(--ink-rgb),0.60)',
+                    border: '0.5px solid rgba(var(--ink-rgb),0.10)',
+                    background: 'var(--panel-2)',
                   }
             }
           >
@@ -461,18 +461,18 @@ export default function KnowledgeBasePage() {
           <div
             className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl transition-all duration-200"
             style={{
-              background: 'rgba(226,223,208,0.04)',
-              border: '0.5px solid rgba(226,223,208,0.10)',
+              background: 'var(--panel-2)',
+              border: '0.5px solid rgba(var(--ink-rgb),0.10)',
               backdropFilter: 'blur(8px)',
             }}
             onFocus={e =>
-              e.currentTarget.style.cssText += '; border-color: rgba(196,168,130,0.30); background: rgba(226,223,208,0.05)'
+              e.currentTarget.style.cssText += '; border-color: rgba(var(--accent-rgb),0.30); background: var(--panel)'
             }
             onBlur={e =>
-              e.currentTarget.style.cssText += '; border-color: rgba(226,223,208,0.10); background: rgba(226,223,208,0.04)'
+              e.currentTarget.style.cssText += '; border-color: rgba(var(--ink-rgb),0.10); background: var(--panel-2)'
             }
           >
-            <Search size={14} style={{ color: 'rgba(226,223,208,0.18)', flexShrink: 0 }} />
+            <Search size={14} style={{ color: 'rgba(var(--ink-rgb),0.60)', flexShrink: 0 }} />
             <input
               ref={inputRef}
               value={input}
@@ -482,7 +482,7 @@ export default function KnowledgeBasePage() {
               placeholder="Ask the career knowledge base anything…"
               className="flex-1 bg-transparent border-none outline-none text-[11px] font-sans disabled:opacity-50"
               style={{
-                color: 'rgba(226,223,208,0.65)',
+                color: 'rgba(var(--ink-rgb),0.65)',
               }}
             />
             <button
@@ -490,23 +490,23 @@ export default function KnowledgeBasePage() {
               disabled={isLoading || !input.trim()}
               className="inline-flex items-center gap-1.5 flex-shrink-0 rounded-lg px-2.5 py-1.5 cursor-pointer transition-colors disabled:opacity-50 disabled:pointer-events-none"
               style={{
-                background: 'rgba(196,168,130,0.15)',
-                border: '0.5px solid rgba(196,168,130,0.28)',
+                background: 'rgba(var(--accent-rgb),0.15)',
+                border: '0.5px solid rgba(var(--accent-rgb),0.28)',
               }}
               onMouseEnter={e =>
-                ((e.currentTarget as HTMLButtonElement).style.background = 'rgba(196,168,130,0.25)')
+                ((e.currentTarget as HTMLButtonElement).style.background = 'rgba(var(--accent-rgb),0.25)')
               }
               onMouseLeave={e =>
-                ((e.currentTarget as HTMLButtonElement).style.background = 'rgba(196,168,130,0.15)')
+                ((e.currentTarget as HTMLButtonElement).style.background = 'rgba(var(--accent-rgb),0.15)')
               }
             >
               <span
                 className="text-[10px] font-medium tracking-[0.08em]"
-                style={{ color: 'rgba(196,168,130,0.85)' }}
+                style={{ color: 'var(--accent)' }}
               >
                 ASK
               </span>
-              <ArrowUpRight size={10} style={{ color: '#C4A882' }} />
+              <ArrowUpRight size={10} style={{ color: 'var(--accent)' }} />
             </button>
           </div>
         </div>
@@ -523,8 +523,8 @@ export default function KnowledgeBasePage() {
         <div
           className="flex flex-col h-full"
           style={{
-            background: 'rgba(10,10,10,0.95)',
-            borderLeft: '1px solid rgba(226,223,208,0.07)',
+            background: 'var(--panel-solid)',
+            borderLeft: '1px solid rgba(var(--ink-rgb),0.10)',
             backdropFilter: 'blur(20px)',
           }}
         >
@@ -532,12 +532,12 @@ export default function KnowledgeBasePage() {
           {/* ── Evidence Check ──────────────────────────────────────────────── */}
           <div
             className="p-4 flex-shrink-0"
-            style={{ borderBottom: '1px solid rgba(226,223,208,0.05)' }}
+            style={{ borderBottom: '1px solid rgba(var(--ink-rgb),0.07)' }}
           >
             <div className="flex items-center justify-between mb-3">
               <p
                 className="text-[8px] tracking-[0.16em] uppercase"
-                style={{ color: 'rgba(226,223,208,0.25)' }}
+                style={{ color: 'rgba(var(--ink-rgb),0.60)' }}
               >
                 Evidence Check
               </p>
@@ -585,7 +585,7 @@ export default function KnowledgeBasePage() {
             ) : (
               <p
                 className="text-[10px] text-center py-2"
-                style={{ color: 'rgba(226,223,208,0.2)' }}
+                style={{ color: 'rgba(var(--ink-rgb),0.60)' }}
               >
                 Ask a question to see evidence scores
               </p>
@@ -595,11 +595,11 @@ export default function KnowledgeBasePage() {
           {/* ── Answer Quality ──────────────────────────────────────────────── */}
           <div
             className="p-4 flex-shrink-0"
-            style={{ borderBottom: '1px solid rgba(226,223,208,0.05)' }}
+            style={{ borderBottom: '1px solid rgba(var(--ink-rgb),0.07)' }}
           >
             <p
               className="text-[8px] tracking-[0.16em] uppercase mb-3"
-              style={{ color: 'rgba(226,223,208,0.25)' }}
+              style={{ color: 'rgba(var(--ink-rgb),0.60)' }}
             >
               Answer Quality
             </p>
@@ -611,7 +611,7 @@ export default function KnowledgeBasePage() {
                   <ScoreBar label="Completeness" value={lastResponse.scores.completeness} />
 
                   <div className="flex justify-between items-center mt-1">
-                    <span className="text-[9px]" style={{ color: 'rgba(226,223,208,0.32)' }}>
+                    <span className="text-[9px]" style={{ color: 'rgba(var(--ink-rgb),0.60)' }}>
                       Unsupported claims
                     </span>
                     {lastResponse.scores.unsupported_claim ? (
@@ -642,7 +642,7 @@ export default function KnowledgeBasePage() {
               ) : (
                 <p
                   className="text-[10px] py-1 leading-relaxed"
-                  style={{ color: 'rgba(226,223,208,0.25)' }}
+                  style={{ color: 'rgba(var(--ink-rgb),0.60)' }}
                 >
                   Not evaluated — evidence gate blocked generation
                 </p>
@@ -650,7 +650,7 @@ export default function KnowledgeBasePage() {
             ) : (
               <p
                 className="text-[10px] text-center py-2"
-                style={{ color: 'rgba(226,223,208,0.2)' }}
+                style={{ color: 'rgba(var(--ink-rgb),0.60)' }}
               >
                 Ask a question to see quality scores
               </p>
@@ -661,7 +661,7 @@ export default function KnowledgeBasePage() {
           <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-2">
             <p
               className="text-[8px] tracking-[0.16em] uppercase mb-1 flex-shrink-0"
-              style={{ color: 'rgba(226,223,208,0.25)' }}
+              style={{ color: 'rgba(var(--ink-rgb),0.60)' }}
             >
               Evidence Sources
             </p>
@@ -672,21 +672,21 @@ export default function KnowledgeBasePage() {
                   key={snippet.citation_index}
                   className="relative overflow-hidden rounded-lg p-2.5"
                   style={{
-                    background: 'rgba(226,223,208,0.03)',
-                    border: '0.5px solid rgba(226,223,208,0.08)',
+                    background: 'var(--panel-2)',
+                    border: '0.5px solid rgba(var(--ink-rgb),0.10)',
                   }}
                 >
                   <div
                     className="absolute inset-0 pointer-events-none"
-                    style={{ background: 'linear-gradient(135deg, rgba(226,223,208,0.03) 0%, transparent 55%)' }}
+                    style={{ background: 'linear-gradient(135deg, rgba(var(--ink-rgb),0.03) 0%, transparent 55%)' }}
                   />
                   <div className="flex items-center gap-1.5 mb-1.5 relative">
                     <span
                       className="text-[8px] font-mono px-1.5 py-0.5 rounded"
                       style={{
-                        background: 'rgba(196,168,130,0.10)',
-                        border: '0.5px solid rgba(196,168,130,0.20)',
-                        color: 'rgba(196,168,130,0.85)',
+                        background: 'rgba(var(--accent-rgb),0.10)',
+                        border: '0.5px solid rgba(var(--accent-rgb),0.20)',
+                        color: 'var(--accent)',
                       }}
                     >
                       [{snippet.citation_index}]
@@ -694,9 +694,9 @@ export default function KnowledgeBasePage() {
                     <span
                       className="text-[8px] px-1.5 py-0.5 rounded"
                       style={{
-                        background: 'rgba(226,223,208,0.04)',
-                        border: '0.5px solid rgba(226,223,208,0.08)',
-                        color: 'rgba(226,223,208,0.35)',
+                        background: 'var(--panel-2)',
+                        border: '0.5px solid rgba(var(--ink-rgb),0.10)',
+                        color: 'rgba(var(--ink-rgb),0.60)',
                       }}
                     >
                       source
@@ -704,13 +704,13 @@ export default function KnowledgeBasePage() {
                   </div>
                   <p
                     className="text-[9px] leading-[1.55] line-clamp-3 relative"
-                    style={{ color: 'rgba(226,223,208,0.36)' }}
+                    style={{ color: 'rgba(var(--ink-rgb),0.60)' }}
                   >
                     {snippet.text}
                   </p>
                   <p
                     className="text-[8px] mt-1.5 relative"
-                    style={{ color: 'rgba(226,223,208,0.18)' }}
+                    style={{ color: 'rgba(var(--ink-rgb),0.60)' }}
                   >
                     {snippet.source}
                   </p>
@@ -719,7 +719,7 @@ export default function KnowledgeBasePage() {
             ) : (
               <p
                 className="text-[10px] text-center py-2 mt-2"
-                style={{ color: 'rgba(226,223,208,0.2)' }}
+                style={{ color: 'rgba(var(--ink-rgb),0.60)' }}
               >
                 Sources will appear after your first question
               </p>
