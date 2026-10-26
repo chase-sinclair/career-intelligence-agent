@@ -880,12 +880,12 @@ export default function AboutPage() {
         .traj-tip.pos-left::after   { right: -6px; top: 50%;   transform: translateY(-50%) rotate(-45deg); }
         .traj-tip.pos-right::after  { left: -6px;  top: 50%;   transform: translateY(-50%) rotate(135deg); }
         .tt-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(var(--accent-rgb),0.6); margin: 0 0 6px; }
-        .traj-tip.traj-tip-purple .tt-eyebrow { color: rgba(var(--viz-bah-rgb),0.75); }
+        .traj-tip.traj-tip-purple .tt-eyebrow { color: rgba(var(--viz-bah-rgb),0.85); }
         .traj-tip.traj-tip-green  .tt-eyebrow { color: rgba(var(--viz-intern-rgb),0.85); }
         .tt-title  { font-size: 13px; font-weight: 500; color: var(--ink); margin: 0; line-height: 1.25; }
         .tt-sub    { font-size: 11px; color: rgba(var(--ink-rgb),0.55); margin: 4px 0 0; line-height: 1.4; }
         .tt-period { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: rgba(var(--accent-rgb),0.7); margin-top: 6px; }
-        .traj-tip.traj-tip-purple .tt-period { color: rgba(var(--viz-bah-rgb),0.8); }
+        .traj-tip.traj-tip-purple .tt-period { color: rgba(var(--viz-bah-rgb),0.85); }
         .traj-tip.traj-tip-green  .tt-period { color: rgba(var(--viz-intern-rgb),0.85); }
         .tt-list { padding-left: 0; list-style: none; margin: 8px 0 0; }
         .tt-list li { font-size: 11px; line-height: 1.5; color: rgba(var(--ink-rgb),0.55); padding: 3px 0 3px 14px; position: relative; }
