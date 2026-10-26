@@ -96,16 +96,18 @@ function Card({ card }: { card: CardDef }) {
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen flex flex-col bg-[#080808]">
+    <main className="h-screen overflow-hidden relative flex flex-col bg-[#080808]">
+
+      {/* Constellation spans the full main area — behind hero AND cards */}
+      <ConstellationCanvas />
 
       {/* ── Hero ──────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden flex-1">
-        <ConstellationCanvas />
+      <section className="relative flex-1 overflow-hidden min-h-0">
 
-        {/* Gradient fade to page bg */}
+        {/* Gradient fade toward cards */}
         <div
           className="absolute inset-0 pointer-events-none"
-          style={{ background: 'linear-gradient(to bottom, transparent 40%, #080808 100%)' }}
+          style={{ background: 'linear-gradient(to bottom, transparent 55%, rgba(8,8,8,0.55) 100%)' }}
         />
 
         {/* Hero content — bottom-anchored */}
@@ -121,7 +123,7 @@ export default function HomePage() {
 
           {/* Headline */}
           <h1
-            className="text-4xl md:text-5xl lg:text-6xl leading-none text-[#E2DFD0] mb-4"
+            className="text-4xl md:text-5xl lg:text-[60px] leading-none text-[#E2DFD0] mb-4"
             style={{ fontWeight: 300, letterSpacing: '-0.04em' }}
           >
             The Career
@@ -130,7 +132,7 @@ export default function HomePage() {
           </h1>
 
           {/* Body copy */}
-          <p className="text-sm text-[#E2DFD0] opacity-50 leading-relaxed max-w-lg mb-6">
+          <p className="text-sm text-[#E2DFD0] opacity-50 leading-relaxed max-w-[32rem] mb-6">
             <strong className="opacity-[0.75] font-medium not-italic">
               You&apos;re looking at an intelligent portfolio — not a résumé.
             </strong>{' '}
@@ -154,12 +156,25 @@ export default function HomePage() {
       </section>
 
       {/* ── Cards ─────────────────────────────────────────────────────────── */}
-      <section className="px-4 pb-5">
+      <section className="relative flex-shrink-0 px-4 pb-5">
+
+        {/* Dark veil to dim constellation nodes behind card zone */}
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            inset: '-8px 0 0 0',
+            background: 'linear-gradient(to bottom, rgba(8,8,8,0) 0%, rgba(8,8,8,0.55) 30%, rgba(8,8,8,0.55) 100%)',
+            zIndex: -1,
+          }}
+        />
+
         <p className="text-[9px] tracking-[0.18em] uppercase text-[#E2DFD0] opacity-25 mb-2.5 px-0.5">
           Explore Chase&apos;s Profile
         </p>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+        {/* 3-col, 2-row grid: row 1 = Architect Profile / Ask About Chase / Projects
+            row 2 = How It Works (col 1 only) */}
+        <div className="grid grid-cols-3 gap-2">
           {CARDS.map(card => (
             <Card key={card.href} card={card} />
           ))}

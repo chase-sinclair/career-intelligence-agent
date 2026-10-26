@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import TopNav from '@/components/TopNav'
+import ConstellationCanvas from '@/components/ConstellationCanvas'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -109,35 +110,61 @@ const JOBS: Job[] = [
 // ─── Skills data ──────────────────────────────────────────────────────────────
 
 const SKILLS = [
-  { name: 'LLMs',          cat: 'ai',   cx: 720, cy: 110, size: 22 },
-  { name: 'RAG',           cat: 'ai',   cx: 620, cy: 70,  size: 18 },
-  { name: 'LangGraph',     cat: 'ai',   cx: 820, cy: 70,  size: 14 },
-  { name: 'Agents',        cat: 'ai',   cx: 870, cy: 160, size: 16 },
-  { name: 'Prompt Eng',    cat: 'ai',   cx: 750, cy: 200, size: 13 },
-  { name: 'Eval',          cat: 'ai',   cx: 620, cy: 180, size: 12 },
-  { name: 'NLP',           cat: 'ai',   cx: 940, cy: 110, size: 12 },
-  { name: 'Vector Search', cat: 'ai',   cx: 540, cy: 130, size: 12 },
-  { name: 'Python',        cat: 'data', cx: 350, cy: 130, size: 20 },
-  { name: 'SQL',           cat: 'data', cx: 220, cy: 90,  size: 15 },
-  { name: 'AWS',           cat: 'data', cx: 270, cy: 230, size: 16 },
-  { name: 'Snowflake',     cat: 'data', cx: 130, cy: 170, size: 14 },
-  { name: 'ETL',           cat: 'data', cx: 410, cy: 240, size: 13 },
-  { name: 'Bedrock',       cat: 'data', cx: 160, cy: 290, size: 13 },
-  { name: 'Pandas',        cat: 'data', cx: 320, cy: 60,  size: 12 },
-  { name: 'Tableau',       cat: 'viz',  cx: 380, cy: 340, size: 14 },
-  { name: 'Streamlit',     cat: 'viz',  cx: 240, cy: 360, size: 12 },
-  { name: 'Dashboards',    cat: 'viz',  cx: 480, cy: 370, size: 13 },
-  { name: 'Stakeholder',   cat: 'lead', cx: 980, cy: 270, size: 15 },
-  { name: 'Mentorship',    cat: 'lead', cx: 880, cy: 340, size: 13 },
-  { name: 'Proposals',     cat: 'lead', cx: 1080, cy: 320, size: 13 },
-  { name: 'Published',     cat: 'lead', cx: 1080, cy: 200, size: 13 },
+  // ── AI / GenAI ──────────────────────────────────────────────────────────────
+  { name: 'LLMs',          cat: 'ai',   cx: 720,  cy: 110, size: 22 },
+  { name: 'RAG',           cat: 'ai',   cx: 620,  cy: 70,  size: 18 },
+  { name: 'LangGraph',     cat: 'ai',   cx: 820,  cy: 70,  size: 14 },
+  { name: 'Agents',        cat: 'ai',   cx: 870,  cy: 160, size: 16 },
+  { name: 'Prompt Eng',    cat: 'ai',   cx: 750,  cy: 200, size: 13 },
+  { name: 'Eval',          cat: 'ai',   cx: 620,  cy: 180, size: 12 },
+  { name: 'NLP',           cat: 'ai',   cx: 940,  cy: 110, size: 12 },
+  { name: 'Vector Search', cat: 'ai',   cx: 540,  cy: 130, size: 12 },
+  { name: 'LangChain',     cat: 'ai',   cx: 670,  cy: 235, size: 13 },
+  { name: 'Multimodal',    cat: 'ai',   cx: 1000, cy: 90,  size: 12 },
+  { name: 'MCP',           cat: 'ai',   cx: 1080, cy: 68,  size: 12 },
+  // ── Data & Cloud ────────────────────────────────────────────────────────────
+  { name: 'Python',        cat: 'data', cx: 350,  cy: 130, size: 20 },
+  { name: 'SQL',           cat: 'data', cx: 220,  cy: 90,  size: 15 },
+  { name: 'AWS',           cat: 'data', cx: 270,  cy: 230, size: 16 },
+  { name: 'Snowflake',     cat: 'data', cx: 130,  cy: 170, size: 14 },
+  { name: 'ETL',           cat: 'data', cx: 410,  cy: 240, size: 13 },
+  { name: 'Bedrock',       cat: 'platform', cx: 160,  cy: 290, size: 13 },
+  { name: 'Pandas',        cat: 'data', cx: 320,  cy: 60,  size: 12 },
+  { name: 'FastAPI',       cat: 'data', cx: 440,  cy: 148, size: 15 },
+  { name: 'Next.js',       cat: 'data', cx: 495,  cy: 52,  size: 14 },
+  { name: 'dbt',           cat: 'data', cx: 295,  cy: 295, size: 13 },
+  { name: 'Databricks',    cat: 'data', cx: 180,  cy: 388, size: 14 },
+  { name: 'PySpark',       cat: 'data', cx: 55,   cy: 185, size: 12 },
+  { name: 'n8n',           cat: 'auto', cx: 490,  cy: 290, size: 11 },
+  // ── Visualization ───────────────────────────────────────────────────────────
+  { name: 'Tableau',       cat: 'viz',  cx: 380,  cy: 340, size: 14 },
+  { name: 'Streamlit',     cat: 'viz',  cx: 240,  cy: 360, size: 12 },
+  { name: 'Dashboards',    cat: 'viz',  cx: 480,  cy: 370, size: 13 },
+  { name: 'Looker',        cat: 'viz',  cx: 355,  cy: 400, size: 11 },
+  // ── Leadership ──────────────────────────────────────────────────────────────
+  { name: 'Stakeholder',   cat: 'lead',     cx: 980,  cy: 270, size: 15 },
+  { name: 'Mentorship',    cat: 'lead',     cx: 880,  cy: 340, size: 13 },
+  { name: 'Proposals',     cat: 'lead',     cx: 1080, cy: 320, size: 13 },
+  { name: 'Published',     cat: 'lead',     cx: 1080, cy: 200, size: 13 },
+  // ── AI Platforms & APIs ─────────────────────────────────────────────────────
+  { name: 'OpenAI API',    cat: 'platform', cx: 710,  cy: 310, size: 15 },
+  { name: 'Anthropic API', cat: 'platform', cx: 800,  cy: 285, size: 15 },
+  { name: 'Claude Code',   cat: 'platform', cx: 655,  cy: 375, size: 14 },
+  { name: 'Codex',         cat: 'platform', cx: 610,  cy: 325, size: 12 },
+  { name: 'NotebookLM',   cat: 'platform', cx: 760,  cy: 380, size: 12 },
+  { name: 'Gemini',        cat: 'platform', cx: 855,  cy: 360, size: 13 },
+  // ── Automation ──────────────────────────────────────────────────────────────
+  { name: 'Zapier',        cat: 'auto',     cx: 560,  cy: 360, size: 13 },
+  { name: 'Airtable',      cat: 'auto',     cx: 430,  cy: 360, size: 13 },
 ]
 
 const SKILL_COLORS: Record<string, string> = {
-  ai:   '#C4A882',
-  data: '#8ed5ff',
-  viz:  '#44e2cd',
-  lead: 'rgba(226,223,208,0.7)',
+  ai:       '#C4A882',
+  data:     '#8ed5ff',
+  viz:      '#44e2cd',
+  lead:     'rgba(226,223,208,0.7)',
+  platform: '#E8956D',
+  auto:     '#A78BFA',
 }
 
 // ─── Cert data ────────────────────────────────────────────────────────────────
@@ -195,7 +222,7 @@ function IdentitySection() {
     <section style={{
       display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 28,
       padding: '28px 32px',
-      background: 'rgba(180,158,120,0.05)',
+      background: 'rgba(10,10,12,0.90)',
       border: '0.5px solid rgba(180,158,120,0.18)',
       borderRadius: 14, position: 'relative', overflow: 'hidden',
     }}>
@@ -493,7 +520,7 @@ function TrajectorySection() {
   const lt = legendTip ? LEGEND_TIPS[legendTip.key] : null
 
   return (
-    <section style={{ background: 'rgba(226,223,208,0.04)', border: '0.5px solid rgba(226,223,208,0.08)', borderRadius: 12, padding: 18, position: 'relative', overflow: 'hidden' }}>
+    <section style={{ background: 'rgba(10,10,12,0.90)', border: '0.5px solid rgba(226,223,208,0.08)', borderRadius: 12, padding: 18, position: 'relative', overflow: 'hidden' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
         <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(226,223,208,0.55)', margin: 0 }}>Career Trajectory</p>
         <p className="font-mono" style={{ fontSize: 9, color: 'rgba(226,223,208,0.28)', letterSpacing: '0.04em', margin: 0 }}>Hover a milestone</p>
@@ -551,7 +578,7 @@ function ExperienceSection() {
     <div style={{ display: 'grid', gridTemplateColumns: '0.55fr 1.45fr', gap: 16 }}>
 
       {/* Job list */}
-      <section style={{ background: 'rgba(226,223,208,0.04)', border: '0.5px solid rgba(226,223,208,0.08)', borderRadius: 12, padding: 18 }}>
+      <section style={{ background: 'rgba(10,10,12,0.90)', border: '0.5px solid rgba(226,223,208,0.08)', borderRadius: 12, padding: 18 }}>
         <div style={{ marginBottom: 14 }}>
           <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(226,223,208,0.55)', margin: 0 }}>Professional Experience</p>
         </div>
@@ -582,7 +609,7 @@ function ExperienceSection() {
       </section>
 
       {/* Detail panel */}
-      <section style={{ background: 'rgba(226,223,208,0.04)', border: '0.5px solid rgba(226,223,208,0.08)', borderRadius: 12, padding: 18, minHeight: 420, display: 'flex', flexDirection: 'column' }}>
+      <section style={{ background: 'rgba(10,10,12,0.90)', border: '0.5px solid rgba(226,223,208,0.08)', borderRadius: 12, padding: 18, minHeight: 420, display: 'flex', flexDirection: 'column' }}>
         {job.type === 'fulltime' ? (
           <>
             <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(196,168,130,0.55)', margin: '0 0 6px' }}>Current Role</p>
@@ -676,7 +703,7 @@ function ConstellationSection() {
   }, [])
 
   return (
-    <section style={{ background: 'rgba(226,223,208,0.04)', border: '0.5px solid rgba(226,223,208,0.08)', borderRadius: 12, padding: 18 }}>
+    <section style={{ background: 'rgba(10,10,12,0.90)', border: '0.5px solid rgba(226,223,208,0.08)', borderRadius: 12, padding: 18 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 0 }}>
         <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(226,223,208,0.55)', margin: 0 }}>Skills Constellation</p>
         <p className="font-mono" style={{ fontSize: 10, color: 'rgba(226,223,208,0.5)', margin: 0, height: 18 }}>
@@ -718,7 +745,7 @@ function ConstellationSection() {
       </svg>
 
       <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginTop: 10, fontFamily: "'JetBrains Mono', monospace", fontSize: 9 }}>
-        {[['#C4A882', 'AI / GenAI'], ['#8ed5ff', 'Data & Cloud'], ['#44e2cd', 'Visualization'], ['rgba(226,223,208,0.45)', 'Leadership']].map(([c, l]) => (
+        {[['#C4A882', 'AI / GenAI'], ['#8ed5ff', 'Data & Cloud'], ['#44e2cd', 'Visualization'], ['rgba(226,223,208,0.45)', 'Leadership'], ['#E8956D', 'AI Platforms & APIs'], ['#A78BFA', 'Automation']].map(([c, l]) => (
           <span key={l} style={{ display: 'flex', gap: 6, alignItems: 'center', color: 'rgba(226,223,208,0.45)' }}>
             <span style={{ width: 8, height: 8, borderRadius: 9999, background: c, flexShrink: 0 }} />
             {l}
@@ -736,7 +763,7 @@ function CertificationsSection() {
   const group = CERT_GROUPS.find(g => g.id === activeId)!
 
   return (
-    <section style={{ background: 'rgba(226,223,208,0.04)', border: '0.5px solid rgba(226,223,208,0.08)', borderRadius: 12, padding: 18 }}>
+    <section style={{ background: 'rgba(10,10,12,0.90)', border: '0.5px solid rgba(226,223,208,0.08)', borderRadius: 12, padding: 18 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
         <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(226,223,208,0.55)', margin: 0 }}>Certifications · 14 total</p>
         <p className="font-mono" style={{ fontSize: 9, color: 'rgba(226,223,208,0.28)', letterSpacing: '0.04em', margin: 0 }}>Filter by issuer</p>
@@ -796,8 +823,9 @@ function CertificationsSection() {
 export default function AboutPage() {
   return (
     <>
+      <ConstellationCanvas className="fixed inset-0 w-full h-full" />
       <TopNav subtitle="Architect Profile" />
-      <main className="pl-5 h-screen overflow-y-auto custom-scrollbar">
+      <main className="pl-5 h-screen overflow-y-auto custom-scrollbar relative z-10">
         <div style={{ padding: '88px 28px 40px', maxWidth: 1320, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 16 }}>
           <RevealSection><IdentitySection /></RevealSection>
           <RevealSection delay={70}><TrajectorySection /></RevealSection>
@@ -807,7 +835,7 @@ export default function AboutPage() {
         </div>
       </main>
 
-      <style>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         /* Availability pulse */
         .about-pulse {
           width: 6px; height: 6px; border-radius: 9999px; background: #C4A882;
@@ -875,7 +903,7 @@ export default function AboutPage() {
         .legend-tip ul { margin: 6px 0 0; padding-left: 0; list-style: none; }
         .legend-tip ul li { font-size: 10.5px; line-height: 1.5; color: rgba(226,223,208,0.6); padding: 2px 0 2px 12px; position: relative; }
         .legend-tip ul li::before { content: '·'; position: absolute; left: 4px; color: rgba(196,168,130,0.55); }
-      `}</style>
+      ` }} />
     </>
   )
 }
