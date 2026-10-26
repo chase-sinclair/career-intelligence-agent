@@ -838,15 +838,15 @@ export default function AboutPage() {
       <style dangerouslySetInnerHTML={{ __html: `
         /* Availability pulse */
         .about-pulse {
-          width: 6px; height: 6px; border-radius: 9999px; background: #C4A882;
-          box-shadow: 0 0 0 0 rgba(196,168,130,0.7);
+          width: 6px; height: 6px; border-radius: 9999px; background: var(--accent);
+          box-shadow: 0 0 0 0 rgba(var(--accent-rgb),0.7);
           animation: about-pulse-anim 2.2s infinite;
           flex-shrink: 0; display: inline-block;
         }
         @keyframes about-pulse-anim {
-          0%   { box-shadow: 0 0 0 0 rgba(196,168,130,0.55); }
-          70%  { box-shadow: 0 0 0 8px rgba(196,168,130,0); }
-          100% { box-shadow: 0 0 0 0 rgba(196,168,130,0); }
+          0%   { box-shadow: 0 0 0 0 rgba(var(--accent-rgb),0.55); }
+          70%  { box-shadow: 0 0 0 8px rgba(var(--accent-rgb),0); }
+          100% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb),0); }
         }
 
         /* Trajectory point fade-in */
@@ -859,50 +859,50 @@ export default function AboutPage() {
         /* Trajectory tooltip */
         .traj-tip {
           position: absolute; pointer-events: none;
-          background: rgba(20,20,22,0.97); border: 0.5px solid rgba(196,168,130,0.35);
+          background: var(--panel-solid); border: 0.5px solid rgba(var(--accent-rgb),0.35);
           border-radius: 10px; padding: 12px 14px; min-width: 220px; max-width: 300px;
-          backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+          backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(var(--ink-rgb),0.16);
           opacity: 0; visibility: hidden; z-index: 5;
         }
         .traj-tip.traj-tip-show   { opacity: 1; visibility: visible; }
         .traj-tip.traj-tip-large  { min-width: 300px; max-width: 360px; }
-        .traj-tip.traj-tip-purple { border-color: rgba(168,140,220,0.45); }
-        .traj-tip.traj-tip-green  { border-color: rgba(93,221,156,0.45); }
+        .traj-tip.traj-tip-purple { border-color: rgba(var(--viz-bah-rgb),0.45); }
+        .traj-tip.traj-tip-green  { border-color: rgba(var(--viz-intern-rgb),0.45); }
         .traj-tip::after {
           content: ''; position: absolute;
-          width: 10px; height: 10px; background: rgba(20,20,22,0.97);
-          border-right: 0.5px solid rgba(196,168,130,0.35); border-bottom: 0.5px solid rgba(196,168,130,0.35);
+          width: 10px; height: 10px; background: var(--panel-solid);
+          border-right: 0.5px solid rgba(var(--accent-rgb),0.35); border-bottom: 0.5px solid rgba(var(--accent-rgb),0.35);
         }
-        .traj-tip.traj-tip-purple::after { border-right-color: rgba(168,140,220,0.45); border-bottom-color: rgba(168,140,220,0.45); }
-        .traj-tip.traj-tip-green::after  { border-right-color: rgba(93,221,156,0.45);  border-bottom-color: rgba(93,221,156,0.45); }
+        .traj-tip.traj-tip-purple::after { border-right-color: rgba(var(--viz-bah-rgb),0.45); border-bottom-color: rgba(var(--viz-bah-rgb),0.45); }
+        .traj-tip.traj-tip-green::after  { border-right-color: rgba(var(--viz-intern-rgb),0.45);  border-bottom-color: rgba(var(--viz-intern-rgb),0.45); }
         .traj-tip.pos-top::after    { left: 50%; bottom: -6px; transform: translateX(-50%) rotate(45deg); }
         .traj-tip.pos-bottom::after { left: 50%; top: -6px;    transform: translateX(-50%) rotate(225deg); }
         .traj-tip.pos-left::after   { right: -6px; top: 50%;   transform: translateY(-50%) rotate(-45deg); }
         .traj-tip.pos-right::after  { left: -6px;  top: 50%;   transform: translateY(-50%) rotate(135deg); }
-        .tt-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(196,168,130,0.6); margin: 0 0 6px; }
-        .traj-tip.traj-tip-purple .tt-eyebrow { color: rgba(186,158,235,0.75); }
-        .traj-tip.traj-tip-green  .tt-eyebrow { color: rgba(93,221,156,0.85); }
-        .tt-title  { font-size: 13px; font-weight: 500; color: #E2DFD0; margin: 0; line-height: 1.25; }
-        .tt-sub    { font-size: 11px; color: rgba(226,223,208,0.55); margin: 4px 0 0; line-height: 1.4; }
-        .tt-period { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: rgba(196,168,130,0.7); margin-top: 6px; }
-        .traj-tip.traj-tip-purple .tt-period { color: rgba(186,158,235,0.8); }
-        .traj-tip.traj-tip-green  .tt-period { color: rgba(93,221,156,0.85); }
+        .tt-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(var(--accent-rgb),0.6); margin: 0 0 6px; }
+        .traj-tip.traj-tip-purple .tt-eyebrow { color: rgba(var(--viz-bah-rgb),0.75); }
+        .traj-tip.traj-tip-green  .tt-eyebrow { color: rgba(var(--viz-intern-rgb),0.85); }
+        .tt-title  { font-size: 13px; font-weight: 500; color: var(--ink); margin: 0; line-height: 1.25; }
+        .tt-sub    { font-size: 11px; color: rgba(var(--ink-rgb),0.55); margin: 4px 0 0; line-height: 1.4; }
+        .tt-period { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: rgba(var(--accent-rgb),0.7); margin-top: 6px; }
+        .traj-tip.traj-tip-purple .tt-period { color: rgba(var(--viz-bah-rgb),0.8); }
+        .traj-tip.traj-tip-green  .tt-period { color: rgba(var(--viz-intern-rgb),0.85); }
         .tt-list { padding-left: 0; list-style: none; margin: 8px 0 0; }
-        .tt-list li { font-size: 11px; line-height: 1.5; color: rgba(226,223,208,0.55); padding: 3px 0 3px 14px; position: relative; }
-        .tt-list li::before { content: '→'; position: absolute; left: 0; color: rgba(196,168,130,0.55); font-family: 'JetBrains Mono', monospace; font-size: 9px; }
+        .tt-list li { font-size: 11px; line-height: 1.5; color: rgba(var(--ink-rgb),0.55); padding: 3px 0 3px 14px; position: relative; }
+        .tt-list li::before { content: '→'; position: absolute; left: 0; color: rgba(var(--accent-rgb),0.55); font-family: 'JetBrains Mono', monospace; font-size: 9px; }
 
         /* Legend tooltip */
-        .legend-tip { pointer-events: none; background: rgba(20,20,22,0.97); border: 0.5px solid rgba(196,168,130,0.35); border-radius: 8px; padding: 10px 12px; min-width: 200px; max-width: 280px; backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 6; }
-        .legend-tip-green  { border-color: rgba(93,221,156,0.5); }
-        .legend-tip-purple { border-color: rgba(168,140,220,0.5); }
-        .lt-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 0.18em; text-transform: uppercase; margin: 0 0 6px; color: rgba(196,168,130,0.6); }
-        .legend-tip-green  .lt-eyebrow { color: rgba(93,221,156,0.85); }
-        .legend-tip-purple .lt-eyebrow { color: rgba(186,158,235,0.85); }
-        .lt-title { font-size: 12px; font-weight: 500; color: #E2DFD0; margin: 0 0 4px; }
-        .lt-body  { font-size: 10.5px; line-height: 1.5; color: rgba(226,223,208,0.6); margin: 0; }
+        .legend-tip { pointer-events: none; background: var(--panel-solid); border: 0.5px solid rgba(var(--accent-rgb),0.35); border-radius: 8px; padding: 10px 12px; min-width: 200px; max-width: 280px; backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(var(--ink-rgb),0.16); z-index: 6; }
+        .legend-tip-green  { border-color: rgba(var(--viz-intern-rgb),0.5); }
+        .legend-tip-purple { border-color: rgba(var(--viz-bah-rgb),0.5); }
+        .lt-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 0.18em; text-transform: uppercase; margin: 0 0 6px; color: rgba(var(--accent-rgb),0.6); }
+        .legend-tip-green  .lt-eyebrow { color: rgba(var(--viz-intern-rgb),0.85); }
+        .legend-tip-purple .lt-eyebrow { color: rgba(var(--viz-bah-rgb),0.85); }
+        .lt-title { font-size: 12px; font-weight: 500; color: var(--ink); margin: 0 0 4px; }
+        .lt-body  { font-size: 10.5px; line-height: 1.5; color: rgba(var(--ink-rgb),0.6); margin: 0; }
         .legend-tip ul { margin: 6px 0 0; padding-left: 0; list-style: none; }
-        .legend-tip ul li { font-size: 10.5px; line-height: 1.5; color: rgba(226,223,208,0.6); padding: 2px 0 2px 12px; position: relative; }
-        .legend-tip ul li::before { content: '·'; position: absolute; left: 4px; color: rgba(196,168,130,0.55); }
+        .legend-tip ul li { font-size: 10.5px; line-height: 1.5; color: rgba(var(--ink-rgb),0.6); padding: 2px 0 2px 12px; position: relative; }
+        .legend-tip ul li::before { content: '·'; position: absolute; left: 4px; color: rgba(var(--accent-rgb),0.55); }
       ` }} />
     </>
   )
