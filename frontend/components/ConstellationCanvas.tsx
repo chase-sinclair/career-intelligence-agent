@@ -14,6 +14,8 @@ interface Node {
   glowTarget: number
   active: boolean
   activePhase: number
+  /** Cached quiet/mask attenuation for this frame. */
+  q: number
 }
 
 const NODE_COUNT = 51
@@ -37,6 +39,11 @@ const ENH_NODE_GLOW = 0.55    // vs 0.60 (less needed now the base is higher)
 const QUIET_PAD = 28          // px of padding around the measured rect
 const QUIET_FEATHER = 90      // px over which activity returns to normal
 const QUIET_MIN = 0.18        // opacity multiplier at the centre of the zone
+
+// Card mask: the effect is suppressed entirely under floating content, with a
+// short feather so edges entering a card fade rather than clip.
+const MASK_FEATHER = 16
+const MASK_MIN = 0
 
 const smoothstep = (t: number) => t * t * (3 - 2 * t)
 
@@ -72,12 +79,20 @@ interface ConstellationCanvasProps {
    * hardcoded, and re-measured on resize and whenever the element reflows.
    */
   quietZoneSelector?: string
+  /**
+   * CSS selector for content that should hide the effect entirely — the
+   * floating cards on a page. Nodes and edges inside these rects are not drawn
+   * at all rather than drawn and covered up. Rects are cached in document
+   * space and offset by scroll each frame, so the loop never reads layout.
+   */
+  maskSelector?: string
 }
 
 export default function ConstellationCanvas({
   className,
   enhanced = false,
   quietZoneSelector,
+  maskSelector,
 }: ConstellationCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const mouseRef = useRef({ x: -9999, y: -9999 })
@@ -91,53 +106,104 @@ export default function ConstellationCanvas({
     if (!ctx) return
 
     const theme = { bg: '#DDE2E5', node: '19, 23, 26', accent: '14, 122, 114' }
-    // Quiet-zone rects in canvas space. Cached — never measured inside the draw
-    // loop, since reading layout there would force a reflow every frame.
-    let quiet: { x1: number; y1: number; x2: number; y2: number }[] = []
+    // Zone rects, cached in CANVAS space at measure time. The draw loop only
+    // subtracts how far the scroller has moved since — never reads layout.
+    type Rect = { x1: number; y1: number; x2: number; y2: number }
+    let quiet: Rect[] = []
+    let mask: Rect[] = []
+    // The element that actually scrolls these rects. Not always the window:
+    // /about scrolls an inner <main>, where window.scrollY is permanently 0.
+    let scroller: Element | null = null
+    let measuredLeft = 0
+    let measuredTop = 0
+
+    const scrollLeftOf = (el: Element | null) =>
+      el ? el.scrollLeft : window.scrollX
+    const scrollTopOf = (el: Element | null) =>
+      el ? el.scrollTop : window.scrollY
+
+    /** Nearest scrollable ancestor, or null to mean "the window". */
+    function findScroller(el: Element | null): Element | null {
+      let n = el?.parentElement ?? null
+      while (n && n !== document.body && n !== document.documentElement) {
+        const st = getComputedStyle(n)
+        const scrolls = /(auto|scroll|overlay)/.test(st.overflowY + st.overflowX)
+        if (scrolls && (n.scrollHeight > n.clientHeight || n.scrollWidth > n.clientWidth)) return n
+        n = n.parentElement
+      }
+      return null
+    }
 
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
     let reduceMotion = motionQuery.matches
 
-    function measureQuietZone() {
-      quiet = []
-      const el = quietZoneSelector ? document.querySelector(quietZoneSelector) : null
-      if (!enhanced || !el || !canvas) return
-      const c = canvas.getBoundingClientRect()
-
-      // Per-line text boxes, not the element box. A block-level headline spans
-      // the full column width while its text may occupy a fraction of it —
-      // using the element rect would mute a full-width band of the canvas.
-      let rects: DOMRect[] = []
+    /** Per-line text boxes for an element — a block-level headline spans the
+     *  full column while its text may occupy a fraction of it, and using the
+     *  element box would mute a full-width band of the canvas. */
+    function textRects(el: Element): DOMRect[] {
       try {
         const range = document.createRange()
         range.selectNodeContents(el)
-        rects = Array.from(range.getClientRects())
+        const rs = Array.from(range.getClientRects())
         range.detach?.()
+        if (rs.length) return rs
       } catch {
-        rects = []
+        /* fall through to the element box */
       }
-      if (!rects.length) rects = [el.getBoundingClientRect()]
-
-      quiet = rects
-        .filter(r => r.width > 0 && r.height > 0)
-        .map(r => ({
-          x1: r.left - c.left - QUIET_PAD,
-          y1: r.top - c.top - QUIET_PAD,
-          x2: r.right - c.left + QUIET_PAD,
-          y2: r.bottom - c.top + QUIET_PAD,
-        }))
+      return [el.getBoundingClientRect()]
     }
 
-    /** 1 outside every zone, easing down to QUIET_MIN inside one. */
-    function quietFactor(x: number, y: number): number {
-      if (!quiet.length) return 1
+    /** Viewport rect -> canvas space at measure time. */
+    function toCanvas(r: DOMRect, c: DOMRect, pad: number): Rect {
+      return {
+        x1: r.left - c.left - pad,
+        y1: r.top - c.top - pad,
+        x2: r.right - c.left + pad,
+        y2: r.bottom - c.top + pad,
+      }
+    }
+
+    function measureZones() {
+      quiet = []
+      mask = []
+      if (!enhanced || !canvas) return
+
+      const c = canvas.getBoundingClientRect()
+      const first = document.querySelector(maskSelector || quietZoneSelector || '')
+      scroller = findScroller(first)
+      measuredLeft = scrollLeftOf(scroller)
+      measuredTop = scrollTopOf(scroller)
+
+      if (quietZoneSelector) {
+        const el = document.querySelector(quietZoneSelector)
+        if (el) {
+          quiet = textRects(el)
+            .filter(r => r.width > 0 && r.height > 0)
+            .map(r => toCanvas(r, c, QUIET_PAD))
+        }
+      }
+
+      if (maskSelector) {
+        mask = Array.from(document.querySelectorAll(maskSelector))
+          .map(el => el.getBoundingClientRect())
+          .filter(r => r.width > 0 && r.height > 0)
+          .map(r => toCanvas(r, c, 0))
+      }
+    }
+
+    /** Smallest attenuation across a rect list, 1 when clear of them all. */
+    function zoneFactor(
+      rects: Rect[], x: number, y: number,
+      floor: number, feather: number, ox: number, oy: number,
+    ): number {
       let factor = 1
-      for (const z of quiet) {
-        const dx = Math.max(z.x1 - x, 0, x - z.x2)
-        const dy = Math.max(z.y1 - y, 0, y - z.y2)
+      for (const z of rects) {
+        const dx = Math.max(z.x1 - ox - x, 0, x - (z.x2 - ox))
+        const dy = Math.max(z.y1 - oy - y, 0, y - (z.y2 - oy))
+        if (dx >= feather || dy >= feather) continue
         const d = Math.hypot(dx, dy)
-        if (d >= QUIET_FEATHER) continue
-        const f = QUIET_MIN + (1 - QUIET_MIN) * smoothstep(d / QUIET_FEATHER)
+        if (d >= feather) continue
+        const f = floor + (1 - floor) * smoothstep(d / feather)
         if (f < factor) factor = f
       }
       return factor
@@ -168,9 +234,10 @@ export default function ConstellationCanvas({
           glowTarget: 0,
           active: Math.random() < 0.22,
           activePhase: rand(0, Math.PI * 2),
+          q: 1,
         }
       })
-      measureQuietZone()
+      measureZones()
     }
 
     // Track mouse at window level so glow works even when sections overlay the canvas
@@ -191,19 +258,38 @@ export default function ConstellationCanvas({
       if (reduceMotion) requestStatic()
     }
 
+    // With motion reduced there is no continuous loop, so the mask would go
+    // stale as the page scrolls under the fixed canvas. Redraw single frames.
+    const handleScroll = () => { if (reduceMotion) requestStatic() }
+
     window.addEventListener('mousemove', handleMouseMove)
     window.addEventListener('resize', handleResize)
+    window.addEventListener('scroll', handleScroll, { passive: true, capture: true })
 
     // Re-measure if the headline itself reflows (font load, copy change).
     let ro: ResizeObserver | null = null
-    const quietEl = enhanced && quietZoneSelector ? document.querySelector(quietZoneSelector) : null
-    if (quietEl && typeof ResizeObserver !== 'undefined') {
+    const observed: Element[] = []
+    if (enhanced && quietZoneSelector) {
+      const el = document.querySelector(quietZoneSelector)
+      if (el) observed.push(el)
+    }
+    if (enhanced && maskSelector) observed.push(...Array.from(document.querySelectorAll(maskSelector)))
+    if (observed.length && typeof ResizeObserver !== 'undefined') {
       ro = new ResizeObserver(() => {
-        measureQuietZone()
+        measureZones()
         if (reduceMotion) requestStatic()
       })
-      ro.observe(quietEl)
+      observed.forEach(el => ro!.observe(el))
     }
+
+    // Cards reveal with a one-shot translateY, which getBoundingClientRect
+    // picks up mid-flight. Re-measure once those have settled.
+    const settleTimers = [400, 1000, 2000].map(ms =>
+      setTimeout(() => {
+        measureZones()
+        if (reduceMotion) requestStatic()
+      }, ms),
+    )
 
     let t = 0
 
@@ -234,10 +320,17 @@ export default function ConstellationCanvas({
         }
       }
 
-      // Proximity. One pass over the nodes — the mousemove handler only stores
-      // coordinates, so moving the cursor costs nothing on its own.
+      // Proximity + zone attenuation. One pass over the nodes — the mousemove
+      // handler only stores coordinates, so moving the cursor costs nothing on
+      // its own, and the attenuation is cached per node so the O(n^2) edge loop
+      // below never repeats the rect maths.
       const radius = enhanced ? ENH_GLOW_RADIUS : GLOW_RADIUS
       const lerp = enhanced ? ENH_GLOW_LERP : 0.08
+      // How far the scroller has moved since the zones were measured. Reading
+      // scrollTop is a cheap property read, not a layout read.
+      const sx = scrollLeftOf(scroller) - measuredLeft
+      const sy = scrollTopOf(scroller) - measuredTop
+      const hasZones = enhanced && (quiet.length > 0 || mask.length > 0)
       for (const node of nodes) {
         const dx = node.x - mouse.x
         const dy = node.y - mouse.y
@@ -246,6 +339,18 @@ export default function ConstellationCanvas({
         node.glowTarget = enhanced ? smoothstep(raw) : raw
         if (reduceMotion) node.glowCurrent = node.glowTarget
         else node.glowCurrent += (node.glowTarget - node.glowCurrent) * lerp
+
+        if (!hasZones) {
+          node.q = 1
+        } else {
+          const qz = quiet.length
+            ? zoneFactor(quiet, node.x, node.y, QUIET_MIN, QUIET_FEATHER, sx, sy)
+            : 1
+          const qm = mask.length
+            ? zoneFactor(mask, node.x, node.y, MASK_MIN, MASK_FEATHER, sx, sy)
+            : 1
+          node.q = Math.min(qz, qm)
+        }
       }
 
       // Edges — bumped rest opacity, strong hover boost
@@ -262,9 +367,7 @@ export default function ConstellationCanvas({
             const alpha = enhanced
               ? Math.min(ENH_EDGE_MAX, prox * ENH_EDGE_REST + g * ENH_EDGE_GLOW)
               : Math.min(0.50, prox * 0.10 + g * 0.34)
-            const q = enhanced
-              ? Math.min(quietFactor(a.x, a.y), quietFactor(b.x, b.y))
-              : 1
+            const q = enhanced ? Math.min(a.q, b.q) : 1
             ctx!.beginPath()
             ctx!.moveTo(a.x, a.y)
             ctx!.lineTo(b.x, b.y)
@@ -287,7 +390,7 @@ export default function ConstellationCanvas({
         const alpha = enhanced
           ? Math.min(ENH_NODE_MAX, ENH_NODE_BASE + 0.30 * p + node.glowCurrent * ENH_NODE_GLOW)
           : Math.min(0.72, 0.16 + 0.30 * p + node.glowCurrent * 0.60)
-        const q = enhanced ? quietFactor(node.x, node.y) : 1
+        const q = node.q
 
         // Soft accent halo on the ~22% active nodes — breathes slowly
         if (node.active) {
@@ -340,8 +443,14 @@ export default function ConstellationCanvas({
     function start() {
       cancelAnimationFrame(rafRef.current)
       staticPending = false
-      if (reduceMotion) requestStatic()
-      else rafRef.current = requestAnimationFrame(draw)
+      if (reduceMotion) {
+        // Paint synchronously rather than waiting on rAF — a reduced-motion
+        // page opened in a background tab would otherwise stay blank until it
+        // is focused, since rAF does not fire while hidden.
+        draw()
+      } else {
+        rafRef.current = requestAnimationFrame(draw)
+      }
     }
 
     const handleMotionChange = () => {
@@ -357,8 +466,10 @@ export default function ConstellationCanvas({
       cancelAnimationFrame(rafRef.current)
       window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('resize', handleResize)
+      window.removeEventListener('scroll', handleScroll, { capture: true } as EventListenerOptions)
       motionQuery.removeEventListener('change', handleMotionChange)
       ro?.disconnect()
+      settleTimers.forEach(clearTimeout)
     }
   }, [enhanced, quietZoneSelector])
 

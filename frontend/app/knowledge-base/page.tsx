@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, KeyboardEvent } from 'react'
 import { motion } from 'framer-motion'
 import { Search, ArrowUpRight } from 'lucide-react'
 import TopNav from '@/components/TopNav'
+import ConstellationCanvas from '@/components/ConstellationCanvas'
 import { chat as sendChat } from '@/lib/api'
 import type { ChatResponse, EvaluationScores, EvidenceSufficiency, EvidenceSnippet } from '@/lib/types'
 
@@ -227,6 +228,9 @@ export default function KnowledgeBasePage() {
 
   // Hero → chat transition. Flips once, never back.
   const [started, setStarted] = useState(false)
+  // The intro constellation stays mounted for the length of the hero move, then
+  // unmounts — opacity alone would leave its rAF loop running forever.
+  const [introCanvas, setIntroCanvas] = useState(true)
 
   // Suggested questions
   const [visibleQs, setVisibleQs] = useState<string[]>(() => QUESTION_POOL.slice(0, 4))
@@ -256,6 +260,13 @@ export default function KnowledgeBasePage() {
     aliveRef.current = true
     return () => { aliveRef.current = false }
   }, [])
+
+  // Unmount the intro canvas once the hero move has finished
+  useEffect(() => {
+    if (!started) return
+    const id = setTimeout(() => setIntroCanvas(false), 820)
+    return () => clearTimeout(id)
+  }, [started])
 
   // Scroll to bottom
   useEffect(() => {
@@ -454,9 +465,17 @@ export default function KnowledgeBasePage() {
           intro and chat layouts instead of cross-fading two trees. */}
       <div className={`ask-stage${started ? ' chat' : ''}`}>
 
+        {/* Intro-only constellation. Fades on the same 800ms curve as the hero
+            move, then unmounts so nothing keeps animating behind the chat. */}
+        {introCanvas && (
+          <div className="ask-canvas" aria-hidden="true">
+            <ConstellationCanvas enhanced quietZoneSelector="[data-quiet-zone]" />
+          </div>
+        )}
+
         {/* ── Hero ─────────────────────────────────────────────────────────── */}
         <div className="ask-hero">
-          <h1 className="ask-hero-h1 font-light tracking-[-0.03em] leading-tight" style={{ color: 'var(--ink)' }}>
+          <h1 data-quiet-zone className="ask-hero-h1 font-light tracking-[-0.03em] leading-tight" style={{ color: 'var(--ink)' }}>
             Ask About{' '}
             <em className="font-serif not-italic" style={{ color: 'var(--accent)' }}>Chase</em>
           </h1>
@@ -940,6 +959,18 @@ export default function KnowledgeBasePage() {
           flex: 1;
           margin-top: 64px;
           overflow: hidden;
+        }
+
+        .ask-canvas {
+          position: absolute;
+          inset: 0;
+          z-index: 0;
+          opacity: 1;
+          pointer-events: none;
+          transition: opacity 800ms cubic-bezier(.16, 1, .3, 1);
+        }
+        .ask-stage.chat .ask-canvas {
+          opacity: 0;
         }
 
         .ask-hero,
