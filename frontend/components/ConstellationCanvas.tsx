@@ -87,9 +87,11 @@ interface ConstellationCanvasProps {
    */
   maskSelector?: string
   /**
-   * Multiplier on the base node count, for routes where much of the field is
-   * hidden under content and the visible area needs more to read as a network.
-   * 1 everywhere unless a route opts in.
+   * Node density relative to the default. With a maskSelector the count is
+   * additionally scaled by how much of the canvas the cards leave open, so the
+   * density of the visible band stays constant as the layout and viewport
+   * change — otherwise a wider window would thin the network out just as its
+   * gutters got roomier. 1 everywhere unless a route opts in.
    */
   densityScale?: number
 }
@@ -208,6 +210,25 @@ export default function ConstellationCanvas({
       }
     }
 
+    /** Index of the mask rect containing a point, or -1. */
+    function maskHit(x: number, y: number, ox: number, oy: number): number {
+      for (let i = 0; i < mask.length; i++) {
+        const z = mask[i]
+        if (x > z.x1 - ox && x < z.x2 - ox && y > z.y1 - oy && y < z.y2 - oy) return i
+      }
+      return -1
+    }
+
+    /** Uniform point in the area the cards leave open. */
+    function openPoint(w: number, h: number): { x: number; y: number } {
+      for (let i = 0; i < 80; i++) {
+        const x = rand(0, w)
+        const y = rand(0, h)
+        if (maskHit(x, y, 0, 0) === -1) return { x, y }
+      }
+      return { x: rand(0, w), y: rand(0, h) }
+    }
+
     /** Smallest attenuation across a rect list, 1 when clear of them all. */
     function zoneFactor(
       rects: Rect[], x: number, y: number,
@@ -237,9 +258,26 @@ export default function ConstellationCanvas({
 
       const w = canvas!.offsetWidth || window.innerWidth
       const h = canvas!.offsetHeight || window.innerHeight
-      const count = Math.round(NODE_COUNT * densityScale)
+      measureZones()
+
+      // With cards masking most of the canvas, seed for the area that is
+      // actually visible rather than the whole surface.
+      let openFraction = 1
+      if (mask.length) {
+        let open = 0, total = 0
+        for (let gy = 0; gy < 24; gy++) {
+          for (let gx = 0; gx < 24; gx++) {
+            const px = ((gx + 0.5) / 24) * w
+            const py = ((gy + 0.5) / 24) * h
+            total++
+            if (maskHit(px, py, 0, 0) === -1) open++
+          }
+        }
+        openFraction = total ? open / total : 1
+      }
+      const count = Math.max(8, Math.round(NODE_COUNT * densityScale * openFraction))
       nodesRef.current = Array.from({ length: count }, () => {
-        const p = biasedPoint(w, h)
+        const p = mask.length ? openPoint(w, h) : biasedPoint(w, h)
         return {
           x: p.x,
           y: p.y,
@@ -255,7 +293,6 @@ export default function ConstellationCanvas({
           q: 1,
         }
       })
-      measureZones()
     }
 
     // Track mouse at window level so glow works even when sections overlay the canvas
@@ -325,8 +362,16 @@ export default function ConstellationCanvas({
       const nodes = nodesRef.current
       const mouse = mouseRef.current
 
-      // Drift. Frozen entirely under prefers-reduced-motion; speed and physics
-      // are otherwise untouched.
+      // How far the scroller has moved since the zones were measured. Reading
+      // scrollTop is a cheap property read, not a layout read.
+      const sx = scrollLeftOf(scroller) - measuredLeft
+      const sy = scrollTopOf(scroller) - measuredTop
+
+      // Drift. Frozen entirely under prefers-reduced-motion. Speed and physics
+      // are unchanged; where cards are present they simply act as additional
+      // bounds, the same way the canvas edges already do, so the network stays
+      // in the space it is actually visible in instead of drifting underneath
+      // the content and vanishing.
       if (!reduceMotion) {
         for (const node of nodes) {
           node.x += node.vx
@@ -335,6 +380,20 @@ export default function ConstellationCanvas({
           if (node.x > cw) { node.x = cw; node.vx = -Math.abs(node.vx) }
           if (node.y < 0) { node.y = 0; node.vy = Math.abs(node.vy) }
           if (node.y > ch) { node.y = ch; node.vy = -Math.abs(node.vy) }
+
+          // Cards are obstacles: eject along the shallowest axis so a node the
+          // layout scrolls over is pushed back out rather than trapped.
+          const hit = maskHit(node.x, node.y, sx, sy)
+          if (hit !== -1) {
+            const z = mask[hit]
+            const l = node.x - (z.x1 - sx), r = (z.x2 - sx) - node.x
+            const t = node.y - (z.y1 - sy), b = (z.y2 - sy) - node.y
+            const m = Math.min(l, r, t, b)
+            if (m === l)      { node.x = z.x1 - sx - 1; node.vx = -Math.abs(node.vx) }
+            else if (m === r) { node.x = z.x2 - sx + 1; node.vx = Math.abs(node.vx) }
+            else if (m === t) { node.y = z.y1 - sy - 1; node.vy = -Math.abs(node.vy) }
+            else              { node.y = z.y2 - sy + 1; node.vy = Math.abs(node.vy) }
+          }
         }
       }
 
@@ -344,10 +403,6 @@ export default function ConstellationCanvas({
       // below never repeats the rect maths.
       const radius = enhanced ? ENH_GLOW_RADIUS : GLOW_RADIUS
       const lerp = enhanced ? ENH_GLOW_LERP : 0.08
-      // How far the scroller has moved since the zones were measured. Reading
-      // scrollTop is a cheap property read, not a layout read.
-      const sx = scrollLeftOf(scroller) - measuredLeft
-      const sy = scrollTopOf(scroller) - measuredTop
       const hasZones = enhanced && (quiet.length > 0 || mask.length > 0)
       for (const node of nodes) {
         const dx = node.x - mouse.x

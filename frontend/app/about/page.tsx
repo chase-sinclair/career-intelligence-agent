@@ -1000,7 +1000,7 @@ export default function AboutPage() {
         className="fixed inset-0 w-full h-full"
         enhanced
         maskSelector="[data-constellation-mask]"
-        densityScale={1.35}
+        densityScale={2.3}
       />
       <TopNav subtitle="Architect Profile" />
       <main className="pl-5 h-screen overflow-y-auto custom-scrollbar relative z-10">
