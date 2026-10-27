@@ -356,8 +356,8 @@ function TrajectorySection() {
     const pts: [number, number][] = TRAJ.map(m => [m.x, m.y])
 
     const pathD  = smoothPath(pts)
-    const greenD = smoothPath(pts.slice(0, 3))
-    const bahD   = smoothPath(pts.slice(4, 7))
+    const greenD = smoothPath(pts.slice(0, 4))
+    const bahD   = smoothPath(pts.slice(3, 7))
     const areaD  = pathD + ` L${pts[pts.length - 1][0]},${H} L${pts[0][0]},${H} Z`
 
     let grid = ''
@@ -413,7 +413,7 @@ function TrajectorySection() {
       const isNext   = m.type === 'next'
       const isIntern = m.type === 'intern'
       const isBah    = m.type === 'bah'
-      const color    = isBah ? PURPLE : isIntern ? GREEN : GOLD
+      const color    = isBah ? PURPLE : isNext ? GOLD : GREEN
       const ringR    = isNext ? 11 : 9
       const dotR     = isNext ? 5  : 4
 
