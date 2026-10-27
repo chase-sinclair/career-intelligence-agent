@@ -248,7 +248,7 @@ function RevealSection({ children, delay = 0 }: { children: React.ReactNode; del
 
 function IdentitySection() {
   return (
-    <section style={{
+    <section data-constellation-mask style={{
       display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 28,
       padding: '28px 32px',
       background: 'var(--panel)',
@@ -549,7 +549,7 @@ function TrajectorySection() {
   const lt = legendTip ? LEGEND_TIPS[legendTip.key] : null
 
   return (
-    <section style={{ background: 'var(--panel)', border: '0.5px solid rgba(var(--ink-rgb),0.10)', borderRadius: 12, padding: 18, position: 'relative', overflow: 'hidden' }}>
+    <section data-constellation-mask style={{ background: 'var(--panel)', border: '0.5px solid rgba(var(--ink-rgb),0.10)', borderRadius: 12, padding: 18, position: 'relative', overflow: 'hidden' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
         <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(var(--ink-rgb),0.60)', margin: 0 }}>Career Trajectory</p>
         <p className="font-mono" style={{ fontSize: 9, color: 'rgba(var(--ink-rgb),0.60)', letterSpacing: '0.04em', margin: 0 }}>Hover a milestone</p>
@@ -607,7 +607,7 @@ function ExperienceSection() {
     <div style={{ display: 'grid', gridTemplateColumns: '0.55fr 1.45fr', gap: 16 }}>
 
       {/* Job list */}
-      <section style={{ background: 'var(--panel)', border: '0.5px solid rgba(var(--ink-rgb),0.10)', borderRadius: 12, padding: 18 }}>
+      <section data-constellation-mask style={{ background: 'var(--panel)', border: '0.5px solid rgba(var(--ink-rgb),0.10)', borderRadius: 12, padding: 18 }}>
         <div style={{ marginBottom: 14 }}>
           <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(var(--ink-rgb),0.60)', margin: 0 }}>Professional Experience</p>
         </div>
@@ -638,7 +638,7 @@ function ExperienceSection() {
       </section>
 
       {/* Detail panel */}
-      <section style={{ background: 'var(--panel)', border: '0.5px solid rgba(var(--ink-rgb),0.10)', borderRadius: 12, padding: 18, minHeight: 420, display: 'flex', flexDirection: 'column' }}>
+      <section data-constellation-mask style={{ background: 'var(--panel)', border: '0.5px solid rgba(var(--ink-rgb),0.10)', borderRadius: 12, padding: 18, minHeight: 420, display: 'flex', flexDirection: 'column' }}>
         {job.type === 'fulltime' ? (
           <>
             <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(var(--accent-rgb),0.55)', margin: '0 0 6px' }}>Current Role</p>
@@ -806,7 +806,7 @@ function ConstellationSection() {
   }, [focusCat])
 
   return (
-    <section style={{ background: 'var(--panel)', border: '0.5px solid rgba(var(--ink-rgb),0.10)', borderRadius: 12, padding: 18 }}>
+    <section data-constellation-mask style={{ background: 'var(--panel)', border: '0.5px solid rgba(var(--ink-rgb),0.10)', borderRadius: 12, padding: 18 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 0 }}>
         <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(var(--ink-rgb),0.60)', margin: 0 }}>Skills Constellation</p>
         <p className="font-mono" style={{ fontSize: 10, color: 'rgba(var(--ink-rgb),0.60)', margin: 0, height: 18 }}>
@@ -936,7 +936,7 @@ function CertificationsSection() {
   const group = CERT_GROUPS.find(g => g.id === activeId)!
 
   return (
-    <section style={{ background: 'var(--panel)', border: '0.5px solid rgba(var(--ink-rgb),0.10)', borderRadius: 12, padding: 18 }}>
+    <section data-constellation-mask style={{ background: 'var(--panel)', border: '0.5px solid rgba(var(--ink-rgb),0.10)', borderRadius: 12, padding: 18 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
         <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(var(--ink-rgb),0.60)', margin: 0 }}>Certifications · 14 total</p>
         <p className="font-mono" style={{ fontSize: 9, color: 'rgba(var(--ink-rgb),0.60)', letterSpacing: '0.04em', margin: 0 }}>Filter by issuer</p>
@@ -996,7 +996,11 @@ function CertificationsSection() {
 export default function AboutPage() {
   return (
     <>
-      <ConstellationCanvas className="fixed inset-0 w-full h-full" />
+      <ConstellationCanvas
+        className="fixed inset-0 w-full h-full"
+        enhanced
+        maskSelector="[data-constellation-mask]"
+      />
       <TopNav subtitle="Architect Profile" />
       <main className="pl-5 h-screen overflow-y-auto custom-scrollbar relative z-10">
         <div style={{ padding: '88px 28px 40px', maxWidth: 1320, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 16 }}>
