@@ -58,21 +58,43 @@ export default function PipelineSection({ steps }: { steps: readonly PipelineSte
   }, [])
 
   useEffect(() => {
-    let raf = 0
-    const onScroll = () => {
-      if (raf) return
-      raf = requestAnimationFrame(() => {
-        raf = 0
-        syncActive()
-      })
+    // Throttled on a timestamp rather than a requestAnimationFrame guard.
+    // A rAF guard that clears itself inside its own callback deadlocks if the
+    // callback never runs — a backgrounded tab suspends rAF entirely, so the
+    // guard stays latched and every later scroll is swallowed, leaving the
+    // stage frozen even after the reader comes back. Picking an index is not
+    // per-frame work, so a plain throttle is both cheaper and recoverable.
+    const GAP = 80
+    let last = 0
+    let timer: ReturnType<typeof setTimeout> | undefined
+
+    const run = () => {
+      last = Date.now()
+      syncActive()
     }
-    syncActive()
+    const onScroll = () => {
+      const since = Date.now() - last
+      if (since >= GAP) {
+        run()
+      } else {
+        clearTimeout(timer)
+        timer = setTimeout(run, GAP - since)
+      }
+    }
+    // Returning to the tab re-syncs, since nothing was tracked while hidden.
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') run()
+    }
+
+    run()
     window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', onScroll)
+    document.addEventListener('visibilitychange', onVisible)
     return () => {
-      cancelAnimationFrame(raf)
+      clearTimeout(timer)
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onScroll)
+      document.removeEventListener('visibilitychange', onVisible)
     }
   }, [syncActive])
 
