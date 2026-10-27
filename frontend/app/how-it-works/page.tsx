@@ -65,9 +65,9 @@ const PIPELINE_STEPS = [
     index: '02',
     title: 'Evidence Retrieval',
     model: 'text-embedding-3-small',
-    summary: 'Top-12 most relevant chunks returned from 16+ ingested career documents.',
+    summary: 'Semantic search returns the 12 highest-scoring chunks from the indexed corpus.',
     description:
-      'The rewritten query is embedded and matched against 16+ ingested career documents using cosine similarity in Chroma. The top-12 most relevant chunks are returned — resume sections, project write-ups, certification records, and work highlights.',
+      'The rewritten query is embedded with text-embedding-3-small and matched against the indexed corpus by cosine similarity in Chroma. Retrieval is configured to return the top 12 chunks — not whole documents, but the individual sections that scored highest: resume passages, project write-ups, certification records, work highlights.',
   },
   {
     index: '03',
@@ -100,35 +100,35 @@ const METRICS = [
     label: 'Evidence Relevance',
     detail: 'Are the retrieved chunks topically relevant to the question?',
     phase: 'Pre-generation',
-    fill: 92,
+    scale: '0-1 score',
     kind: 'score',
   },
   {
     label: 'Evidence Coverage',
     detail: 'Do the chunks contain enough specific facts to actually answer?',
     phase: 'Pre-generation',
-    fill: 88,
+    scale: '0-1 score',
     kind: 'score',
   },
   {
     label: 'Groundedness',
     detail: 'Are all claims in the answer directly supported by the evidence?',
     phase: 'Post-generation',
-    fill: 95,
+    scale: '0-1 score',
     kind: 'score',
   },
   {
     label: 'Completeness',
     detail: 'Did the answer use all the relevant information available?',
     phase: 'Post-generation',
-    fill: 85,
+    scale: '0-1 score',
     kind: 'score',
   },
   {
     label: 'Unsupported Claims',
     detail: 'Did the answer assert anything not present in the source documents?',
     phase: 'Post-generation',
-    fill: 0,
+    scale: 'flagged / not flagged',
     kind: 'flag',
   },
 ] as const
@@ -226,7 +226,7 @@ export default function HowItWorksPage() {
                 >
                   {[
                     'Ask anything directly.',
-                    '16+ career artifacts retrieved.',
+                    '19 career artifacts indexed.',
                     'Evidence checked before answering.',
                     'Answer scored after generating.',
                   ].map((line, i) => (
@@ -256,7 +256,7 @@ export default function HowItWorksPage() {
             <section>
               <div className={`transition-all duration-600 ease-out ${kbIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
                 <Eyebrow>The knowledge base</Eyebrow>
-                <Heading2 className="mb-4">16+ career artifacts, ingested and indexed</Heading2>
+                <Heading2 className="mb-4">19 career artifacts, ingested and indexed</Heading2>
                 <p className="text-sm leading-relaxed mb-7 max-w-lg" style={{ color: 'rgba(var(--ink-rgb),0.62)' }}>
                   The profile is built from structured markdown documents parsed, chunked to
                   preserve section structure, embedded with{' '}
@@ -474,7 +474,7 @@ export default function HowItWorksPage() {
 
               {/* Metric rows */}
               <div className="flex flex-col gap-2">
-                {METRICS.map(({ label, detail, phase, fill, kind }, i) => (
+                {METRICS.map(({ label, detail, phase, scale, kind }, i) => (
                   <div
                     key={label}
                     className={`rounded-xl px-4 py-3 transition-all duration-500 ease-out ${metricsIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
@@ -513,30 +513,7 @@ export default function HowItWorksPage() {
                       </span>
                     </div>
 
-                    {kind === 'score' ? (
-                      <div>
-                        <div
-                          className="h-px rounded-full overflow-hidden"
-                          style={{ background: 'rgba(var(--ink-rgb),0.10)' }}
-                        >
-                          <div
-                            className="h-full rounded-full transition-all duration-1000 ease-out"
-                            style={{
-                              width: metricsIn ? `${fill}%` : '0%',
-                              background:
-                                'linear-gradient(to right, rgba(var(--accent-rgb),0.4), rgba(var(--accent-rgb),0.65))',
-                              transitionDelay: metricsIn ? `${200 + i * 100}ms` : '0ms',
-                            }}
-                          />
-                        </div>
-                        <p
-                          className="font-mono text-[8px] mt-1"
-                          style={{ color: 'var(--accent)' }}
-                        >
-                          {fill}% avg
-                        </p>
-                      </div>
-                    ) : (
+                    <div className="flex items-center gap-2 mt-2">
                       <span
                         className="font-mono text-[8px] px-2 py-0.5 rounded"
                         style={{
@@ -545,9 +522,12 @@ export default function HowItWorksPage() {
                           color: 'rgba(var(--ink-rgb),0.60)',
                         }}
                       >
-                        flag rate: low
+                        {scale}
                       </span>
-                    )}
+                      <span className="text-[9px]" style={{ color: 'rgba(var(--ink-rgb),0.60)' }}>
+                        {kind === 'flag' ? 'raised per answer' : 'recorded per answer'}
+                      </span>
+                    </div>
                   </div>
                 ))}
               </div>
