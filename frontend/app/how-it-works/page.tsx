@@ -1,10 +1,9 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
 import TopNav from '@/components/TopNav'
 import { useInView } from '@/hooks/useInView'
-import RetrievalScene from '@/components/how-it-works/RetrievalScene'
+import PipelineSection from '@/components/how-it-works/PipelineSection'
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 
@@ -156,7 +155,10 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
 
 function Heading2({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
-    <h2 className={`text-2xl font-light tracking-[-0.04em] leading-tight ${className}`} style={{ color: 'var(--ink)' }}>
+    <h2
+      className={`font-light tracking-[-0.04em] leading-[1.08] ${className}`}
+      style={{ color: 'var(--ink)', fontSize: 'clamp(2rem, 2.9vw, 3rem)' }}
+    >
       {children}
     </h2>
   )
@@ -177,14 +179,13 @@ export default function HowItWorksPage() {
   const { ref: stackRef,    inView: stackIn    } = useInView()
   const { ref: visionRef,   inView: visionIn   } = useInView({ threshold: 0.1 })
 
-  const [expandedStep, setExpandedStep] = useState<number | null>(null)
 
   return (
     <>
       <TopNav subtitle="How It Works" />
 
       <main className="pl-5">
-        <div className="px-10 pb-20 pt-24 max-w-4xl">
+        <div className="px-6 md:px-10 pb-24 pt-24 mx-auto w-full max-w-[1280px]">
 
           {/* ── §1 Hero ──────────────────────────────────────────────────── */}
           <div ref={heroRef}>
@@ -258,7 +259,7 @@ export default function HowItWorksPage() {
               <div className={`transition-all duration-600 ease-out ${kbIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
                 <Eyebrow>The knowledge base</Eyebrow>
                 <Heading2 className="mb-4">19 career artifacts, ingested and indexed</Heading2>
-                <p className="text-sm leading-relaxed mb-7 max-w-lg" style={{ color: 'rgba(var(--ink-rgb),0.62)' }}>
+                <p className="text-[1.0625rem] leading-[1.7] mb-7 max-w-[64ch]" style={{ color: 'rgba(var(--ink-rgb),0.72)' }}>
                   The profile is built from structured markdown documents parsed, chunked to
                   preserve section structure, embedded with{' '}
                   <span style={{ color: 'rgba(var(--ink-rgb),0.68)' }}>text-embedding-3-small</span>,
@@ -331,124 +332,14 @@ export default function HowItWorksPage() {
               <div className={`transition-all duration-600 ease-out ${pipeIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
                 <Eyebrow>The pipeline</Eyebrow>
                 <Heading2 className="mb-2">Five-node LangGraph workflow</Heading2>
-                <p className="text-sm leading-relaxed mb-8 max-w-lg" style={{ color: 'rgba(var(--ink-rgb),0.62)' }}>
+                <p className="text-[1.0625rem] leading-[1.7] mb-10 max-w-[64ch]" style={{ color: 'rgba(var(--ink-rgb),0.72)' }}>
                   Every question runs through a stateful graph. Each node has a single
                   responsibility. The evidence gate uses a conditional edge — if evidence
                   is insufficient, generation is skipped and no answer is fabricated.
                 </p>
               </div>
 
-              {/* Flagship stage illustration — Evidence Retrieval */}
-              <div className="mb-10">
-                <RetrievalScene active={pipeIn} />
-              </div>
-
-              <div className="flex flex-col">
-                {PIPELINE_STEPS.map((step, i) => {
-                  const isExpanded = expandedStep === i
-                  const isLast = i === PIPELINE_STEPS.length - 1
-
-                  return (
-                    <div
-                      key={step.index}
-                      className={`flex gap-5 transition-all duration-500 ease-out ${pipeIn ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}
-                      style={{ transitionDelay: pipeIn ? `${i * 120}ms` : '0ms' }}
-                    >
-                      {/* Left rail: node + connector */}
-                      <div className="flex flex-col items-center flex-shrink-0">
-                        <button
-                          onClick={() => setExpandedStep(isExpanded ? null : i)}
-                          className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 cursor-pointer transition-all duration-200"
-                          style={{
-                            background: isExpanded
-                              ? 'rgba(var(--accent-rgb),0.15)'
-                              : 'rgba(var(--accent-rgb),0.06)',
-                            border: isExpanded
-                              ? '1px solid rgba(var(--accent-rgb),0.55)'
-                              : '0.5px solid rgba(var(--accent-rgb),0.22)',
-                          }}
-                          aria-label={`${isExpanded ? 'Collapse' : 'Expand'} step ${step.index}`}
-                        >
-                          <span
-                            className="font-mono text-[9px]"
-                            style={{
-                              color: isExpanded
-                                ? 'var(--accent)'
-                                : 'rgba(var(--accent-rgb),0.80)',
-                            }}
-                          >
-                            {step.index}
-                          </span>
-                        </button>
-
-                        {/* Animated segment line between nodes */}
-                        {!isLast && (
-                          <div
-                            className="w-px flex-1 mt-1 mb-0 min-h-[24px] transition-all duration-700 ease-out"
-                            style={{
-                              background: isExpanded
-                                ? 'rgba(var(--accent-rgb),0.35)'
-                                : 'rgba(var(--accent-rgb),0.1)',
-                              transformOrigin: 'top',
-                              transform: pipeIn ? 'scaleY(1)' : 'scaleY(0)',
-                              transitionDelay: pipeIn ? `${i * 120 + 200}ms` : '0ms',
-                            }}
-                          />
-                        )}
-                      </div>
-
-                      {/* Content */}
-                      <div className={`flex-1 ${isLast ? 'pb-0' : 'pb-5'}`}>
-                        <div className="flex items-center gap-2 mb-1 flex-wrap">
-                          <button
-                            onClick={() => setExpandedStep(isExpanded ? null : i)}
-                            className="text-[12px] font-medium text-left cursor-pointer transition-colors duration-150"
-                            style={{
-                              color: isExpanded
-                                ? 'rgba(var(--ink-rgb),0.92)'
-                                : 'rgba(var(--ink-rgb),0.7)',
-                            }}
-                          >
-                            {step.title}
-                          </button>
-                          <span
-                            className="font-mono text-[8px] px-1.5 py-[2px] rounded"
-                            style={{
-                              background: 'var(--panel-2)',
-                              border: '0.5px solid rgba(var(--ink-rgb),0.10)',
-                              color: 'rgba(var(--ink-rgb),0.60)',
-                            }}
-                          >
-                            {step.model}
-                          </span>
-                        </div>
-
-                        {/* Collapsed: summary. Expanded: full description */}
-                        <div
-                          className="overflow-hidden transition-all duration-300 ease-out"
-                          style={{ maxHeight: isExpanded ? '160px' : '36px' }}
-                        >
-                          <p className="text-[10px] leading-relaxed" style={{ color: 'rgba(var(--ink-rgb),0.62)' }}>
-                            {isExpanded ? step.description : step.summary}
-                          </p>
-                        </div>
-
-                        {!isExpanded && (
-                          <button
-                            onClick={() => setExpandedStep(i)}
-                            className="font-mono text-[8px] mt-1 transition-colors duration-150"
-                            style={{ color: 'rgba(var(--accent-rgb),0.75)' }}
-                            onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
-                            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(var(--accent-rgb),0.75)')}
-                          >
-                            expand ↓
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
+              <PipelineSection steps={PIPELINE_STEPS} />
             </section>
           </div>
 
