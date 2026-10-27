@@ -59,29 +59,29 @@ export default function GateScene({ active = false }: { active?: boolean }) {
 
       {/* ── sufficient branch ─────────────────────────────────────────────── */}
       <motion.path
-        d="M332 78 C372 78, 372 56, 404 56"
+        d="M332 78 C368 78, 368 56, 398 56"
         stroke={ACCENT(0.6)} strokeWidth={1.6} fill="none" {...draw(0.9)}
       />
       <motion.g {...pop(1.25)}>
-        <rect x={408} y={38} width={196} height={38} rx={9} fill={ACCENT(0.1)} stroke={ACCENT(0.45)} strokeWidth={1} />
-        <text x={424} y={62} style={{ fontFamily: MONO, fontSize: 11 }} fill={ACCENT(1)}>
+        <rect x={402} y={38} width={210} height={38} rx={9} fill={ACCENT(0.1)} stroke={ACCENT(0.45)} strokeWidth={1} />
+        <text x={416} y={62} style={{ fontFamily: MONO, fontSize: 11 }} fill={ACCENT(1)}>
           sufficient → generate answer
         </text>
       </motion.g>
 
       {/* ── insufficient branch — terminates ──────────────────────────────── */}
       <motion.path
-        d="M332 108 C372 108, 372 150, 404 150"
+        d="M332 108 C368 108, 368 150, 398 150"
         stroke={INK(0.32)} strokeWidth={1.6} strokeDasharray="5 5" fill="none" {...draw(1.3)}
       />
       <motion.g {...pop(1.65)}>
-        <rect x={408} y={132} width={196} height={38} rx={9} fill={INK(0.04)} stroke={INK(0.18)} strokeWidth={1} />
-        <text x={424} y={156} style={{ fontFamily: MONO, fontSize: 11 }} fill={INK(0.62)}>
+        <rect x={402} y={132} width={210} height={38} rx={9} fill={INK(0.04)} stroke={INK(0.18)} strokeWidth={1} />
+        <text x={416} y={156} style={{ fontFamily: MONO, fontSize: 11 }} fill={INK(0.62)}>
           insufficient → no answer
         </text>
         {/* stop marker: the path ends here */}
-        <circle cx={604} cy={151} r={7} fill="none" stroke={INK(0.3)} strokeWidth={1.4} />
-        <path d="M600 147 l8 8 M608 147 l-8 8" stroke={INK(0.42)} strokeWidth={1.3} strokeLinecap="round" />
+        <circle cx={598} cy={151} r={7} fill="none" stroke={INK(0.3)} strokeWidth={1.4} />
+        <path d="M594 147 l8 8 M602 147 l-8 8" stroke={INK(0.42)} strokeWidth={1.3} strokeLinecap="round" />
       </motion.g>
 
       <motion.g {...pop(1.9)}>
