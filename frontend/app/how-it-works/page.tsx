@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import TopNav from '@/components/TopNav'
 import { useInView } from '@/hooks/useInView'
+import RetrievalScene from '@/components/how-it-works/RetrievalScene'
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 
@@ -335,6 +336,11 @@ export default function HowItWorksPage() {
                   responsibility. The evidence gate uses a conditional edge — if evidence
                   is insufficient, generation is skipped and no answer is fabricated.
                 </p>
+              </div>
+
+              {/* Flagship stage illustration — Evidence Retrieval */}
+              <div className="mb-10">
+                <RetrievalScene active={pipeIn} />
               </div>
 
               <div className="flex flex-col">
