@@ -99,7 +99,7 @@ export default function HomePage() {
     <main className="h-screen overflow-hidden relative flex flex-col bg-[var(--bg)]">
 
       {/* Constellation spans the full main area — behind hero AND cards */}
-      <ConstellationCanvas />
+      <ConstellationCanvas enhanced quietZoneSelector="[data-quiet-zone]" />
 
       {/* ── Hero ──────────────────────────────────────────────────────────── */}
       <section className="relative flex-1 overflow-hidden min-h-0">
@@ -123,6 +123,7 @@ export default function HomePage() {
 
           {/* Headline */}
           <h1
+            data-quiet-zone
             className="text-4xl md:text-5xl lg:text-[60px] leading-none text-[var(--ink)] mb-4"
             style={{ fontWeight: 300, letterSpacing: '-0.04em' }}
           >
