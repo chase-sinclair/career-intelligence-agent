@@ -327,10 +327,14 @@ export default function HowItWorksPage() {
                   small subset of the {CORPUS.chunks} resulting chunks — currently the top 12.
                   Nothing re-reads the whole corpus per question.
                 </p>
+                <p className="text-[1.0625rem] leading-[1.7] mb-7 max-w-[64ch]" style={{ color: 'rgba(var(--ink-rgb),0.72)' }}>
+                  Which raises the question the next section answers: given an index full of
+                  passages, how does one question turn into a trustworthy answer?
+                </p>
               </div>
 
               <ChapterLayout visual={<KnowledgeBaseScene active={kbIn} />}>
-              <div className="grid grid-cols-2 gap-2 mb-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-5">
                 {KB_DOCS.map(({ label, detail, icon }, i) => (
                   <div
                     key={label}
@@ -394,11 +398,31 @@ export default function HowItWorksPage() {
             <section>
               <div className={`transition-all duration-600 ease-out ${pipeIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
                 <Eyebrow>The pipeline</Eyebrow>
-                <Heading2 className="mb-2">Five-node LangGraph workflow</Heading2>
+                <Heading2 className="mb-4">What happens when you ask</Heading2>
+                <p className="text-[1.0625rem] leading-[1.7] mb-4 max-w-[64ch]" style={{ color: 'rgba(var(--ink-rgb),0.72)' }}>
+                  Indexing is the preparation. This is the part that runs every time someone
+                  types a question, and it is where most of the design sits.
+                </p>
+                <p className="text-[1.0625rem] leading-[1.7] mb-4 max-w-[64ch]" style={{ color: 'rgba(var(--ink-rgb),0.72)' }}>
+                  The obvious way to build this is one call: hand the question and some
+                  documents to a model and print what comes back. The problem is that you get
+                  an answer either way. A model asked something the documents cannot support
+                  will still produce fluent, confident text — and nothing in that design is
+                  positioned to notice.
+                </p>
+                <p className="text-[1.0625rem] leading-[1.7] mb-4 max-w-[64ch]" style={{ color: 'rgba(var(--ink-rgb),0.72)' }}>
+                  So it is split into five steps instead, each doing one job and passing its
+                  result to the next. Breaking it up means each step can be inspected, and one
+                  of them is allowed to halt the whole thing. That step is the third:{' '}
+                  <em className="not-italic" style={{ color: 'var(--accent)' }}>
+                    if the evidence does not support an answer, the graph stops and no answer
+                    is written
+                  </em>
+                  . Generation never runs on evidence that failed the check.
+                </p>
                 <p className="text-[1.0625rem] leading-[1.7] mb-10 max-w-[64ch]" style={{ color: 'rgba(var(--ink-rgb),0.72)' }}>
-                  Every question runs through a stateful graph. Each node has a single
-                  responsibility. The evidence gate uses a conditional edge — if evidence
-                  is insufficient, generation is skipped and no answer is fabricated.
+                  Scroll through the five stages below — the illustration follows along, or
+                  select a step to jump to it.
                 </p>
               </div>
 
@@ -526,9 +550,10 @@ export default function HowItWorksPage() {
                 <Eyebrow>Tech stack</Eyebrow>
                 <Heading2 className="mb-4">What it&apos;s built on</Heading2>
                 <p className="text-[1.0625rem] leading-[1.7] mb-4 max-w-[64ch]" style={{ color: 'rgba(var(--ink-rgb),0.72)' }}>
-                  Individually these are ordinary choices, and deliberately so. What matters is
-                  the division of labour between them: each piece is responsible for one thing
-                  and hands a well-defined result to the next.
+                  All of that has to run somewhere. Individually these are ordinary choices,
+                  and deliberately so. What matters is the division of labour between them:
+                  each piece is responsible for one thing and hands a well-defined result to
+                  the next.
                 </p>
                 <p className="text-[1.0625rem] leading-[1.7] mb-4 max-w-[64ch]" style={{ color: 'rgba(var(--ink-rgb),0.72)' }}>
                   A question arrives at the API, which hands it to the graph. The graph decides

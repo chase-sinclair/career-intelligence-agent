@@ -67,7 +67,7 @@ export default function IntroScene({ active = false }: { active?: boolean }) {
           </g>
         ))}
       </svg>
-      <figcaption className="mt-2 text-[10px]" style={{ fontFamily: MONO, color: INK(0.6) }}>
+      <figcaption className="mt-2 text-[10px]" style={{ fontFamily: MONO, color: INK(0.7) }}>
         The same four beats are expanded, stage by stage, further down the page.
       </figcaption>
     </figure>

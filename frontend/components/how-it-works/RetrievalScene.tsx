@@ -151,7 +151,7 @@ export default function RetrievalScene({ active = false }: { active?: boolean })
         <text x={24} y={272} className="hiw-status hiw-status-b">Top-12 retrieved chunks (configured k = 12)</text>
       </svg>
 
-      <figcaption className="mt-2 font-mono text-[10px]" style={{ color: 'rgba(var(--ink-rgb),0.60)' }}>
+      <figcaption className="mt-2 font-mono text-[10px]" style={{ color: 'rgba(var(--ink-rgb),0.70)' }}>
         Illustrative pipeline visualization — not live data.
       </figcaption>
 

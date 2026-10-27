@@ -33,7 +33,7 @@ export default function SceneFrame({
       </svg>
       <figcaption
         className="mt-2 text-[10px]"
-        style={{ fontFamily: MONO, color: INK(0.6) }}
+        style={{ fontFamily: MONO, color: INK(0.7) }}
       >
         {caption}
       </figcaption>

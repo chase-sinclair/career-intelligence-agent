@@ -64,7 +64,7 @@ export default function StackScene({ active = false }: { active?: boolean }) {
           </motion.g>
         ))}
       </svg>
-      <figcaption className="mt-2 text-[10px]" style={{ fontFamily: MONO, color: INK(0.6) }}>
+      <figcaption className="mt-2 text-[10px]" style={{ fontFamily: MONO, color: INK(0.7) }}>
         Orchestration is highlighted — it is where the five pipeline stages live.
       </figcaption>
     </figure>
