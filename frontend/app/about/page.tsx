@@ -110,52 +110,57 @@ const JOBS: Job[] = [
 // ─── Skills data ──────────────────────────────────────────────────────────────
 
 const SKILLS = [
-  // ── AI / GenAI ──────────────────────────────────────────────────────────────
-  { name: 'LLMs',          cat: 'ai',   cx: 720,  cy: 110, size: 22 },
-  { name: 'RAG',           cat: 'ai',   cx: 620,  cy: 70,  size: 18 },
-  { name: 'LangGraph',     cat: 'ai',   cx: 820,  cy: 70,  size: 14 },
-  { name: 'Agents',        cat: 'ai',   cx: 870,  cy: 160, size: 16 },
-  { name: 'Prompt Eng',    cat: 'ai',   cx: 750,  cy: 200, size: 13 },
-  { name: 'Eval',          cat: 'ai',   cx: 620,  cy: 180, size: 12 },
-  { name: 'NLP',           cat: 'ai',   cx: 940,  cy: 110, size: 12 },
-  { name: 'Vector Search', cat: 'ai',   cx: 540,  cy: 130, size: 12 },
-  { name: 'LangChain',     cat: 'ai',   cx: 670,  cy: 235, size: 13 },
-  { name: 'Multimodal',    cat: 'ai',   cx: 1000, cy: 90,  size: 12 },
-  { name: 'MCP',           cat: 'ai',   cx: 1080, cy: 68,  size: 12 },
-  // ── Data & Cloud ────────────────────────────────────────────────────────────
-  { name: 'Python',        cat: 'data', cx: 350,  cy: 130, size: 20 },
-  { name: 'SQL',           cat: 'data', cx: 220,  cy: 90,  size: 15 },
-  { name: 'AWS',           cat: 'data', cx: 270,  cy: 230, size: 16 },
-  { name: 'Snowflake',     cat: 'data', cx: 130,  cy: 170, size: 14 },
-  { name: 'ETL',           cat: 'data', cx: 410,  cy: 240, size: 13 },
-  { name: 'Bedrock',       cat: 'platform', cx: 160,  cy: 290, size: 13 },
-  { name: 'Pandas',        cat: 'data', cx: 320,  cy: 60,  size: 12 },
-  { name: 'FastAPI',       cat: 'data', cx: 440,  cy: 148, size: 15 },
-  { name: 'Next.js',       cat: 'data', cx: 495,  cy: 52,  size: 14 },
-  { name: 'dbt',           cat: 'data', cx: 295,  cy: 295, size: 13 },
-  { name: 'Databricks',    cat: 'data', cx: 180,  cy: 388, size: 14 },
-  { name: 'PySpark',       cat: 'data', cx: 55,   cy: 185, size: 12 },
-  { name: 'n8n',           cat: 'auto', cx: 490,  cy: 290, size: 11 },
-  // ── Visualization ───────────────────────────────────────────────────────────
-  { name: 'Tableau',       cat: 'viz',  cx: 380,  cy: 340, size: 14 },
-  { name: 'Streamlit',     cat: 'viz',  cx: 240,  cy: 360, size: 12 },
-  { name: 'Dashboards',    cat: 'viz',  cx: 480,  cy: 370, size: 13 },
-  { name: 'Looker',        cat: 'viz',  cx: 355,  cy: 400, size: 11 },
-  // ── Leadership ──────────────────────────────────────────────────────────────
-  { name: 'Stakeholder',   cat: 'lead',     cx: 980,  cy: 270, size: 15 },
-  { name: 'Mentorship',    cat: 'lead',     cx: 880,  cy: 340, size: 13 },
-  { name: 'Proposals',     cat: 'lead',     cx: 1080, cy: 320, size: 13 },
-  { name: 'Published',     cat: 'lead',     cx: 1080, cy: 200, size: 13 },
-  // ── AI Platforms & APIs ─────────────────────────────────────────────────────
-  { name: 'OpenAI API',    cat: 'platform', cx: 710,  cy: 310, size: 15 },
-  { name: 'Anthropic API', cat: 'platform', cx: 800,  cy: 285, size: 15 },
-  { name: 'Claude Code',   cat: 'platform', cx: 655,  cy: 375, size: 14 },
-  { name: 'Codex',         cat: 'platform', cx: 610,  cy: 325, size: 12 },
-  { name: 'NotebookLM',   cat: 'platform', cx: 760,  cy: 380, size: 12 },
-  { name: 'Gemini',        cat: 'platform', cx: 855,  cy: 360, size: 13 },
-  // ── Automation ──────────────────────────────────────────────────────────────
-  { name: 'Zapier',        cat: 'auto',     cx: 560,  cy: 360, size: 13 },
-  { name: 'Airtable',      cat: 'auto',     cx: 430,  cy: 360, size: 13 },
+  // ── AI / GenAI (top-center) ─────────────────────────────────────────────────
+  { name: 'LLMs',          cat: 'ai',       cx: 760,  cy: 130, size: 22 },
+  { name: 'RAG',           cat: 'ai',       cx: 640,  cy: 85,  size: 18 },
+  { name: 'LangGraph',     cat: 'ai',       cx: 870,  cy: 75,  size: 14 },
+  { name: 'Agents',        cat: 'ai',       cx: 910,  cy: 175, size: 16 },
+  { name: 'Prompt Eng',    cat: 'ai',       cx: 790,  cy: 220, size: 13 },
+  { name: 'Eval',          cat: 'ai',       cx: 650,  cy: 200, size: 12 },
+  { name: 'NLP',           cat: 'ai',       cx: 970,  cy: 110, size: 12 },
+  { name: 'Vector Search', cat: 'ai',       cx: 575,  cy: 145, size: 12 },
+  { name: 'LangChain',     cat: 'ai',       cx: 700,  cy: 250, size: 13 },
+  { name: 'Multimodal',    cat: 'ai',       cx: 985,  cy: 215, size: 12 },
+  { name: 'MCP',           cat: 'ai',       cx: 945,  cy: 250, size: 12 },
+
+  // ── Data & Cloud (top-left) ─────────────────────────────────────────────────
+  { name: 'Python',        cat: 'data',     cx: 250,  cy: 140, size: 20 },
+  { name: 'SQL',           cat: 'data',     cx: 140,  cy: 80,  size: 15 },
+  { name: 'AWS',           cat: 'data',     cx: 320,  cy: 215, size: 16 },
+  { name: 'Snowflake',     cat: 'data',     cx: 90,   cy: 150, size: 14 },
+  { name: 'ETL',           cat: 'data',     cx: 400,  cy: 165, size: 13 },
+  { name: 'Pandas',        cat: 'data',     cx: 250,  cy: 50,  size: 12 },
+  { name: 'FastAPI',       cat: 'data',     cx: 400,  cy: 90,  size: 15 },
+  { name: 'Next.js',       cat: 'data',     cx: 350,  cy: 30,  size: 14 },
+  { name: 'dbt',           cat: 'data',     cx: 190,  cy: 220, size: 13 },
+  { name: 'Databricks',    cat: 'data',     cx: 80,   cy: 240, size: 14 },
+  { name: 'PySpark',       cat: 'data',     cx: 50,   cy: 90,  size: 12 },
+
+  // ── Leadership (top-right) ──────────────────────────────────────────────────
+  { name: 'Stakeholder',   cat: 'lead',     cx: 1200, cy: 130, size: 15 },
+  { name: 'Mentorship',    cat: 'lead',     cx: 1140, cy: 215, size: 13 },
+  { name: 'Proposals',     cat: 'lead',     cx: 1290, cy: 195, size: 13 },
+  { name: 'Published',     cat: 'lead',     cx: 1240, cy: 60,  size: 13 },
+
+  // ── Visualization (bottom-left) ─────────────────────────────────────────────
+  { name: 'Tableau',       cat: 'viz',      cx: 240,  cy: 380, size: 14 },
+  { name: 'Streamlit',     cat: 'viz',      cx: 110,  cy: 420, size: 12 },
+  { name: 'Dashboards',    cat: 'viz',      cx: 360,  cy: 410, size: 13 },
+  { name: 'Looker',        cat: 'viz',      cx: 200,  cy: 470, size: 11 },
+
+  // ── AI Platforms & APIs (bottom-center) ─────────────────────────────────────
+  { name: 'OpenAI API',    cat: 'platform', cx: 700,  cy: 380, size: 15 },
+  { name: 'Anthropic API', cat: 'platform', cx: 840,  cy: 390, size: 15 },
+  { name: 'Bedrock',       cat: 'platform', cx: 560,  cy: 410, size: 13 },
+  { name: 'Claude Code',   cat: 'platform', cx: 640,  cy: 470, size: 14 },
+  { name: 'Codex',         cat: 'platform', cx: 570,  cy: 460, size: 12 },
+  { name: 'NotebookLM',    cat: 'platform', cx: 770,  cy: 470, size: 12 },
+  { name: 'Gemini',        cat: 'platform', cx: 880,  cy: 460, size: 13 },
+
+  // ── Automation (bottom-right) ───────────────────────────────────────────────
+  { name: 'n8n',           cat: 'auto',     cx: 1100, cy: 400, size: 11 },
+  { name: 'Zapier',        cat: 'auto',     cx: 1250, cy: 430, size: 13 },
+  { name: 'Airtable',      cat: 'auto',     cx: 1170, cy: 470, size: 13 },
 ]
 
 const SKILL_COLORS: Record<string, string> = {
@@ -166,6 +171,30 @@ const SKILL_COLORS: Record<string, string> = {
   platform: 'var(--sk-platform)',
   auto:     'var(--sk-auto)',
 }
+
+const CAT_LABELS: Record<string, string> = {
+  ai:       'AI / GenAI',
+  data:     'Data & Cloud',
+  viz:      'Visualization',
+  lead:     'Leadership',
+  platform: 'AI Platforms & APIs',
+  auto:     'Automation',
+}
+
+// Text colour for a tab whose pill is filled with the category colour. Five of
+// the six Slate category colours are dark, so their labels invert to light;
+// --sk-lead is a translucent ink that composites light, so it keeps dark text.
+const CAT_ON: Record<string, string> = {
+  ai:       'var(--accent-ink)',
+  data:     'var(--accent-ink)',
+  viz:      'var(--accent-ink)',
+  lead:     'var(--ink)',
+  platform: 'var(--accent-ink)',
+  auto:     'var(--accent-ink)',
+}
+
+const DEFAULT_VB: [number, number, number, number] = [30, -10, 1290, 520]
+const VB_RATIO = DEFAULT_VB[2] / DEFAULT_VB[3]
 
 // ─── Cert data ────────────────────────────────────────────────────────────────
 
@@ -665,24 +694,67 @@ function ExperienceSection() {
 // ─── Constellation Section ────────────────────────────────────────────────────
 
 function buildEdges() {
-  const out: { x1: number; y1: number; x2: number; y2: number; stroke: string; op: number }[] = []
+  const out: { x1: number; y1: number; x2: number; y2: number
+               stroke: string; op: number; catA: string; catB: string }[] = []
   SKILLS.forEach((a, i) => {
     SKILLS.forEach((b, j) => {
       if (j <= i) return
       const d = Math.hypot(a.cx - b.cx, a.cy - b.cy)
-      if (a.cat === b.cat && d < 160) out.push({ x1: a.cx, y1: a.cy, x2: b.cx, y2: b.cy, stroke: SKILL_COLORS[a.cat], op: 0.18 })
-      else if (d < 100)               out.push({ x1: a.cx, y1: a.cy, x2: b.cx, y2: b.cy, stroke: 'rgba(var(--ink-rgb),0.5)', op: 0.032 })
+      const base = { x1: a.cx, y1: a.cy, x2: b.cx, y2: b.cy, catA: a.cat, catB: b.cat }
+      if (a.cat === b.cat && d < 180) out.push({ ...base, stroke: SKILL_COLORS[a.cat], op: 0.18 })
+      else if (d < 110)               out.push({ ...base, stroke: 'rgba(var(--ink-rgb),0.5)', op: 0.032 })
     })
   })
   return out
 }
 const EDGES = buildEdges()
 
-function ConstellationSection() {
-  const svgRef       = useRef<SVGSVGElement>(null)
-  const infoRef      = useRef<HTMLSpanElement>(null)
-  const rafRef       = useRef<number>(0)
+// Bounding box of a category, padded, then padded again to the container's
+// aspect ratio — without that second pad, preserveAspectRatio="xMidYMid meet"
+// letterboxes the zoom and the cluster lands smaller than the frame.
+function categoryViewBox(cat: string): [number, number, number, number] {
+  const ns = SKILLS.filter(s => s.cat === cat)
+  if (!ns.length) return [...DEFAULT_VB]
+  const padX = 90, padY = 75
+  let x1 = Math.min(...ns.map(s => s.cx - s.size)) - padX
+  const x2 = Math.max(...ns.map(s => s.cx + s.size)) + padX
+  let y1 = Math.min(...ns.map(s => s.cy - s.size)) - padY
+  const y2 = Math.max(...ns.map(s => s.cy + s.size)) + padY + 20
+  let w = x2 - x1, h = y2 - y1
 
+  if (w / h > VB_RATIO) {
+    const newH = w / VB_RATIO
+    y1 = (y1 + y2) / 2 - newH / 2
+    h = newH
+  } else {
+    const newW = h * VB_RATIO
+    x1 = (x1 + x2) / 2 - newW / 2
+    w = newW
+  }
+  return [x1, y1, w, h]
+}
+
+const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
+
+function ConstellationSection() {
+  const svgRef   = useRef<SVGSVGElement>(null)
+  const infoRef  = useRef<HTMLSpanElement>(null)
+  const rafRef   = useRef<number>(0)
+  const vbRef    = useRef<[number, number, number, number]>([...DEFAULT_VB])
+
+  const [focusCat, setFocusCat] = useState<string | null>(null)
+  const [hoverCat, setHoverCat] = useState<string | null>(null)
+
+  function toggleCat(cat: string) {
+    setFocusCat(prev => (prev === cat ? null : cat))
+  }
+
+  const restInfo = () =>
+    focusCat ? 'Focused on ' + CAT_LABELS[focusCat] : 'Hover a node · click a category to focus'
+
+  // Drift loop — writes `transform` on the node groups. Kept separate from the
+  // viewBox tween below, which writes `viewBox` on the svg, so they compose
+  // instead of fighting over the same attribute.
   useEffect(() => {
     if (!svgRef.current) return
     const svg = svgRef.current as SVGSVGElement
@@ -694,7 +766,7 @@ function ConstellationSection() {
         const s = SKILLS[i]; if (!s) return
         const dx = Math.sin(t + i) * 1.2
         const dy = Math.cos(t + i * 0.7) * 1.2
-        ;(g as SVGGElement).setAttribute('transform', `translate(${s.cx + dx} ${s.cy + dy})`)
+        ;(g as SVGGElement).setAttribute('transform', 'translate(' + (s.cx + dx) + ' ' + (s.cy + dy) + ')')
       })
       rafRef.current = requestAnimationFrame(tick)
     }
@@ -702,55 +774,156 @@ function ConstellationSection() {
     return () => cancelAnimationFrame(rafRef.current)
   }, [])
 
+  // viewBox is not CSS-animatable, so tween the four numbers on rAF.
+  // Each run owns its frame id and cancelled flag rather than sharing a ref:
+  // with a shared ref the outgoing cleanup can cancel the incoming run's frame,
+  // which silently kills the tween.
+  useEffect(() => {
+    const svg = svgRef.current
+    if (!svg) return
+    const target: number[] = focusCat ? categoryViewBox(focusCat) : [...DEFAULT_VB]
+    const start = [...vbRef.current]
+    const t0 = performance.now()
+    const duration = 700
+    let id = 0
+    let cancelled = false
+    const step = (now: number) => {
+      if (cancelled) return
+      const t = Math.min(1, (now - t0) / duration)
+      const e = easeInOut(t)
+      const vb = start.map((v, i) => v + (target[i] - v) * e)
+      svg.setAttribute('viewBox', vb.join(' '))
+      vbRef.current = vb as [number, number, number, number]
+      if (t < 1) id = requestAnimationFrame(step)
+    }
+    id = requestAnimationFrame(step)
+    return () => { cancelled = true; cancelAnimationFrame(id) }
+  }, [focusCat])
+
+  // Keep the hover readout in sync when the focus changes with no pointer move.
+  useEffect(() => {
+    if (infoRef.current) infoRef.current.textContent = restInfo()
+  }, [focusCat])
+
   return (
     <section style={{ background: 'var(--panel)', border: '0.5px solid rgba(var(--ink-rgb),0.10)', borderRadius: 12, padding: 18 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 0 }}>
         <p className="font-mono" style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(var(--ink-rgb),0.60)', margin: 0 }}>Skills Constellation</p>
         <p className="font-mono" style={{ fontSize: 10, color: 'rgba(var(--ink-rgb),0.60)', margin: 0, height: 18 }}>
-          <span ref={infoRef}>Hover a node</span>
+          <span ref={infoRef}>Hover a node · click a category to focus</span>
         </p>
       </div>
 
-      <svg ref={svgRef} viewBox="0 0 1200 420" preserveAspectRatio="xMidYMid meet"
-        style={{ width: '100%', height: 420, cursor: 'default', display: 'block' }}>
-        {EDGES.map((e, i) => (
-          <line key={i} x1={e.x1} y1={e.y1} x2={e.x2} y2={e.y2}
-            stroke={e.stroke} strokeWidth="0.5" strokeOpacity={e.op} />
-        ))}
-        {SKILLS.map((s, i) => (
-          <g key={s.name} data-si={i} transform={`translate(${s.cx} ${s.cy})`} style={{ cursor: 'pointer' }}
-            onMouseEnter={e => {
-              const ch = e.currentTarget.children
-              ;(ch[0] as SVGCircleElement).setAttribute('opacity', '0.16')
-              ;(ch[1] as SVGCircleElement).setAttribute('fill-opacity', '0.55')
-              ;(ch[2] as SVGTextElement).setAttribute('fill', 'var(--ink)')
-              if (infoRef.current) infoRef.current.innerHTML = `<b style="color:${SKILL_COLORS[s.cat]}">${s.name}</b> · ${s.cat.toUpperCase()}`
-            }}
-            onMouseLeave={e => {
-              const ch = e.currentTarget.children
-              ;(ch[0] as SVGCircleElement).setAttribute('opacity', '0')
-              ;(ch[1] as SVGCircleElement).setAttribute('fill-opacity', '0.25')
-              ;(ch[2] as SVGTextElement).setAttribute('fill', 'rgba(var(--ink-rgb),0.60)')
-              if (infoRef.current) infoRef.current.textContent = 'Hover a node'
-            }}>
-            <circle r={s.size + 6} fill={SKILL_COLORS[s.cat]} opacity={0} />
-            <circle r={s.size / 2} fill={SKILL_COLORS[s.cat]} fillOpacity={0.25}
-              stroke={SKILL_COLORS[s.cat]} strokeWidth={1} strokeOpacity={0.85} />
-            <text x={0} y={s.size / 2 + 13} textAnchor="middle"
-              fill="rgba(var(--ink-rgb),0.60)" fontFamily="JetBrains Mono, monospace" fontSize={9.5}>
-              {s.name}
-            </text>
-          </g>
-        ))}
-      </svg>
+      <div style={{ position: 'relative' }}>
+        {/* Focus overlay */}
+        <div
+          aria-hidden={!focusCat}
+          style={{
+            position: 'absolute', left: 18, top: 14, pointerEvents: 'none', zIndex: 2,
+            opacity: focusCat ? 1 : 0,
+            transform: focusCat ? 'none' : 'translateY(-4px)',
+            transition: 'opacity .45s ease, transform .45s ease',
+          }}
+        >
+          <p className="font-mono" style={{ fontSize: 8, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(var(--ink-rgb),0.60)', margin: 0 }}>Focused on</p>
+          <p className="font-serif" style={{ fontSize: 26, lineHeight: 1.1, margin: '2px 0 0', color: focusCat ? SKILL_COLORS[focusCat] : 'transparent' }}>
+            {focusCat ? CAT_LABELS[focusCat] : ''}
+          </p>
+          <p className="font-mono" style={{ fontSize: 9, color: 'rgba(var(--ink-rgb),0.60)', margin: '3px 0 0' }}>
+            {focusCat ? SKILLS.filter(s => s.cat === focusCat).length : 0} skills
+          </p>
+        </div>
 
-      <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginTop: 10, fontFamily: "'JetBrains Mono', monospace", fontSize: 9 }}>
-        {[['var(--sk-ai)', 'AI / GenAI'], ['var(--sk-data)', 'Data & Cloud'], ['var(--sk-viz)', 'Visualization'], ['var(--sk-lead)', 'Leadership'], ['var(--sk-platform)', 'AI Platforms & APIs'], ['var(--sk-auto)', 'Automation']].map(([c, l]) => (
-          <span key={l} style={{ display: 'flex', gap: 6, alignItems: 'center', color: 'rgba(var(--ink-rgb),0.60)' }}>
-            <span style={{ width: 8, height: 8, borderRadius: 9999, background: c, flexShrink: 0 }} />
-            {l}
-          </span>
-        ))}
+        <svg ref={svgRef} viewBox={DEFAULT_VB.join(' ')} preserveAspectRatio="xMidYMid meet"
+          style={{ width: '100%', height: 420, cursor: 'default', display: 'block' }}>
+          {EDGES.map((e, i) => {
+            const on = !focusCat || (e.catA === focusCat && e.catB === focusCat)
+            return (
+              <line key={i} x1={e.x1} y1={e.y1} x2={e.x2} y2={e.y2}
+                data-cat-a={e.catA} data-cat-b={e.catB}
+                stroke={e.stroke} strokeWidth="0.5" strokeOpacity={on ? e.op : 0}
+                style={{ transition: 'stroke-opacity .55s cubic-bezier(0.16, 1, 0.3, 1)' }} />
+            )
+          })}
+          {SKILLS.map((s, i) => {
+            const dim = !!focusCat && s.cat !== focusCat
+            return (
+              <g key={s.name} data-si={i} data-cat={s.cat} transform={'translate(' + s.cx + ' ' + s.cy + ')'}
+                style={{
+                  cursor: dim ? 'default' : 'pointer',
+                  opacity: dim ? 0.07 : 1,
+                  pointerEvents: dim ? 'none' : 'auto',
+                  transition: 'opacity .55s cubic-bezier(0.16, 1, 0.3, 1)',
+                }}
+                onMouseEnter={e => {
+                  const ch = e.currentTarget.children
+                  ;(ch[0] as SVGCircleElement).setAttribute('opacity', '0.16')
+                  ;(ch[1] as SVGCircleElement).setAttribute('fill-opacity', '0.55')
+                  ;(ch[2] as SVGTextElement).setAttribute('fill', 'var(--ink)')
+                  if (infoRef.current) {
+                    infoRef.current.innerHTML =
+                      '<b style="color:' + SKILL_COLORS[s.cat] + '">' + s.name + '</b> · ' +
+                      CAT_LABELS[s.cat].toUpperCase()
+                  }
+                }}
+                onMouseLeave={e => {
+                  const ch = e.currentTarget.children
+                  ;(ch[0] as SVGCircleElement).setAttribute('opacity', '0')
+                  ;(ch[1] as SVGCircleElement).setAttribute('fill-opacity', '0.25')
+                  ;(ch[2] as SVGTextElement).setAttribute('fill', 'rgba(var(--ink-rgb),0.60)')
+                  if (infoRef.current) infoRef.current.textContent = restInfo()
+                }}>
+                <circle r={s.size + 6} fill={SKILL_COLORS[s.cat]} opacity={0} />
+                <circle r={s.size / 2} fill={SKILL_COLORS[s.cat]} fillOpacity={0.25}
+                  stroke={SKILL_COLORS[s.cat]} strokeWidth={1} strokeOpacity={0.85} />
+                <text x={0} y={s.size / 2 + 13} textAnchor="middle"
+                  fill="rgba(var(--ink-rgb),0.60)" fontFamily="JetBrains Mono, monospace" fontSize={11}>
+                  {s.name}
+                </text>
+              </g>
+            )
+          })}
+        </svg>
+      </div>
+
+      {/* Category filter tabs */}
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 10, fontFamily: "'JetBrains Mono', monospace", fontSize: 9 }}>
+        {Object.keys(CAT_LABELS).map(cat => {
+          const active = focusCat === cat
+          const hot = hoverCat === cat && !active
+          return (
+            <button key={cat} onClick={() => toggleCat(cat)}
+              onMouseEnter={() => setHoverCat(cat)}
+              onMouseLeave={() => setHoverCat(null)}
+              aria-pressed={active}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer',
+                padding: '5px 10px 5px 8px', borderRadius: 9999,
+                fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
+                background: active ? SKILL_COLORS[cat] : hot ? 'rgba(var(--ink-rgb),0.03)' : 'transparent',
+                border: '0.5px solid ' + (active ? SKILL_COLORS[cat] : hot ? 'rgba(var(--ink-rgb),0.22)' : 'rgba(var(--ink-rgb),0.10)'),
+                color: active ? CAT_ON[cat] : hot ? 'var(--ink)' : 'rgba(var(--ink-rgb),0.60)',
+                transition: 'color .18s, background .18s, border-color .18s',
+              }}>
+              <span style={{ width: 9, height: 9, borderRadius: 9999, background: active ? CAT_ON[cat] : SKILL_COLORS[cat], flexShrink: 0 }} />
+              {CAT_LABELS[cat]}
+            </button>
+          )
+        })}
+
+        <button onClick={() => setFocusCat(null)} aria-label="Reset category filter"
+          style={{
+            display: focusCat ? 'flex' : 'none', alignItems: 'center', gap: 5, cursor: 'pointer',
+            padding: '5px 10px', borderRadius: 9999,
+            fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
+            border: '0.5px solid rgba(var(--accent-rgb),0.30)',
+            background: 'rgba(var(--accent-rgb),0.06)',
+            color: 'var(--accent)',
+            transition: 'color .18s, background .18s, border-color .18s',
+          }}>
+          <span style={{ fontSize: 10, lineHeight: 1 }}>✕</span>
+          Reset
+        </button>
       </div>
     </section>
   )
