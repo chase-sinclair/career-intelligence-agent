@@ -8,6 +8,7 @@ import ChapterLayout from '@/components/how-it-works/ChapterLayout'
 import IntroScene from '@/components/how-it-works/IntroScene'
 import KnowledgeBaseScene from '@/components/how-it-works/KnowledgeBaseScene'
 import QualityScene from '@/components/how-it-works/QualityScene'
+import StackScene from '@/components/how-it-works/StackScene'
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 
@@ -146,13 +147,41 @@ const METRICS = [
 ] as const
 
 const STACK = [
-  { label: 'Orchestration', value: 'LangGraph 0.2 — stateful multi-node graph' },
-  { label: 'Generation',    value: 'GPT-4o — grounded answer synthesis' },
-  { label: 'Evaluation',    value: 'GPT-4o-mini — LLM-as-judge (pre & post generation)' },
-  { label: 'Embeddings',    value: 'text-embedding-3-small — semantic similarity' },
-  { label: 'Vector DB',     value: 'Chroma — local persistent vector store' },
-  { label: 'Backend',       value: 'FastAPI + Python — async REST API' },
-  { label: 'Frontend',      value: 'Next.js 14 App Router + TypeScript + Tailwind CSS' },
+  {
+    label: 'Orchestration',
+    value:
+      'LangGraph holds the five stages as a stateful graph. State flows node to node, and the gate is a conditional edge — which is what lets the graph stop early instead of always running to the end.',
+  },
+  {
+    label: 'Retrieval',
+    value:
+      'Chroma stores a vector per chunk and answers the nearest-neighbour query. It is local and persistent, so the index is a file on disk rather than a managed service.',
+  },
+  {
+    label: 'Embeddings',
+    value:
+      'text-embedding-3-small turns both the indexed chunks and the incoming question into vectors. The same model has to be used for both, or the distances between them are meaningless.',
+  },
+  {
+    label: 'Generation',
+    value:
+      'gpt-4o writes the answer, but only from the passages the graph hands it. The prompt constrains it to the supplied evidence and the conversation so far.',
+  },
+  {
+    label: 'Judging',
+    value:
+      'gpt-4o-mini runs twice on different questions: before generation it rules on whether the evidence is sufficient, after generation it reviews the finished answer. A smaller model is enough for a bounded yes/no judgement.',
+  },
+  {
+    label: 'API',
+    value:
+      'FastAPI exposes the graph over one endpoint. The browser posts a question and conversation history and receives the answer, its sources, and both sets of scores together.',
+  },
+  {
+    label: 'Interface',
+    value:
+      'Next.js 14 App Router with TypeScript and Tailwind. The chat page renders the answer as it streams in and shows the evidence and scores alongside it.',
+  },
 ]
 
 // ── Shared atoms ──────────────────────────────────────────────────────────────
@@ -495,10 +524,30 @@ export default function HowItWorksPage() {
             <section>
               <div className={`transition-all duration-600 ease-out ${stackIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
                 <Eyebrow>Tech stack</Eyebrow>
-                <Heading2 className="mb-6">What it&apos;s built on</Heading2>
+                <Heading2 className="mb-4">What it&apos;s built on</Heading2>
+                <p className="text-[1.0625rem] leading-[1.7] mb-4 max-w-[64ch]" style={{ color: 'rgba(var(--ink-rgb),0.72)' }}>
+                  Individually these are ordinary choices, and deliberately so. What matters is
+                  the division of labour between them: each piece is responsible for one thing
+                  and hands a well-defined result to the next.
+                </p>
+                <p className="text-[1.0625rem] leading-[1.7] mb-4 max-w-[64ch]" style={{ color: 'rgba(var(--ink-rgb),0.72)' }}>
+                  A question arrives at the API, which hands it to the graph. The graph decides
+                  what happens in what order — and, crucially, whether to continue at all. The
+                  embedding model and the vector store answer one narrow question between them:
+                  which stored passages are closest to this one. Only after that does a
+                  generation model see anything, and it sees the retrieved passages rather than
+                  the corpus.
+                </p>
+                <p className="text-[1.0625rem] leading-[1.7] mb-7 max-w-[64ch]" style={{ color: 'rgba(var(--ink-rgb),0.72)' }}>
+                  Splitting it this way is what makes the behaviour inspectable. Because judging
+                  is a separate node rather than an instruction buried in the generation prompt,
+                  its verdict can be recorded, shown next to the answer, and used to stop the
+                  graph.
+                </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <ChapterLayout visual={<StackScene active={stackIn} />}>
+              <div className="grid grid-cols-1 gap-2">
                 {STACK.map(({ label, value }, i) => (
                   <div
                     key={label}
@@ -510,17 +559,18 @@ export default function HowItWorksPage() {
                     }}
                   >
                     <p
-                      className="font-mono text-[8px] tracking-[0.14em] uppercase mb-1"
+                      className="font-mono text-[9.5px] tracking-[0.14em] uppercase mb-1.5"
                       style={{ color: 'var(--accent)' }}
                     >
                       {label}
                     </p>
-                    <p className="text-[11px] leading-relaxed" style={{ color: 'rgba(var(--ink-rgb),0.60)' }}>
+                    <p className="text-[0.9375rem] leading-[1.6]" style={{ color: 'rgba(var(--ink-rgb),0.66)' }}>
                       {value}
                     </p>
                   </div>
                 ))}
               </div>
+              </ChapterLayout>
             </section>
           </div>
 
