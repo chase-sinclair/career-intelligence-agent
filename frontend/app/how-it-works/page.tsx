@@ -4,8 +4,20 @@ import Link from 'next/link'
 import TopNav from '@/components/TopNav'
 import { useInView } from '@/hooks/useInView'
 import PipelineSection from '@/components/how-it-works/PipelineSection'
+import ChapterLayout from '@/components/how-it-works/ChapterLayout'
+import IntroScene from '@/components/how-it-works/IntroScene'
+import KnowledgeBaseScene from '@/components/how-it-works/KnowledgeBaseScene'
+import QualityScene from '@/components/how-it-works/QualityScene'
 
 // ── Data ──────────────────────────────────────────────────────────────────────
+
+/**
+ * Corpus snapshot. Counted from the live Chroma collection rather than
+ * estimated, and dated so it is obvious when it was last checked. There is no
+ * public endpoint exposing a chunk count, and the spec rules out live calls
+ * from explanatory visuals, so this is a dated figure rather than a fetch.
+ */
+const CORPUS = { artifacts: 19, chunks: 91, asOf: 'October 2026' } as const
 
 const KB_DOCS = [
   {
@@ -187,39 +199,42 @@ export default function HowItWorksPage() {
       <main className="pl-5">
         <div className="px-6 md:px-10 pb-24 pt-24 mx-auto w-full max-w-[1280px]">
 
-          {/* ── §1 Hero ──────────────────────────────────────────────────── */}
+          {/* ── §1 Under the hood ───────────────────────────────────────── */}
           <div ref={heroRef}>
             <header
-              className={`mb-0 transition-all duration-700 ease-out ${heroIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
+              className={`transition-all duration-700 ease-out ${heroIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
             >
               <Eyebrow>Under the hood</Eyebrow>
               <h1
-                className="text-4xl md:text-5xl font-light tracking-[-0.04em] leading-tight mb-6 max-w-xl"
-                style={{ color: 'var(--ink)' }}
+                className="font-light tracking-[-0.04em] leading-[1.06] mb-6 max-w-[16ch]"
+                style={{ color: 'var(--ink)', fontSize: 'clamp(2.25rem, 3.2vw, 3.5rem)' }}
               >
                 An AI-native candidate profile built on real evidence
               </h1>
 
-              {/* Two-column desktop layout */}
-              <div className="flex flex-col md:flex-row gap-8 mt-8 mb-14">
-                {/* Left: problem copy */}
-                <div className="flex-1 max-w-md">
-                  <p className="text-sm leading-relaxed mb-3" style={{ color: 'rgba(var(--ink-rgb),0.62)' }}>
-                    Traditional resumes are static snapshots. This profile is conversational,
-                    evidence-backed, and evaluated in real time. Every answer is traced to a
-                    specific career document — not generated from training data.
-                  </p>
-                  <p className="text-sm leading-relaxed" style={{ color: 'rgba(var(--ink-rgb),0.62)' }}>
-                    A recruiter evaluating systems architecture experience has different questions
-                    than one evaluating team leadership or client impact. This profile answers
-                    both — grounded in evidence, not inference.
-                  </p>
-                </div>
+              <ChapterLayout visual={<IntroScene active={heroIn} />}>
+                <p className="text-[1.0625rem] leading-[1.7] mb-4 max-w-[64ch]" style={{ color: 'rgba(var(--ink-rgb),0.72)' }}>
+                  A resume is a fixed document: it answers the questions its author
+                  anticipated, in the order they chose. This profile works the other way
+                  round — you ask, and the system answers from Chase&apos;s actual career
+                  documents.
+                </p>
+                <p className="text-[1.0625rem] leading-[1.7] mb-4 max-w-[64ch]" style={{ color: 'rgba(var(--ink-rgb),0.72)' }}>
+                  That only means something if the answers can be trusted. So the system is
+                  built around a simple rule: before it writes anything, it has to find
+                  supporting passages in the indexed documents, and it checks whether what it
+                  found is actually enough. If it isn&apos;t, it says so instead of guessing.
+                </p>
+                <p className="text-[1.0625rem] leading-[1.7] mb-6 max-w-[64ch]" style={{ color: 'rgba(var(--ink-rgb),0.72)' }}>
+                  A language model still writes the words. What changes is where the facts come
+                  from: retrieved passages rather than whatever the model absorbed in training.
+                  Every answer carries citations back to the document it came from, and is
+                  scored after the fact.
+                </p>
 
-                {/* Right: callout box */}
                 <div
                   ref={calloutRef}
-                  className={`w-full md:w-60 flex-shrink-0 rounded-xl p-5 transition-all duration-700 ease-out ${calloutIn ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'}`}
+                  className={`rounded-xl p-5 max-w-[46ch] transition-all duration-700 ease-out ${calloutIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
                   style={{
                     background: 'rgba(var(--accent-rgb),0.05)',
                     border: '0.5px solid rgba(var(--accent-rgb),0.2)',
@@ -228,7 +243,7 @@ export default function HowItWorksPage() {
                 >
                   {[
                     'Ask anything directly.',
-                    '19 career artifacts indexed.',
+                    `${CORPUS.artifacts} career artifacts indexed.`,
                     'Evidence checked before answering.',
                     'Answer scored after generating.',
                   ].map((line, i) => (
@@ -238,16 +253,16 @@ export default function HowItWorksPage() {
                       style={{ transitionDelay: calloutIn ? `${160 + i * 70}ms` : '0ms' }}
                     >
                       <span
-                        className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-[5px]"
+                        className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-[7px]"
                         style={{ background: 'rgba(var(--accent-rgb),0.65)' }}
                       />
-                      <p className="text-[11px] leading-relaxed" style={{ color: 'rgba(var(--ink-rgb),0.62)' }}>
+                      <p className="text-[0.9375rem] leading-[1.6]" style={{ color: 'rgba(var(--ink-rgb),0.7)' }}>
                         {line}
                       </p>
                     </div>
                   ))}
                 </div>
-              </div>
+              </ChapterLayout>
             </header>
           </div>
 
@@ -258,16 +273,34 @@ export default function HowItWorksPage() {
             <section>
               <div className={`transition-all duration-600 ease-out ${kbIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
                 <Eyebrow>The knowledge base</Eyebrow>
-                <Heading2 className="mb-4">19 career artifacts, ingested and indexed</Heading2>
-                <p className="text-[1.0625rem] leading-[1.7] mb-7 max-w-[64ch]" style={{ color: 'rgba(var(--ink-rgb),0.72)' }}>
-                  The profile is built from structured markdown documents parsed, chunked to
-                  preserve section structure, embedded with{' '}
+                <Heading2 className="mb-4">
+                  {CORPUS.artifacts} career artifacts, ingested and indexed
+                </Heading2>
+                <p className="text-[1.0625rem] leading-[1.7] mb-4 max-w-[64ch]" style={{ color: 'rgba(var(--ink-rgb),0.72)' }}>
+                  Everything the assistant can say comes from a fixed set of documents:
+                  resume content, project write-ups, engagement summaries and certification
+                  records, written as structured markdown.
+                </p>
+                <p className="text-[1.0625rem] leading-[1.7] mb-4 max-w-[64ch]" style={{ color: 'rgba(var(--ink-rgb),0.72)' }}>
+                  Each document is split along its own section boundaries rather than at a
+                  fixed character count, so a retrieved passage still makes sense on its own.
+                  Every passage is turned into an embedding — a list of numbers standing in
+                  for its meaning — with{' '}
                   <span style={{ color: 'rgba(var(--ink-rgb),0.68)' }}>text-embedding-3-small</span>,
                   and stored in a Chroma vector index.
                 </p>
+                <p className="text-[1.0625rem] leading-[1.7] mb-7 max-w-[64ch]" style={{ color: 'rgba(var(--ink-rgb),0.72)' }}>
+                  That work happens once, when a document is ingested. It is worth separating
+                  two numbers that are easy to confuse: {CORPUS.artifacts} artifacts are{' '}
+                  <em className="not-italic" style={{ color: 'var(--accent)' }}>indexed</em>, and a
+                  single question{' '}
+                  <em className="not-italic" style={{ color: 'var(--accent)' }}>retrieves</em> a
+                  small subset of the {CORPUS.chunks} resulting chunks — currently the top 12.
+                  Nothing re-reads the whole corpus per question.
+                </p>
               </div>
 
-              {/* 2×2 doc cards */}
+              <ChapterLayout visual={<KnowledgeBaseScene active={kbIn} />}>
               <div className="grid grid-cols-2 gap-2 mb-5">
                 {KB_DOCS.map(({ label, detail, icon }, i) => (
                   <div
@@ -321,6 +354,7 @@ export default function HowItWorksPage() {
                   )}
                 </div>
               </div>
+              </ChapterLayout>
             </section>
           </div>
 
@@ -350,7 +384,19 @@ export default function HowItWorksPage() {
             <section>
               <div className={`transition-all duration-600 ease-out ${metricsIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
                 <Eyebrow>Answer quality</Eyebrow>
-                <Heading2 className="mb-4">Every answer is scored, not just generated</Heading2>
+                <Heading2 className="mb-4">Checked twice — before and after writing</Heading2>
+                <p className="text-[1.0625rem] leading-[1.7] mb-4 max-w-[64ch]" style={{ color: 'rgba(var(--ink-rgb),0.72)' }}>
+                  Retrieval can go wrong in two different ways, so the system checks at two
+                  different moments. Before anything is written, it asks whether the passages
+                  it found are on topic and whether they actually contain the facts the
+                  question needs. That check can stop the process outright.
+                </p>
+                <p className="text-[1.0625rem] leading-[1.7] mb-7 max-w-[64ch]" style={{ color: 'rgba(var(--ink-rgb),0.72)' }}>
+                  Once an answer exists, a second pass reviews the finished text against the
+                  evidence it was given: is every claim supported, was the available evidence
+                  used, and did anything slip in that the sources do not say. The five
+                  dimensions below belong to one checkpoint or the other — never both.
+                </p>
               </div>
 
               {/* Pull-quote callout */}
@@ -361,15 +407,18 @@ export default function HowItWorksPage() {
                   transitionDelay: metricsIn ? '100ms' : '0ms',
                 }}
               >
-                <p className="text-sm leading-relaxed italic mb-1" style={{ color: 'rgba(var(--ink-rgb),0.68)' }}>
-                  Most AI systems generate an answer and stop. This one evaluates it.
+                <p className="text-[1.0625rem] leading-[1.7] italic mb-1" style={{ color: 'rgba(var(--ink-rgb),0.72)' }}>
+                  Most AI systems generate an answer and stop. This one grades its own work.
                 </p>
-                <p className="text-[11px] leading-relaxed" style={{ color: 'rgba(var(--ink-rgb),0.62)' }}>
-                  The quality panel on the Ask page shows live scores for every response.
+                <p className="text-[0.9375rem] leading-[1.6]" style={{ color: 'rgba(var(--ink-rgb),0.62)' }}>
+                  Scores are recorded per answer and shown in the quality panel on the Ask
+                  page. No aggregate performance figures are published here — see the note at
+                  the end of this section.
                 </p>
               </div>
 
               {/* Metric rows */}
+              <ChapterLayout visual={<QualityScene active={metricsIn} />}>
               <div className="flex flex-col gap-2">
                 {METRICS.map(({ label, detail, phase, scale, kind }, i) => (
                   <div
@@ -428,6 +477,14 @@ export default function HowItWorksPage() {
                   </div>
                 ))}
               </div>
+                <p className="mt-6 text-[0.9375rem] leading-[1.6] max-w-[62ch]" style={{ color: 'rgba(var(--ink-rgb),0.62)' }}>
+                  A note on numbers: this page deliberately shows no average scores. The
+                  evaluation harness exists and records these dimensions per answer, but the
+                  only batch run stored in the repository covers three questions, which is far
+                  too small to quote as a performance figure. Rather than publish a number that
+                  cannot be defended, the design is described and the measurement left out.
+                </p>
+              </ChapterLayout>
             </section>
           </div>
 
