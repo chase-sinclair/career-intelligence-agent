@@ -16,7 +16,7 @@ const KB_DOCS = [
         <rect x="1.5" y="1" width="9" height="12" rx="1" stroke="rgba(var(--accent-rgb),0.55)" strokeWidth="0.75" />
         <line x1="3.5" y1="4.5" x2="8.5" y2="4.5" stroke="rgba(var(--accent-rgb),0.35)" strokeWidth="0.75" />
         <line x1="3.5" y1="6.5" x2="8.5" y2="6.5" stroke="rgba(var(--accent-rgb),0.35)" strokeWidth="0.75" />
-        <line x1="3.5" y1="8.5" x2="6.5" y2="8.5" stroke="rgba(var(--accent-rgb),0.25)" strokeWidth="0.75" />
+        <line x1="3.5" y1="8.5" x2="6.5" y2="8.5" stroke="rgba(var(--accent-rgb),0.4)" strokeWidth="0.75" />
       </svg>
     ),
   },
@@ -36,7 +36,7 @@ const KB_DOCS = [
       <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
         <rect x="1.5" y="4.5" width="12" height="9" rx="1" stroke="rgba(var(--accent-rgb),0.55)" strokeWidth="0.75" fill="rgba(var(--accent-rgb),0.04)" />
         <path d="M4.5 4.5V3.5C4.5 3.22 4.72 3 5 3H10C10.28 3 10.5 3.22 10.5 3.5V4.5" stroke="rgba(var(--accent-rgb),0.4)" strokeWidth="0.75" />
-        <line x1="1.5" y1="8.5" x2="13.5" y2="8.5" stroke="rgba(var(--accent-rgb),0.2)" strokeWidth="0.75" />
+        <line x1="1.5" y1="8.5" x2="13.5" y2="8.5" stroke="rgba(var(--accent-rgb),0.35)" strokeWidth="0.75" />
       </svg>
     ),
   },
