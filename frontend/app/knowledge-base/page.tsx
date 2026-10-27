@@ -474,8 +474,8 @@ export default function KnowledgeBasePage() {
         )}
 
         {/* ── Hero ─────────────────────────────────────────────────────────── */}
-        <div className="ask-hero">
-          <h1 data-quiet-zone className="ask-hero-h1 font-light tracking-[-0.03em] leading-tight" style={{ color: 'var(--ink)' }}>
+        <div className="ask-hero" data-quiet-zone>
+          <h1 className="ask-hero-h1 font-light tracking-[-0.03em] leading-tight" style={{ color: 'var(--ink)' }}>
             Ask About{' '}
             <em className="font-serif not-italic" style={{ color: 'var(--accent)' }}>Chase</em>
           </h1>

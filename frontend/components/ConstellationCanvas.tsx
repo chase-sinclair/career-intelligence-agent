@@ -86,6 +86,12 @@ interface ConstellationCanvasProps {
    * space and offset by scroll each frame, so the loop never reads layout.
    */
   maskSelector?: string
+  /**
+   * Multiplier on the base node count, for routes where much of the field is
+   * hidden under content and the visible area needs more to read as a network.
+   * 1 everywhere unless a route opts in.
+   */
+  densityScale?: number
 }
 
 export default function ConstellationCanvas({
@@ -93,6 +99,7 @@ export default function ConstellationCanvas({
   enhanced = false,
   quietZoneSelector,
   maskSelector,
+  densityScale = 1,
 }: ConstellationCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const mouseRef = useRef({ x: -9999, y: -9999 })
@@ -137,20 +144,30 @@ export default function ConstellationCanvas({
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
     let reduceMotion = motionQuery.matches
 
-    /** Per-line text boxes for an element — a block-level headline spans the
-     *  full column while its text may occupy a fraction of it, and using the
-     *  element box would mute a full-width band of the canvas. */
+    /** Per-line text boxes for an element and everything inside it.
+     *  Walks text nodes rather than ranging over the element's contents:
+     *  a range over a container also yields its child block boxes, which span
+     *  the full column width and would mute a band far wider than the text. */
     function textRects(el: Element): DOMRect[] {
+      const out: DOMRect[] = []
       try {
-        const range = document.createRange()
-        range.selectNodeContents(el)
-        const rs = Array.from(range.getClientRects())
-        range.detach?.()
-        if (rs.length) return rs
+        const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT)
+        let n = walker.nextNode()
+        while (n) {
+          if (n.nodeValue && n.nodeValue.trim()) {
+            const range = document.createRange()
+            range.selectNodeContents(n)
+            for (const r of Array.from(range.getClientRects())) {
+              if (r.width > 0 && r.height > 0) out.push(r)
+            }
+            range.detach?.()
+          }
+          n = walker.nextNode()
+        }
       } catch {
         /* fall through to the element box */
       }
-      return [el.getBoundingClientRect()]
+      return out.length ? out : [el.getBoundingClientRect()]
     }
 
     /** Viewport rect -> canvas space at measure time. */
@@ -220,7 +237,8 @@ export default function ConstellationCanvas({
 
       const w = canvas!.offsetWidth || window.innerWidth
       const h = canvas!.offsetHeight || window.innerHeight
-      nodesRef.current = Array.from({ length: NODE_COUNT }, () => {
+      const count = Math.round(NODE_COUNT * densityScale)
+      nodesRef.current = Array.from({ length: count }, () => {
         const p = biasedPoint(w, h)
         return {
           x: p.x,
