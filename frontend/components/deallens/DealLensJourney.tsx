@@ -15,7 +15,7 @@ function InlineScene({ stage, replay }: { stage: number; replay: number }) {
       ref={ref}
       className="mt-6 rounded-xl border border-outline-variant bg-surface-container-low p-3 sm:p-5"
     >
-      <SourceBadge />
+      <SourceBadge comparison={stage === 5} />
       <JourneyScene
         key={`${entered}-${replay}`}
         stage={stage}
@@ -36,7 +36,7 @@ export default function DealLensJourney() {
   const current = useRef(-1)
   useEffect(() => {
     const media = window.matchMedia(
-      '(min-width: 1024px) and (min-height: 760px)',
+      '(min-width: 1200px) and (min-height: 800px), (min-width: 1024px) and (min-height: 900px)',
     )
     const update = () => setDesktop(media.matches)
     update()
@@ -59,7 +59,10 @@ export default function DealLensJourney() {
         (!visited.current.has(next) && rects[next] && rects[next]!.top <= band)
       ) {
         setAnimate(
-          !visited.current.has(next) && Math.abs(next - current.current) <= 1,
+          !!rects[next] &&
+            rects[next]!.top <= band &&
+            !visited.current.has(next) &&
+            Math.abs(next - current.current) <= 1,
         )
         if (rects[next] && rects[next]!.top < window.innerHeight)
           visited.current.add(next)
@@ -219,11 +222,11 @@ export default function DealLensJourney() {
         {desktop && (
           <div
             data-testid="sticky-canvas"
-            className="sticky top-[136px] self-start"
+            className="sticky top-[128px] self-start"
           >
             <div className="rounded-xl border border-outline-variant bg-surface-container-low shadow-[0_12px_40px_rgba(19,23,26,.04)]">
               <div className="flex items-center justify-between gap-2 border-b border-outline-variant px-5 py-3">
-                <SourceBadge />
+                <SourceBadge comparison={active === 5} />
                 <span className="shrink-0 font-mono text-xs text-on-surface-variant">
                   0{active + 1} / 06
                 </span>
@@ -238,7 +241,7 @@ export default function DealLensJourney() {
                   animate={animate}
                 />
               </div>
-              <div className="flex items-center justify-between gap-2 border-t border-outline-variant px-4 py-2">
+              <div className="flex items-center justify-between gap-2 border-t border-outline-variant px-4 py-1">
                 <button
                   type="button"
                   onClick={() => replay(active)}

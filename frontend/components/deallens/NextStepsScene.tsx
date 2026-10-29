@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 import { Check, Minus, CircleHelp } from 'lucide-react'
 import { companies, criteria, questions } from '@/lib/deallens-data'
 import { Reveal, Tabs } from './StoryParts'
@@ -9,7 +10,7 @@ export default function NextStepsScene({ play }: { play: boolean }) {
   const company = companies[selected]
   // Local choices stay stable during scroll; a deliberate stage re-entry/replay restores defaults.
   return (
-    <div className="py-4">
+    <div className="py-3">
       <Tabs
         labels={companies.map((c) => c.short)}
         label="Compare synthetic companies"
@@ -23,7 +24,7 @@ export default function NextStepsScene({ play }: { play: boolean }) {
             <strong className="text-primary">{company.score}/100</strong>
           </span>
         </div>
-        <div className="mt-3 border-y border-outline-variant py-3">
+        <div className="mt-2 border-y border-outline-variant py-2">
           <p className="mb-2 text-[11px] font-semibold text-primary">
             From risks to follow-up questions
           </p>
@@ -31,7 +32,7 @@ export default function NextStepsScene({ play }: { play: boolean }) {
             <div className="space-y-2">
               {questions.map(([risk, question], i) => (
                 <Reveal play={play} delay={i * 0.25} key={risk}>
-                  <div className="grid grid-cols-[110px_1fr] gap-3 text-[11px] leading-[1.55] sm:grid-cols-[130px_1fr]">
+                  <div className="grid grid-cols-[110px_1fr] gap-3 text-xs leading-[1.5] sm:grid-cols-[130px_1fr]">
                     <p className="font-medium text-primary">{risk}</p>
                     <p>{question}</p>
                   </div>
@@ -43,7 +44,7 @@ export default function NextStepsScene({ play }: { play: boolean }) {
               </p>
             </div>
           ) : (
-            <div className="flex min-h-[124px] flex-col justify-center">
+            <div className="flex min-h-[110px] flex-col justify-center">
               <p className="text-sm">Sample follow-up not shown</p>
               <p className="mt-2 text-xs leading-5 text-on-surface-variant">
                 A verified question capture for {company.short} is not available
@@ -58,7 +59,7 @@ export default function NextStepsScene({ play }: { play: boolean }) {
             <p className="mb-2 text-xs font-semibold">
               How the deal measures up
             </p>
-            <table className="w-full border-collapse text-left text-[11px] leading-4">
+            <table className="w-full border-collapse text-left text-xs leading-4">
               <caption className="sr-only">
                 Illustrative screening checks for {company.name}
               </caption>
@@ -92,20 +93,37 @@ export default function NextStepsScene({ play }: { play: boolean }) {
                       key={criterion.need}
                       className="border-b border-outline-variant last:border-0"
                     >
-                      <th scope="row" className="w-[49%] py-2 pr-3 font-normal">
+                      <th
+                        scope="row"
+                        className="w-[49%] py-1.5 pr-3 font-normal"
+                      >
                         {criterion.need}
                       </th>
-                      <td className="py-2 font-medium tabular-nums">
+                      <motion.td
+                        initial={play ? { opacity: 0 } : false}
+                        animate={{ opacity: 1 }}
+                        transition={{
+                          delay: play ? 1.15 : 0,
+                          duration: play ? 0.25 : 0,
+                        }}
+                        className="py-1.5 font-medium tabular-nums"
+                      >
                         {company.display[i]}
-                      </td>
-                      <td
-                        className={`py-2 pl-2 ${meets ? 'text-primary' : 'text-amber-900'}`}
+                      </motion.td>
+                      <motion.td
+                        initial={play ? { opacity: 0 } : false}
+                        animate={{ opacity: 1 }}
+                        transition={{
+                          delay: play ? 1.45 : 0,
+                          duration: play ? 0.25 : 0,
+                        }}
+                        className={`py-1.5 pl-2 ${meets ? 'text-primary' : 'text-amber-900'}`}
                       >
                         <span className="flex items-center gap-1">
                           <Icon size={12} className="shrink-0" />
                           {result}
                         </span>
-                      </td>
+                      </motion.td>
                     </tr>
                   )
                 })}
@@ -114,7 +132,7 @@ export default function NextStepsScene({ play }: { play: boolean }) {
           </div>
         </Reveal>
         <Reveal play={play} delay={1.6}>
-          <p className="mt-3 rounded-md bg-primary/10 px-3 py-2 text-sm font-semibold text-primary">
+          <p className="mt-2 rounded-md bg-primary/10 px-3 py-2 text-sm font-semibold text-primary">
             {company.recommendation}
           </p>
         </Reveal>
@@ -126,3 +144,4 @@ export default function NextStepsScene({ play }: { play: boolean }) {
     </div>
   )
 }
+

@@ -85,7 +85,7 @@ const shots = [
     file: 'slack-deallens-alert-northstar.png',
     title: 'Northstar Slack alert',
     caption:
-      'Captured alert: 85 initial fit score, five risks, and Proceed to initial review. This historical capture shows completeness75, whereas the Airtable capture shows80; those fields are not synchronized proof from one canonical run.',
+      'Captured alert: 85 initial fit score, five risks, and Proceed to initial review. This historical capture shows completeness 75, whereas the Airtable capture shows 80; those fields are not synchronized proof from one canonical run.',
     width: 766,
     height: 285,
   },

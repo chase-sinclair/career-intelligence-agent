@@ -29,7 +29,7 @@ function RawText({
       <p className="mb-4 font-mono text-[10px] uppercase tracking-wider text-on-surface-variant">
         Extracted text
       </p>
-      <p className="font-mono text-xs leading-[1.9] text-on-surface/75">
+      <p className="font-mono text-xs leading-[1.7] text-on-surface/75">
         {phrases.map((part, i) =>
           highlighted && i % 2 === 1 ? (
             <motion.mark
@@ -62,7 +62,7 @@ function RawText({
 }
 function Extraction({ play }: { play: boolean }) {
   return (
-    <div className="py-5">
+    <div className="py-3">
       <div className="mb-4 flex items-center justify-between text-xs text-on-surface-variant">
         <span>Document</span>
         <ArrowRight size={14} />
@@ -131,9 +131,9 @@ function Extraction({ play }: { play: boolean }) {
 }
 function Structure({ play }: { play: boolean }) {
   return (
-    <div className="py-5">
+    <div className="py-3">
       <Reveal play={play}>
-        <div className="mb-4 border-b border-outline-variant pb-4">
+        <div className="mb-3 border-b border-outline-variant pb-3">
           <Label>Extraction checklist</Label>
           <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
             {[
@@ -171,7 +171,7 @@ function Structure({ play }: { play: boolean }) {
             ],
           ].map(([label, value], i) => (
             <Reveal play={play} delay={0.35 + i * 0.23} key={label}>
-              <div className="relative border-t border-outline-variant py-2">
+              <div className="relative border-t border-outline-variant py-1.5">
                 <p className="text-[10px] text-on-surface-variant">{label}</p>
                 <p
                   className={`mt-0.5 text-xs font-medium leading-5 ${i === 5 ? 'text-amber-900' : ''}`}
@@ -205,7 +205,7 @@ function Records({ play }: { play: boolean }) {
   const [selected, setSelected] = useState(1)
   const icons = [FileText, ChartNoAxesCombined, Activity]
   return (
-    <div className="py-5">
+    <div className="py-3">
       <Reveal play={play}>
         <div className="rounded-lg border border-primary/30 bg-[var(--panel-solid)] p-4">
           <DealIdentity>Company record · FY2025</DealIdentity>

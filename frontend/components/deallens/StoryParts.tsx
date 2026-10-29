@@ -27,11 +27,15 @@ export function Reveal({
     </motion.div>
   )
 }
-export function SourceBadge() {
+export function SourceBadge({ comparison = false }: { comparison?: boolean }) {
   return (
     <div className="flex min-w-0 items-center gap-2 text-xs text-primary">
       <FileText size={14} className="shrink-0" />
-      <span>{northstar.source}</span>
+      <span>
+        {comparison
+          ? 'Synthetic CIMs · Northstar / MedAxis / BrightCart'
+          : northstar.source}
+      </span>
     </div>
   )
 }
@@ -101,7 +105,7 @@ export function Tabs({
                 document.getElementById(`${id}-tab-${target}`)?.focus()
               }
             }}
-            className={`min-h-10 flex-1 rounded-md px-3 py-2 text-sm font-medium ${focus} ${i === selected ? 'bg-[var(--panel-solid)] text-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`}
+            className={`min-h-10 flex-1 rounded-md px-3 py-2 text-sm font-medium ${focus} ${i === selected ? 'bg-[var(--panel-solid)] text-primary shadow-sm' : 'text-on-surface/80 hover:text-on-surface'}`}
           >
             {name}
           </button>

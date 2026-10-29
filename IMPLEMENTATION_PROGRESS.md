@@ -35,3 +35,13 @@ Inspect git status and this file, then continue current phase; do not restart. U
 - Two authentic workspace tabs, three evidence chapters, eight-image full-resolution viewer, unavailable-image state, memo gate and capture discrepancy note implemented.
 - `frontend/node_modules/.bin/tsc.cmd --noEmit -p frontend/tsconfig.json`: PASS before formatting.
 - Next: render and refine. No new browser acceptance claims yet. Start preview on3001 so existing3000 baseline stays available during QA.
+
+## Milestone 2 — rendered behavior and accessibility refinement
+- Browser-reviewed all twelve sections and all six settled scenes; screenshots saved in the external QA folder.
+- Fixed initial entry activation, compacted tall scenes, increased comparison text to12px, added Needs→Has→Result reveal timing, and clarified the comparison source badge.
+- Sticky supported at width>=1200/height>=800 and width>=1024/height>=900; shorter/narrower screens use complete normal-flow scenes. All six scenes fit 1280×800 and1920×1080 in the main run. Local comparison choices reset only on deliberate stage re-entry/replay, not minor scroll.
+- Main Chrome run:94 checks,92 passed; two scans found the same inactive-tab contrast defect. Corrected text contrast, then desktop/modal/mobile axe rescans all returned zero WCAG A/AA violations.
+- Confirmed intake Watching→Detected→Started timing, background settle and safe return, zero requested animation frames during a1.5s idle sample, Edge comparison interaction, and no-JavaScript narrative fallback.
+- Next.js lint command cannot run unattended: repository has no ESLint config/dependency. Isolated ESLint8.57.1 + eslint-config-next14.2.29 tested all DealLens files: zero errors/warnings. No repository dependency changes.
+- TypeScript passed after refinements. Next: stop development servers, clean production build, repeat acceptance run against production, verify refreshed fonts/images and final native-browser inspection.
+- Milestone1 commit:10afb0f. Preserve unrelated working-tree paths. Memo/date repair remains blocked outside portfolio scope.
