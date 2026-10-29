@@ -145,3 +145,21 @@ Completed: Phase 5 — Evaluation layer.
 - frontend/lib/api.ts — added runEval() (POST /eval/run), getEvalResults() (GET /eval/results)
 - frontend/app/diagnostics/page.tsx — full diagnostics page: MetricBar + PassBadge helpers, aggregate metrics panel, run controls panel, per-question results table with line-clamp explanations
 MVP complete — all 5 phases done.
+
+### Session 7 — 2026-10-28
+Completed: DealLens interactive case-study redesign at `/projects/deallens`.
+- Audited available skills, plugins, animation tooling, browser automation, and screenshot assets; reused Next.js, Tailwind, Framer Motion, and Lucide without adding repository dependencies.
+- Replaced the legacy fixed dark/gold scroller with a normal document page using the current Slate/teal theme, route metadata, and a recruiter-facing hero.
+- Added a native animated CIM-to-Drive drop, six scroll-linked journey scenes, replay controls, independent three-Zap architecture exploration, and an accessible seven-table relationship explorer.
+- Repaired all 14 gallery paths, added authentic Airtable/Slack surface selectors, category filters, and an accessible full-resolution lightbox.
+- Verified workflow order and schema against `chase-sinclair/DealLens` README and CODEX: risk creation follows memo write-back; Zaps 2/3 have independent view triggers; Memo Link is a Deals field; Review Notes remains outside the seven populated MVP tables.
+- Added reduced-motion/completed-state fallbacks, background-tab animation cancellation, keyboard/touch interactions, mobile intake layout, and inline scenes for short viewports.
+- Validation: clean production build and TypeScript passed; 59 Playwright checks passed across 320–1536px widths, native browser inspection, Chrome/Edge checks, zero axe WCAG A/AA findings in tested page/modal/mobile states, all 14 images served, no application runtime errors. Idle animation sample recorded zero callbacks over 1.5 seconds; no-JavaScript narrative fallback verified.
+- New implementation lives in `frontend/components/deallens/` and `frontend/lib/deallens-data.ts`. Original reference images remain on disk. QA scripts/screenshots/tooling are outside the repository.
+Next: optional authentic Google Docs IC memo screenshot (currently represented by a labeled illustration); optional Safari/Firefox and physical-device checks; deployment when requested. Changes are local and not deployed.
+
+### Session 8 — 2026-10-29 (second pass, in progress)
+- Read complete approved second-pass contract; centralized exact copy and synthetic company canon.
+- Rebuilt the twelve-section story and six native scroll-triggered scenes; stronger laptop sticky layout, three-automation convergence, genuine screenshot theaters, approved reflection.
+- Located higher-quality real PNG assets locally. Independently confirmed erroneous memo EBITDA/date; memo proof withheld. No live automation modified.
+- User authorized milestone commits and IMPLEMENTATION_PROGRESS.md for interruption recovery. TypeScript passes; browser QA next. See progress file for current status and resume steps.
