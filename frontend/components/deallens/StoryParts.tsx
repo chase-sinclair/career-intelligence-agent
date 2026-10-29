@@ -63,12 +63,14 @@ export function Tabs({
   onChange,
   label,
   children,
+  badges,
 }: {
   labels: readonly string[]
   selected: number
   onChange: (index: number) => void
   label: string
   children: ReactNode
+  badges?: readonly ReactNode[]
 }) {
   const id = useId()
   return (
@@ -85,6 +87,7 @@ export function Tabs({
             key={name}
             id={`${id}-tab-${i}`}
             aria-selected={i === selected}
+            aria-label={name}
             aria-controls={`${id}-panel`}
             tabIndex={i === selected ? 0 : -1}
             onClick={() => onChange(i)}
@@ -108,6 +111,7 @@ export function Tabs({
             className={`min-h-10 flex-1 rounded-md px-3 py-2 text-sm font-medium ${focus} ${i === selected ? 'bg-[var(--panel-solid)] text-primary shadow-sm' : 'text-on-surface/80 hover:text-on-surface'}`}
           >
             {name}
+            {badges?.[i]}
           </button>
         ))}
       </div>

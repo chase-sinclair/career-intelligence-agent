@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Check, Minus, CircleHelp } from 'lucide-react'
-import { companies, criteria, questions } from '@/lib/deallens-data'
+import { companies, criteria, questions, risks } from '@/lib/deallens-data'
 import { Reveal, Tabs } from './StoryParts'
 
 export default function NextStepsScene({ play }: { play: boolean }) {
@@ -29,19 +29,39 @@ export default function NextStepsScene({ play }: { play: boolean }) {
             From risks to follow-up questions
           </p>
           {selected === 0 ? (
-            <div className="space-y-2">
-              {questions.map(([risk, question], i) => (
-                <Reveal play={play} delay={i * 0.25} key={risk}>
-                  <div className="grid grid-cols-[110px_1fr] gap-3 text-xs leading-[1.5] sm:grid-cols-[130px_1fr]">
-                    <p className="font-medium text-primary">{risk}</p>
-                    <p>{question}</p>
-                  </div>
-                </Reveal>
-              ))}
-              <p className="pt-1 text-[10px] text-on-surface-variant">
-                5 risks flagged · Follow-up questions prepared for analyst
-                review
-              </p>
+            <div className="relative">
+              {play && (
+                <motion.div
+                  aria-hidden="true"
+                  initial={{ opacity: 1 }}
+                  animate={{ opacity: [1, 1, 0] }}
+                  transition={{ duration: 0.8, times: [0, 0.35, 1] }}
+                  className="pointer-events-none absolute inset-0 z-10 flex flex-wrap content-center gap-2 bg-[var(--panel-solid)]"
+                >
+                  {risks.map((risk) => (
+                    <span
+                      key={risk}
+                      className={`h-fit rounded border px-2 py-1 text-xs ${risk === 'Customer concentration' ? 'border-primary/30 bg-primary/10 text-primary' : 'border-outline-variant text-on-surface-variant'}`}
+                    >
+                      {risk}
+                    </span>
+                  ))}
+                </motion.div>
+              )}
+              <div className="space-y-2">
+                {questions.map(([risk, question], i) => (
+                  <Reveal play={play} delay={0.65 + i * 0.2} key={risk}>
+                    <div className="grid grid-cols-[110px_1fr] gap-3 text-xs leading-[1.5] sm:grid-cols-[130px_1fr]">
+                      <p className="font-medium text-primary">{risk}</p>
+                      <p>{question}</p>
+                    </div>
+                  </Reveal>
+                ))}
+                <p className="pt-1 text-[10px] text-on-surface-variant">
+                  5 risks flagged · Follow-up questions prepared for analyst
+                  review
+                </p>
+              </div>
             </div>
           ) : (
             <div className="flex min-h-[110px] flex-col justify-center">
@@ -144,4 +164,3 @@ export default function NextStepsScene({ play }: { play: boolean }) {
     </div>
   )
 }
-

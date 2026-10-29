@@ -319,6 +319,20 @@ function Handoff({ play }: { play: boolean }) {
         selected={tab}
         onChange={setTab}
         label="Review package"
+        badges={[
+          null,
+          <motion.span
+            key="memo-ready"
+            aria-hidden="true"
+            initial={play ? { opacity: 0, y: 4, scale: 0.85 } : false}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ delay: play ? 0.95 : 0, duration: play ? 0.25 : 0 }}
+            className="ml-2 inline-flex items-center gap-1 text-[10px] text-primary"
+          >
+            <FileText size={12} />
+            Ready
+          </motion.span>,
+        ]}
       >
         <div className="min-h-[240px] rounded-lg border border-outline-variant bg-[var(--panel-solid)] p-5">
           {tab === 0 ? (

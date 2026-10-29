@@ -163,3 +163,10 @@ Next: optional authentic Google Docs IC memo screenshot (currently represented b
 - Rebuilt the twelve-section story and six native scroll-triggered scenes; stronger laptop sticky layout, three-automation convergence, genuine screenshot theaters, approved reflection.
 - Located higher-quality real PNG assets locally. Independently confirmed erroneous memo EBITDA/date; memo proof withheld. No live automation modified.
 - User authorized milestone commits and IMPLEMENTATION_PROGRESS.md for interruption recovery. TypeScript passes; browser QA next. See progress file for current status and resume steps.
+
+Session8 completion:
+- Complete approved12-section second pass, six sticky scroll-triggered scenes and native inline fallback;44 approved narrative/disclosure paragraphs verified. Real PNG workspace/proof theaters and keyboard-accessible full-size viewer.
+- Canonical synthetic comparisons85/70/45 verified from captured dashboard; FY2025 values matched source. Added correct Slack→memo→risks ordering and existing-score threshold explanation.
+- Production build/TypeScript passed; isolated Next Core Web Vitals lint0 errors/warnings (repo lint remains unconfigured).94/94 production browser checks passed, axe0 findings in desktop/mobile/modal states, Edge smoke passed, idle0 RAF/1.5s, background/reduced-motion/no-JS fallbacks verified.
+- Independently confirmed Google Docs memo bad EBITDA/date. Original memo proof withheld; canonical rerun/refresh and completeness synchronization remain external tasks. No live workflows edited, no deployment/push.
+- User-authorized commits10afb0f,deb487c plus final validation checkpoint. Full progress/acceptance/resume notes in IMPLEMENTATION_PROGRESS.md. Local production preview port3000; screenshots/scripts outside repo under .codex/visualizations/deallens-second-pass.
