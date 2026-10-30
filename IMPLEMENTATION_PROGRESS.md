@@ -157,3 +157,6 @@ Contract: C:\Users\chase\Downloads\deallens_codex_third_pass_handoff.md. This is
 ### Evidence and resume
 Before/after images, scripts and JSON results: C:\Users\chase\.codex\visualizations\deallens-third-pass. See qa-results.json, third-pass-checks.json, background-results.json, threshold-results.json, lint-results.json, axe-fixed-*.json, before-*.png, final-*.png.
 No push or deployment. No further third-pass implementation work remains. On any future pass, inspect current code and this final status; do not rerun one-time edit scripts. Preserve unrelated .claude/settings.local.json, frontend/tsconfig.tsbuildinfo and untracked design notes.
+
+### Third-pass Git checkpoint
+Implementation and validation committed locally as `a12aea2` — Refine DealLens third-pass UX and visual previews. This follow-up documentation checkpoint records that immutable implementation hash. Neither commit is pushed or deployed. Unrelated working-tree changes remain untouched.
