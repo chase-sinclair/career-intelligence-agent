@@ -36,7 +36,7 @@ export default function DealLensJourney() {
   const current = useRef(-1)
   useEffect(() => {
     const media = window.matchMedia(
-      '(min-width: 1200px) and (min-height: 800px), (min-width: 1024px) and (min-height: 900px)',
+      '(min-width: 1280px) and (min-height: 800px), (min-width: 1024px) and (min-height: 900px)',
     )
     const update = () => setDesktop(media.matches)
     update()
@@ -79,12 +79,10 @@ export default function DealLensJourney() {
     sections.current.forEach((el) => el && observer.observe(el))
     const resize = new ResizeObserver(schedule)
     sections.current.forEach((el) => el && resize.observe(el))
-    const visibility = () => {
-      if (document.hidden) setAnimate(false)
-    }
+    // Each scene settles through useSceneMotion on backgrounding. Do not change
+    // the scene key here: that would discard the visitor's selected tab.
     window.addEventListener('scroll', schedule, { passive: true })
     window.addEventListener('resize', schedule)
-    document.addEventListener('visibilitychange', visibility)
     const hash = () => {
       const target = document.getElementById(location.hash.slice(1))
       if (target && location.hash.startsWith('#cim-'))
@@ -100,7 +98,6 @@ export default function DealLensJourney() {
       window.removeEventListener('scroll', schedule)
       window.removeEventListener('resize', schedule)
       window.removeEventListener('hashchange', hash)
-      document.removeEventListener('visibilitychange', visibility)
     }
   }, [desktop])
   function navigate(index: number) {
@@ -174,35 +171,19 @@ export default function DealLensJourney() {
                 sections.current[i] = el
               }}
               tabIndex={-1}
-              className={`scroll-mt-40 border-b border-outline-variant py-10 outline-none last:border-0 ${desktop ? `flex flex-col justify-center py-14 ${i === 1 ? 'min-h-[60vh]' : i === 2 || i === 5 ? 'min-h-[88vh]' : 'min-h-[75vh]'}` : ''}`}
+              className={`scroll-mt-40 border-b border-outline-variant outline-none last:border-0 ${desktop ? 'flex min-h-[calc(100vh-96px)] flex-col pb-4 pt-6' : 'py-10'}`}
             >
               <Label>{stage.eyebrow}</Label>
               <h3 className="mb-5 mt-4 text-3xl font-medium leading-[1.13] tracking-[-.04em] xl:text-4xl">
                 {stage.title}
               </h3>
               <CopyBlock paragraphs={stage.body} />
-              {i === 0 && (
-                <p className="mt-5 text-xs leading-6 text-primary">
-                  What carries forward: File name · Original document link ·
-                  Upload timestamp
-                </p>
-              )}
               {i === 5 && (
                 <p className="mt-5 text-sm italic text-primary">
                   An analyst reviews the findings and makes the final decision.
                 </p>
               )}
               <Disclosure paragraphs={stage.detail} />
-              <a
-                href={i === 5 ? '#data-model' : `#cim-${journey[i + 1].id}`}
-                onClick={(e) => {
-                  e.preventDefault()
-                  navigate(i + 1)
-                }}
-                className={`mt-6 w-fit text-sm font-medium leading-6 text-primary ${focus}`}
-              >
-                {stage.transition}
-              </a>
               {!desktop && (
                 <>
                   <InlineScene stage={i} replay={replays[i]} />
@@ -216,6 +197,26 @@ export default function DealLensJourney() {
                   </button>
                 </>
               )}
+              <footer
+                className={
+                  desktop
+                    ? `mt-auto pt-8 ${active === i ? '' : 'invisible'}`
+                    : 'mt-6'
+                }
+              >
+                <a
+                  href={i === 5 ? '#data-model' : `#cim-${journey[i + 1].id}`}
+                  onClick={(e) => {
+                    if (!e.metaKey && !e.ctrlKey) {
+                      e.preventDefault()
+                      navigate(i + 1)
+                    }
+                  }}
+                  className={`inline-flex min-h-11 items-center gap-3 border-t border-outline-variant pt-3 text-sm font-medium leading-6 text-primary ${focus}`}
+                >
+                  {stage.transition}
+                </a>
+              </footer>
             </article>
           ))}
         </div>

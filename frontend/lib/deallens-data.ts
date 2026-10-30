@@ -40,7 +40,7 @@ export const risks = [
   'Seasonality',
   'Integration risk',
 ] as const
-export const questions = [
+const northstarQuestions = [
   [
     'Customer concentration',
     'Provide customer-level sales for the top 20 accounts over the last 36 months.',
@@ -54,12 +54,24 @@ export const questions = [
     'What acquisitions are in the pipeline, and how would they be integrated?',
   ],
 ] as const
+type FollowUp = readonly [risk: string, question: string]
+type CompanyExample = {
+  name: string
+  short: string
+  score: number
+  recommendation:
+    'Proceed to initial review' | 'Request more information' | 'Pass'
+  values: readonly [number, number, number, number | null, number]
+  display: readonly [string, string, string, string, string]
+  questions: readonly FollowUp[]
+}
 export const companies = [
   {
     ...northstar,
     short: 'Northstar',
     values: [42, 13.8, 15.2, 34, 85],
     display: ['$42.0M', '13.8%', '15.2%', '34%', '85'],
+    questions: northstarQuestions,
   },
   {
     name: 'MedAxis Revenue Solutions',
@@ -68,6 +80,20 @@ export const companies = [
     recommendation: 'Request more information',
     values: [68, 9, 18.1, 49, 70],
     display: ['$68.0M', '9.0%', '18.1%', '49%', '70'],
+    questions: [
+      [
+        'Customer retention / disclosure',
+        'Can you provide net revenue retention by customer cohort?',
+      ],
+      [
+        'Customer concentration',
+        'Can you share the contract renewal schedule for your largest customers?',
+      ],
+      [
+        'Offshore delivery controls',
+        'What controls monitor offshore service quality and compliance?',
+      ],
+    ],
   },
   {
     name: 'BrightCart Consumer Goods',
@@ -76,8 +102,22 @@ export const companies = [
     recommendation: 'Pass',
     values: [27, -4.3, 7.4, null, 45],
     display: ['$27.0M', '−4.3%', '7.4%', 'Not disclosed', '45'],
+    questions: [
+      [
+        'Margin pressure',
+        'Can you provide gross margins by sales channel and explain recent margin declines?',
+      ],
+      [
+        'Inventory exposure',
+        'Can you provide inventory aging and write-down history?',
+      ],
+      [
+        'Concentration gap',
+        'What percentage of revenue comes from the largest wholesale customers?',
+      ],
+    ],
   },
-] as const
+] as const satisfies readonly CompanyExample[]
 export const criteria = [
   { need: '$30M+ revenue', threshold: 30 },
   { need: '10%+ revenue growth', threshold: 10 },

@@ -72,7 +72,7 @@ export const copy = [
     title: 'The facts become a deal page, not another file.',
     subtitle: null,
     body: [
-      'Instead of scattered documents and spreadsheets, each company gets a page in a shared workspace. Its financials, source document, and processing history stay connected, with more information added as the workflow continues.',
+      'Instead of scattered documents and spreadsheets, each company gets a connected deal page in Airtable. Its financials, source document, and processing history stay connected, with more information added as the workflow continues.',
     ],
     detail: [
       "Zap 1 creates linked Airtable records across Deals, CIM Documents, Financial Metrics, and Workflow Runs. Northstar's extraction includes FY2023 through TTM financial data, but the current demonstration writes one FY2025 Financial Metrics row per deal. The data model supports additional reporting periods; automating their storage would require extending the workflow. Later automations add diligence questions and investment criteria.",

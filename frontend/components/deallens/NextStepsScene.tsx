@@ -1,8 +1,8 @@
 'use client'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Check, Minus, CircleHelp } from 'lucide-react'
-import { companies, criteria, questions, risks } from '@/lib/deallens-data'
+import { Check, Minus, CircleHelp, CircleArrowRight } from 'lucide-react'
+import { companies, criteria, risks } from '@/lib/deallens-data'
 import { Reveal, Tabs } from './StoryParts'
 
 export default function NextStepsScene({ play }: { play: boolean }) {
@@ -28,51 +28,39 @@ export default function NextStepsScene({ play }: { play: boolean }) {
           <p className="mb-2 text-[11px] font-semibold text-primary">
             From risks to follow-up questions
           </p>
-          {selected === 0 ? (
-            <div className="relative">
-              {play && (
-                <motion.div
-                  aria-hidden="true"
-                  initial={{ opacity: 1 }}
-                  animate={{ opacity: [1, 1, 0] }}
-                  transition={{ duration: 0.8, times: [0, 0.35, 1] }}
-                  className="pointer-events-none absolute inset-0 z-10 flex flex-wrap content-center gap-2 bg-[var(--panel-solid)]"
-                >
-                  {risks.map((risk) => (
-                    <span
-                      key={risk}
-                      className={`h-fit rounded border px-2 py-1 text-xs ${risk === 'Customer concentration' ? 'border-primary/30 bg-primary/10 text-primary' : 'border-outline-variant text-on-surface-variant'}`}
-                    >
-                      {risk}
-                    </span>
-                  ))}
-                </motion.div>
-              )}
-              <div className="space-y-2">
-                {questions.map(([risk, question], i) => (
-                  <Reveal play={play} delay={0.65 + i * 0.2} key={risk}>
-                    <div className="grid grid-cols-[110px_1fr] gap-3 text-xs leading-[1.5] sm:grid-cols-[130px_1fr]">
-                      <p className="font-medium text-primary">{risk}</p>
-                      <p>{question}</p>
-                    </div>
-                  </Reveal>
+          <div className="relative">
+            {play && selected === 0 && (
+              <motion.div
+                aria-hidden="true"
+                initial={{ opacity: 1 }}
+                animate={{ opacity: [1, 1, 0] }}
+                transition={{ duration: 0.8, times: [0, 0.35, 1] }}
+                className="pointer-events-none absolute inset-0 z-10 flex flex-wrap content-center gap-2 bg-[var(--panel-solid)]"
+              >
+                {risks.map((risk) => (
+                  <span
+                    key={risk}
+                    className={`h-fit rounded border px-2 py-1 text-xs ${risk === 'Customer concentration' ? 'border-primary/30 bg-primary/10 text-primary' : 'border-outline-variant text-on-surface-variant'}`}
+                  >
+                    {risk}
+                  </span>
                 ))}
-                <p className="pt-1 text-[10px] text-on-surface-variant">
-                  5 risks flagged · Follow-up questions prepared for analyst
-                  review
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="flex min-h-[110px] flex-col justify-center">
-              <p className="text-sm">Sample follow-up not shown</p>
-              <p className="mt-2 text-xs leading-5 text-on-surface-variant">
-                A verified question capture for {company.short} is not available
-                in this case study. Financials and the captured recommendation
-                are shown below.
+              </motion.div>
+            )}
+            <div className="space-y-1.5">
+              {company.questions.map(([risk, question], i) => (
+                <Reveal play={play} delay={0.65 + i * 0.2} key={risk}>
+                  <div className="grid grid-cols-[110px_1fr] gap-3 text-xs leading-[1.5] sm:grid-cols-[180px_1fr]">
+                    <p className="font-medium text-primary">{risk}</p>
+                    <p>{question}</p>
+                  </div>
+                </Reveal>
+              ))}
+              <p className="pt-1 text-[10px] text-on-surface-variant">
+                Representative follow-up questions based on each synthetic CIM
               </p>
             </div>
-          )}
+          </div>
         </div>
         <Reveal play={play} delay={0.9}>
           <div className="mt-3">
@@ -113,10 +101,7 @@ export default function NextStepsScene({ play }: { play: boolean }) {
                       key={criterion.need}
                       className="border-b border-outline-variant last:border-0"
                     >
-                      <th
-                        scope="row"
-                        className="w-[49%] py-1.5 pr-3 font-normal"
-                      >
+                      <th scope="row" className="w-[49%] py-1 pr-3 font-normal">
                         {criterion.need}
                       </th>
                       <motion.td
@@ -126,7 +111,7 @@ export default function NextStepsScene({ play }: { play: boolean }) {
                           delay: play ? 1.15 : 0,
                           duration: play ? 0.25 : 0,
                         }}
-                        className="py-1.5 font-medium tabular-nums"
+                        className="py-1 font-medium tabular-nums"
                       >
                         {company.display[i]}
                       </motion.td>
@@ -137,7 +122,7 @@ export default function NextStepsScene({ play }: { play: boolean }) {
                           delay: play ? 1.45 : 0,
                           duration: play ? 0.25 : 0,
                         }}
-                        className={`py-1.5 pl-2 ${meets ? 'text-primary' : 'text-amber-900'}`}
+                        className={`py-1 pl-2 ${meets ? 'text-primary' : 'text-amber-900'}`}
                       >
                         <span className="flex items-center gap-1">
                           <Icon size={12} className="shrink-0" />
@@ -151,15 +136,27 @@ export default function NextStepsScene({ play }: { play: boolean }) {
             </table>
           </div>
         </Reveal>
-        <Reveal play={play} delay={1.6}>
-          <p className="mt-2 rounded-md bg-primary/10 px-3 py-2 text-sm font-semibold text-primary">
-            {company.recommendation}
-          </p>
-        </Reveal>
         <p className="mt-2 text-[10px] leading-4 text-on-surface-variant">
           Simplified screening interpretation. Checks use existing information;
-          they do not calculate the initial match score.
+          they do not calculate the initial score or recommendation.
         </p>
+        <Reveal play={play} delay={1.6}>
+          <div className="mt-3 flex items-center gap-3 rounded-lg border border-primary/25 bg-primary/5 px-3 py-2">
+            <CircleArrowRight
+              size={21}
+              className="shrink-0 text-primary"
+              aria-hidden="true"
+            />
+            <div>
+              <p className="text-[10px] font-medium uppercase tracking-wider text-on-surface-variant">
+                Initial AI recommendation
+              </p>
+              <p className="mt-0.5 text-sm font-semibold text-primary">
+                {company.recommendation}
+              </p>
+            </div>
+          </div>
+        </Reveal>
       </Tabs>
     </div>
   )

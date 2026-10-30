@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import {
   ArrowRight,
@@ -8,6 +9,7 @@ import {
   Link2,
   Activity,
   ChartNoAxesCombined,
+  ShieldCheck,
 } from 'lucide-react'
 import { financials, northstar, rawExcerpt, risks } from '@/lib/deallens-data'
 import DocumentDropScene from './DocumentDropScene'
@@ -267,29 +269,63 @@ function Records({ play }: { play: boolean }) {
               </p>
             </>
           ) : selected === 0 ? (
-            <div className="space-y-4 text-sm">
-              <Label>Source document</Label>
-              <p>{northstar.source}</p>
-              <p className="leading-6 text-on-surface-variant">
-                Original document link, file identity, and extraction metadata
-                stay connected to this deal.
-              </p>
-              <p className="flex items-center gap-2 text-xs text-primary">
-                <Link2 size={14} />
-                Linked CIM Documents record
-              </p>
+            <div className="flex min-h-[208px] items-center gap-4">
+              <Image
+                src="/images/deallens/proof/northstar-cim-04-financial-snapshot.png"
+                width={606}
+                height={779}
+                sizes="140px"
+                alt="Genuine Northstar synthetic CIM financial snapshot"
+                className="h-auto w-[100px] shrink-0 rounded-sm border border-outline-variant shadow-sm sm:w-[140px]"
+              />
+              <div className="min-w-0">
+                <Label>Source document</Label>
+                <p className="mt-3 text-sm font-semibold leading-5">
+                  {northstar.source}
+                </p>
+                <p className="mt-3 text-xs font-medium">Source: Google Drive</p>
+                <p className="mt-2 text-xs leading-5 text-on-surface-variant">
+                  Original document retained with the deal
+                </p>
+                <p className="mt-3 text-[10px] leading-4 text-on-surface-variant">
+                  Genuine synthetic CIM page · Linked CIM Documents record
+                </p>
+              </div>
             </div>
           ) : (
-            <div className="space-y-4 text-sm">
-              <Label>Run history</Label>
-              <p>Intake processing history</p>
-              <p className="leading-6 text-on-surface-variant">
-                Upload timing and extraction, AI, and database-write statuses
-                retain the processing history.
+            <div>
+              <p className="mb-3 flex items-center justify-between gap-2 text-xs font-semibold">
+                Intake processing history
+                <span className="rounded bg-primary/10 px-2 py-1 text-[10px] text-primary">
+                  Processing completed
+                </span>
               </p>
-              <p className="flex items-center gap-2 text-xs text-primary">
-                <Activity size={14} />
-                Linked Workflow Runs record
+              <ol className="space-y-0">
+                {[
+                  'Document received',
+                  'Text extraction completed',
+                  'AI analysis completed',
+                  'Airtable record saved',
+                ].map((step, index) => (
+                  <li
+                    key={step}
+                    className="relative flex items-center gap-3 pb-3 text-xs last:pb-0"
+                  >
+                    {index < 3 && (
+                      <span
+                        aria-hidden="true"
+                        className="absolute bottom-0 left-[9px] top-5 w-px bg-primary/20"
+                      />
+                    )}
+                    <span className="relative flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-primary/25 bg-primary/5 text-primary">
+                      <Check size={12} aria-hidden="true" />
+                    </span>
+                    {step}
+                  </li>
+                ))}
+              </ol>
+              <p className="mt-3 text-[10px] leading-4 text-on-surface-variant">
+                Simplified illustrative status progression · Workflow Runs
               </p>
             </div>
           )}
@@ -304,9 +340,9 @@ function Records({ play }: { play: boolean }) {
 function Handoff({ play }: { play: boolean }) {
   const [tab, setTab] = useState(0)
   return (
-    <div className="py-4">
+    <div className="py-3">
       <DealIdentity />
-      <div className="mb-4 mt-2 flex justify-end">
+      <div className="mb-2 mt-1 flex justify-end">
         <Reveal play={play} delay={1.2}>
           <span className="flex items-center gap-1 text-[11px] text-primary">
             <Link2 size={12} />
@@ -334,85 +370,125 @@ function Handoff({ play }: { play: boolean }) {
           </motion.span>,
         ]}
       >
-        <div className="min-h-[240px] rounded-lg border border-outline-variant bg-[var(--panel-solid)] p-5">
+        <div className="min-h-[240px] overflow-hidden rounded-lg border border-outline-variant bg-[var(--panel-solid)]">
           {tab === 0 ? (
             <Reveal play={play} delay={0.1}>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 border-b border-outline-variant px-4 py-2">
                 <span className="text-lg font-bold text-primary">#</span>
                 <span className="text-xs font-semibold">deallens-alerts</span>
                 <span className="ml-auto text-[10px] text-on-surface-variant">
-                  DealLens · APP
+                  Slack preview
                 </span>
               </div>
-              <p className="mt-4 text-base font-semibold">{northstar.name}</p>
-              <p className="mt-1 text-xs text-on-surface-variant">
-                Business Services · Facilities Maintenance
-              </p>
-              <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-xs">
+              <div className="flex gap-3 p-3">
+                <div
+                  aria-hidden="true"
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-sm font-bold text-on-primary"
+                >
+                  D.
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-bold">
+                    DealLens{' '}
+                    <span className="ml-1 rounded bg-surface-container-high px-1 py-0.5 text-[9px] font-medium text-on-surface-variant">
+                      APP
+                    </span>
+                  </p>
+                  <p className="mt-2 text-sm font-semibold">{northstar.name}</p>
+                  <p className="mt-1 text-[11px] text-on-surface-variant">
+                    Business Services · Facilities Maintenance
+                  </p>
+                  <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 border-l-2 border-primary/25 pl-3 text-[11px]">
+                    {[
+                      ['Match score', '85/100'],
+                      ['Revenue', northstar.revenue],
+                      ['Profit (EBITDA)', northstar.profit],
+                      ['Risks flagged', '5'],
+                    ].map(([label, value]) => (
+                      <div key={label}>
+                        <span className="text-on-surface-variant">{label}</span>
+                        <p className="mt-0.5 text-xs font-semibold">{value}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="mt-3 text-xs font-semibold text-primary">
+                    {northstar.recommendation}
+                  </p>
+                </div>
+              </div>
+            </Reveal>
+          ) : (
+            <div>
+              <div className="flex items-center gap-2 border-b border-outline-variant bg-surface-container-low px-4 py-2">
+                <FileText
+                  size={16}
+                  className="text-primary"
+                  aria-hidden="true"
+                />
+                <span className="text-xs font-medium">
+                  Northstar · Investment memo
+                </span>
+                <span className="ml-auto text-[10px] text-on-surface-variant">
+                  Google Docs preview
+                </span>
+              </div>
+              <div className="space-y-2 border-l-[3px] border-primary/15 px-5 py-3 sm:px-7">
                 {[
-                  ['Match score', '85/100'],
-                  ['Revenue', northstar.revenue],
-                  ['Profit (EBITDA)', northstar.profit],
-                  ['Risks flagged', '5'],
-                ].map(([label, value]) => (
-                  <div key={label}>
-                    <span className="text-on-surface-variant">{label}</span>
-                    <p className="mt-1 text-sm font-semibold">{value}</p>
+                  [
+                    'EXECUTIVE SUMMARY',
+                    'Northstar Field Services is a facilities maintenance platform serving multi-site commercial customers across the Southeast.',
+                  ],
+                  [
+                    'BUSINESS OVERVIEW',
+                    'Route-based field services with a recurring MSA revenue model.',
+                  ],
+                  [
+                    'KEY RISKS',
+                    'Labor availability, founder dependency, customer concentration, seasonality, and integration risk.',
+                  ],
+                ].map(([heading, text]) => (
+                  <div key={heading}>
+                    <h4 className="text-[10px] font-semibold tracking-wider text-primary">
+                      {heading}
+                    </h4>
+                    <p className="mt-1 text-xs leading-[1.5]">{text}</p>
                   </div>
                 ))}
               </div>
-              <p className="mt-4 border-t border-outline-variant pt-3 text-sm font-medium text-primary">
-                {northstar.recommendation}
-              </p>
-            </Reveal>
-          ) : (
-            <div className="space-y-3">
-              {[
-                [
-                  'EXECUTIVE SUMMARY',
-                  'Northstar Field Services is a facilities maintenance platform serving multi-site commercial customers across the Southeast.',
-                ],
-                [
-                  'BUSINESS OVERVIEW',
-                  'Route-based field services with a recurring MSA revenue model.',
-                ],
-                [
-                  'KEY RISKS',
-                  'Labor availability, founder dependency, customer concentration, seasonality, and integration risk.',
-                ],
-              ].map(([heading, text]) => (
-                <div key={heading}>
-                  <h4 className="text-[10px] font-semibold tracking-wider text-primary">
-                    {heading}
-                  </h4>
-                  <p className="mt-1 text-xs leading-5">{text}</p>
-                </div>
-              ))}
-              <p className="border-t border-outline-variant pt-2 text-[10px] text-on-surface-variant">
-                AI-assisted first-pass / human review
-              </p>
             </div>
           )}
         </div>
       </Tabs>
       <Reveal play={play} delay={1.1}>
         <p className="mt-2 text-[10px] text-primary">
-          Memo draft ready · Simplified previews
+          Memo draft ready · Illustrative previews · Human review
         </p>
       </Reveal>
       <Reveal play={play} delay={1.6}>
-        <p className="mb-2 mt-3 text-[11px] font-medium">
-          5 risks added to the deal
-        </p>
-        <div className="flex flex-wrap gap-1.5">
-          {risks.map((risk) => (
-            <span
-              key={risk}
-              className={`rounded border px-2 py-1 text-[10px] ${risk === 'Customer concentration' ? 'border-primary/30 bg-primary/10 text-primary' : 'border-outline-variant text-on-surface-variant'}`}
-            >
-              {risk}
-            </span>
-          ))}
+        <div className="mt-3 rounded-lg border border-primary/25 bg-primary/5 p-3">
+          <div className="mb-2 flex items-center gap-3">
+            <ShieldCheck
+              size={21}
+              className="text-primary"
+              aria-hidden="true"
+            />
+            <p className="text-xs font-medium">
+              <strong className="mr-1 text-2xl font-semibold text-primary">
+                5
+              </strong>{' '}
+              risks added to the deal
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {risks.map((risk) => (
+              <span
+                key={risk}
+                className={`rounded border px-2 py-1 text-[10px] ${risk === 'Customer concentration' ? 'border-primary/30 bg-primary/10 text-primary' : 'border-outline-variant text-on-surface-variant'}`}
+              >
+                {risk}
+              </span>
+            ))}
+          </div>
         </div>
       </Reveal>
     </div>

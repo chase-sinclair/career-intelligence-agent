@@ -11,7 +11,6 @@ import {
   ZoomOut,
   ImageOff,
 } from 'lucide-react'
-import { companies } from '@/lib/deallens-data'
 import { copy } from '@/lib/deallens-copy'
 import {
   button,
@@ -190,7 +189,13 @@ export default function ProjectEvidence() {
       <section id="analyst" className={sectionClass}>
         <div className="grid gap-7 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
           <EditorialHeading eyebrow={copy[9].eyebrow} title={copy[9].title} />
-          <CopyBlock paragraphs={copy[9].body} />
+          <div>
+            <CopyBlock paragraphs={copy[9].body} />
+            <p className="mt-4 text-base leading-7 text-on-surface-variant">
+              I built two custom Airtable interfaces: an Executive Dashboard to
+              compare deals and a Deal Review to inspect each company.
+            </p>
+          </div>
         </div>
         <div className="mt-9">
           <Tabs
@@ -322,16 +327,6 @@ export default function ProjectEvidence() {
               </figure>
             </div>
           </Tabs>
-        </div>
-        <div className="mt-8 grid gap-5 border-y border-outline-variant py-6 md:grid-cols-3">
-          {companies.map((company) => (
-            <div key={company.name}>
-              <p className="text-sm font-medium">{company.name}</p>
-              <p className="mt-2 text-xs text-primary">
-                {company.recommendation}
-              </p>
-            </div>
-          ))}
         </div>
         <details className="mt-6 text-sm">
           <summary

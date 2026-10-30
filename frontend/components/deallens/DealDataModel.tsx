@@ -53,7 +53,7 @@ export default function DealDataModel() {
         className="relative mt-10 rounded-xl border border-outline-variant bg-surface-container-low p-5 sm:p-9"
       >
         <h3 className="mb-8 text-lg font-medium tracking-tight">
-          Three automations. One connected deal.
+          Three automations. One Airtable workspace.
         </h3>
         <div className="relative grid gap-5 md:grid-cols-3">
           {producers.map(({ title, items, note, Icon }, i) => (
@@ -74,13 +74,14 @@ export default function DealDataModel() {
                 {items.map((item) => (
                   <span
                     key={item}
-                    className="rounded bg-primary/5 px-2 py-1 text-xs text-primary"
+                    className="inline-flex items-center gap-1.5 rounded-md border border-primary/20 bg-primary/5 px-2.5 py-1.5 text-xs text-primary"
                   >
+                    <Link2 size={12} aria-hidden="true" />
                     {item}
                   </span>
                 ))}
               </div>
-              <p className="mt-4 text-xs leading-5 text-on-surface-variant">
+              <p className="mt-4 text-sm font-medium leading-6 text-on-surface">
                 {note}
               </p>
             </Reveal>

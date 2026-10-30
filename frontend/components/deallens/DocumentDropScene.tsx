@@ -31,7 +31,7 @@ export default function DocumentDropScene({
       >
         <span className="h-2 w-2 rounded-full bg-primary" />
         {
-          ['Watching for new files', 'New file detected', 'Workflow started'][
+          ['Watching for new files', 'New file detected', 'Workflow Started'][
             status
           ]
         }
@@ -39,7 +39,7 @@ export default function DocumentDropScene({
       <div
         className="relative mx-auto h-[360px] w-full max-w-[340px] sm:hidden"
         role="img"
-        aria-label="A synthetic Northstar CIM PDF drops into Google Drive and triggers Zap 1."
+        aria-label="A synthetic Northstar CIM PDF drops into Google Drive and triggers Automation 1."
       >
         <p className="pt-4 text-center font-mono text-[11px] text-primary">
           GOOGLE DRIVE INTAKE
@@ -85,7 +85,7 @@ export default function DocumentDropScene({
         >
           <p className="mb-2 text-primary">↓</p>
           <p className="text-sm font-semibold text-primary">
-            ✓ File detected → Zap 1
+            ✓ File detected → Automation 1
           </p>
           <p className="mt-2 text-xs text-on-surface-variant">
             Northstar CIM · synthetic PDF
@@ -95,7 +95,7 @@ export default function DocumentDropScene({
       <svg
         viewBox="0 0 600 410"
         role="img"
-        aria-label="A synthetic Northstar CIM PDF drops into the Google Drive CIM Intake folder. File detection triggers Zap 1."
+        aria-label="A synthetic Northstar CIM PDF drops into the Google Drive CIM Intake folder. File detection triggers Automation 1."
         className="hidden h-auto w-full overflow-visible sm:block"
       >
         <defs>
@@ -238,11 +238,11 @@ export default function DocumentDropScene({
             fill="none"
             strokeWidth="1.5"
           />
-          <text x="495" y="204" fontSize="16" fontWeight="600">
-            Zap 1
+          <text x="491" y="204" fontSize="11" fontWeight="600">
+            Automation 1
           </text>
           <text x="471" y="237" fontSize="12" fill="var(--accent)">
-            Workflow started
+            Workflow Started
           </text>
           <rect
             x="117"
