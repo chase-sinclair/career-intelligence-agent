@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import TopNav from '@/components/TopNav'
 import { useInView } from '@/hooks/useInView'
+import { Eyebrow, Heading2, Divider } from '@/components/shared/typography'
 import PipelineSection from '@/components/how-it-works/PipelineSection'
 import ChapterLayout from '@/components/how-it-works/ChapterLayout'
 import IntroScene from '@/components/how-it-works/IntroScene'
@@ -185,29 +186,9 @@ const STACK = [
 ]
 
 // ── Shared atoms ──────────────────────────────────────────────────────────────
-
-function Eyebrow({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="font-mono text-[9px] tracking-[0.22em] uppercase mb-4" style={{ color: 'var(--accent)' }}>
-      {children}
-    </p>
-  )
-}
-
-function Heading2({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return (
-    <h2
-      className={`font-light tracking-[-0.04em] leading-[1.08] ${className}`}
-      style={{ color: 'var(--ink)', fontSize: 'clamp(2rem, 2.9vw, 3rem)' }}
-    >
-      {children}
-    </h2>
-  )
-}
-
-function Divider() {
-  return <div className="my-16 h-px" style={{ background: 'rgba(var(--ink-rgb),0.10)' }} />
-}
+// Eyebrow, Heading2 and Divider now live in components/shared/typography so the
+// standalone project pages can inherit the same system. Imported at the top of
+// this file; rendered output is unchanged.
 
 // ── Page ───────────────────────────────────────────────────────────────────────
 

@@ -7,6 +7,17 @@ import ProjectCard, { type ProjectCardProps } from '@/components/ProjectCard'
 import ProjectDeepDive from '@/components/ProjectDeepDive'
 import { PROJECT_DETAILS } from '@/lib/project-details'
 
+// ── Standalone case-study routes ──────────────────────────────────────────────
+
+/**
+ * Slugs that own a full page under `app/projects/<slug>/` instead of opening
+ * the ProjectDeepDive overlay. A static segment takes precedence over the
+ * `[slug]` catch-all in the App Router, so these pages are authoritative and
+ * the catch-all never redirects them back to the overlay. Every other card
+ * keeps its existing overlay behavior.
+ */
+const STANDALONE_ROUTES = new Set(['deallens', 'peai-chat-assistant'])
+
 // ── Filter definitions ────────────────────────────────────────────────────────
 
 const FILTERS = [
@@ -66,7 +77,7 @@ const PROJECTS: ProjectCardProps[] = [
     category: 'RAG System',
     categoryTag: 'rag',
     tagline: 'Deployed RAG chatbot on aioperatingpartners.ai answering questions grounded in proprietary PE content.',
-    stack: ['RAG', 'Two-Pass Routing', 'Next.js', 'OpenAI'],
+    stack: ['RAG', 'Two-Pass Routing', 'Python', 'Flask', 'Pinecone Assistant'],
     bullets: [
       'Live in production — two-pass retrieval enforces proprietary content priority over general knowledge',
       "Serves real users on a published book's homepage with source-grounded, cited answers",
@@ -167,8 +178,9 @@ export default function ProjectsPage() {
   const [isAnimatingIn, setIsAnimatingIn] = useState(false)
 
   const openOverlay = useCallback((slug: string) => {
-    if (slug === 'deallens') {
-      router.push('/projects/deallens')
+    // Projects with a standalone case-study route bypass the overlay entirely.
+    if (STANDALONE_ROUTES.has(slug)) {
+      router.push(`/projects/${slug}`)
       return
     }
     if (!(slug in PROJECT_DETAILS)) return
@@ -196,6 +208,12 @@ export default function ProjectsPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const openSlug = params.get('open')
+    if (openSlug && STANDALONE_ROUTES.has(openSlug)) {
+      // A hand-written ?open= for a project that owns a real page should land
+      // on that page, not a stale overlay copy of it.
+      router.replace(`/projects/${openSlug}`)
+      return
+    }
     if (openSlug && openSlug in PROJECT_DETAILS) {
       window.history.replaceState({}, '', `/projects/${openSlug}`)
       setActiveSlug(openSlug)
@@ -205,7 +223,7 @@ export default function ProjectsPage() {
         })
       })
     }
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Close overlay on browser back button
   useEffect(() => {
