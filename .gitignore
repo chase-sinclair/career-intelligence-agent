@@ -41,3 +41,23 @@ Thumbs.db
 *.swp
 
 backend/backend/
+
+# ── Internal planning / handoff notes — never publish (repo is public) ────────
+# Build-ready context docs (contain candid resume-correction and sourcing notes)
+/peai-book-context.md
+/peai-chat-context.md
+/file-overview-index.md
+/portfolio-website.md
+
+# How It Works spec + storyboard working files at repo root
+/how-it-works_*
+
+# Design handoff bundles (prompts, review scripts, HTML prototypes)
+/design_handoff_*/
+
+# Scratch design briefs written next to app routes
+frontend/app/**/Claude outputs/
+
+# Local-only tool + build artifacts
+.claude/settings.local.json
+frontend/tsconfig.tsbuildinfo
