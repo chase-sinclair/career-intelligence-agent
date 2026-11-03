@@ -53,7 +53,9 @@ backend/backend/
 /how-it-works_*
 
 # Design handoff bundles (prompts, review scripts, HTML prototypes)
+# Covers both the extracted folders and the archives they arrive in.
 /design_handoff_*/
+*.zip
 
 # Scratch design briefs written next to app routes
 frontend/app/**/Claude outputs/
