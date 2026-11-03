@@ -19,5 +19,68 @@
     "must_mention": ["led", "managed", "team"],
     "should_mention": ["results", "impact"],
     "source_types": ["resume"]
+  },
+  {
+    "id": "q004",
+    "question": "What published work has Chase contributed to?",
+    "must_mention": ["Private Equity AI Operating Partner"],
+    "should_mention": ["matrix", "peer reviewer", "acknowledgments", "2026"],
+    "source_types": ["project_doc", "resume"]
+  },
+  {
+    "id": "q005",
+    "question": "What is the Atomic Abilities framework?",
+    "must_mention": ["abilities"],
+    "should_mention": ["PERCEIVE", "REASON", "ACT", "12", "families"],
+    "source_types": ["project_doc"]
+  },
+  {
+    "id": "q006",
+    "question": "What was Chase's role on *The Private Equity AI Operating Partner*?",
+    "must_mention": ["matrix"],
+    "should_mention": ["peer reviewer", "Appendix 1", "Chapter 1", "acknowledgments"],
+    "source_types": ["project_doc"]
+  },
+  {
+    "id": "q007",
+    "question": "Explain the AI model-selection matrix Chase built.",
+    "must_mention": ["matrix"],
+    "should_mention": ["model types", "model family", "training", "abilities"],
+    "source_types": ["project_doc"]
+  },
+  {
+    "id": "q008",
+    "question": "Has Chase deployed anything to production?",
+    "must_mention": ["production"],
+    "should_mention": ["PEAI Chat Assistant", "AI Operating Partners", "live"],
+    "source_types": ["project_doc", "resume"]
+  },
+  {
+    "id": "q009",
+    "question": "Describe a RAG system Chase has built",
+    "must_mention": ["retrieval"],
+    "should_mention": ["two-pass", "Pinecone", "citations", "metadata"],
+    "source_types": ["project_doc"]
+  },
+  {
+    "id": "q010",
+    "question": "How has Chase handled source prioritization in RAG?",
+    "must_mention": ["two-pass"],
+    "should_mention": ["Pinecone", "filter", "book", "fallback", "source_type"],
+    "source_types": ["project_doc"]
+  },
+  {
+    "id": "q011",
+    "question": "How does Chase approach citation design in RAG systems?",
+    "must_mention": ["citation"],
+    "should_mention": ["page", "section", "chapter", "over-citation", "range"],
+    "source_types": ["project_doc"]
+  },
+  {
+    "id": "q012",
+    "question": "Tell me about Chase's experience with Pinecone",
+    "must_mention": ["Pinecone"],
+    "should_mention": ["Assistant", "metadata filtering", "two-pass", "vector"],
+    "source_types": ["project_doc"]
   }
 ]
