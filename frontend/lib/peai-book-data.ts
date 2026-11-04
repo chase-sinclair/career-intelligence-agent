@@ -22,7 +22,7 @@ export interface Family {
 /** The three ability families, in the book's Table 1 order. */
 export const FAMILIES: ReadonlyArray<Family> = [
   { key: 'Perceive', description: 'Senses and structures data' },
-  { key: 'Reason', description: 'Analyses patterns and extracts meaning' },
+  { key: 'Reason', description: 'Analyzes patterns and extracts meaning' },
   { key: 'Act', description: 'Decides, forecasts and generates outputs' },
 ] as const
 

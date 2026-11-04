@@ -254,7 +254,7 @@ export default function PeaiBookPage() {
 
                     <div className="vis">
                       <p className="vlab">
-                        For example<i>&mdash;</i>
+                        For example:
                         <i>one model, several rows</i>
                       </p>
                       <div className="fan">
@@ -393,7 +393,7 @@ export default function PeaiBookPage() {
                   </p>
                   <p className="body">
                     Arranged as a periodic table, they fall into three families by what they do to information.{' '}
-                    <em>Perceive</em> senses and structures data, <em>Reason</em> analyses patterns and extracts
+                    <em>Perceive</em> senses and structures data, <em>Reason</em> analyzes patterns and extracts
                     meaning, <em>Act</em> decides, forecasts and generates outputs. Within each column the abilities
                     climb in sophistication.
                   </p>
