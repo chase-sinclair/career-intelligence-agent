@@ -16,7 +16,7 @@ import { PROJECT_DETAILS } from '@/lib/project-details'
  * the catch-all never redirects them back to the overlay. Every other card
  * keeps its existing overlay behavior.
  */
-const STANDALONE_ROUTES = new Set(['deallens', 'peai-chat-assistant'])
+const STANDALONE_ROUTES = new Set(['deallens', 'peai-chat-assistant', 'peai-book-ml-model-matrix'])
 
 // ── Filter definitions ────────────────────────────────────────────────────────
 
@@ -102,11 +102,11 @@ const PROJECTS: ProjectCardProps[] = [
     title: 'PEAI Book — ML Model Matrix',
     category: 'Published Work',
     categoryTag: 'published',
-    tagline: 'Co-authored chapter in The Private Equity AI Operating Partner mapping business problems to ML model types.',
-    stack: ['AI Strategy', 'Framework Design', 'Published 2024'],
+    tagline: 'The model selection matrix in The Private Equity AI Operating Partner, mapping business problems to ML model types.',
+    stack: ['AI Strategy', 'Framework Design', 'Published 2026'],
     bullets: [
-      'Published author — strategic framework used by PE operators to evaluate AI use cases',
-      'Authored the AI Model Capability Matrix chapter in a commercially released book',
+      'Authored the "Types of AI Models" model selection matrix and served as a peer reviewer',
+      'Maps twelve atomic AI abilities to the model types, families and training each one requires',
     ],
     slug: 'peai-book-ml-model-matrix',
     bgImage: '/images/projects/peai-book-ml-model-matrix.jpg',
