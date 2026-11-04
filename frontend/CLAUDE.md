@@ -7,8 +7,11 @@ Next.js App Router, TypeScript, Tailwind CSS
 - /                  → Landing page (hero + 4 recruiter-facing entry cards)
 - /about             → Architect Profile (structured resume view: skills, timeline, education)
 - /knowledge-base    → Ask About Chase (RAG chat, right panel with evidence check + answer quality + source evidence)
-- /projects          → Project cards grid
-- /projects/[slug]   → Project deep dives (AnimatedReveal scroll sections, data from project-details.ts)
+- /projects          → Project cards grid (8 cards)
+- /projects/[slug]   → Redirects to /projects?open=<slug>, which opens the ProjectDeepDive overlay
+- /projects/deallens → Standalone DealLens product demo (full-screen)
+- /projects/peai-chat-assistant       → Standalone case study (8 sections, no sticky mechanic)
+- /projects/peai-book-ml-model-matrix → Standalone case study (7 sections, sticky AbilityGrid)
 - /how-it-works      → How It Works (static page: pipeline explanation, tech stack, product vision)
 - /diagnostics       → Answer Quality Check (session-based, reads from sessionStorage — linked from knowledge-base panel)
 - /job-preferences   → Job preferences editor (HIDDEN from nav — backend intact)
@@ -50,9 +53,21 @@ Hidden routes (/job-preferences, /top-fit-jobs, /admin, /diagnostics) are still 
 - knowledge-base has a fixed right panel (w-80), so main uses mr-80
 - knowledge-base TopNav uses hasRightPanel prop (right-80 instead of right-0)
 
+## Standalone vs overlay projects
+Cards open the `ProjectDeepDive` overlay unless their slug is in `STANDALONE_ROUTES` at the top
+of `app/projects/page.tsx`, in which case the click routes to a real page under
+`app/projects/<slug>/`. A static segment takes precedence over the `[slug]` catch-all, so those
+pages are authoritative without touching `[slug]`. To add one: create the directory, add the
+slug to the set, done.
+
 ## Conventions
 - All interactive pages use 'use client'
-- Tailwind for all styling — no custom CSS
+- Tailwind for most styling. Long-form editorial pages (how-it-works, the PEAI case studies)
+  use `<style jsx global>` scoped under a page-root class for what Tailwind cannot express
+  (keyframes, nth-child stagger, media queries), never globals.css
+- `Eyebrow`, `Heading2`, `Divider` come from `components/shared/typography.tsx` — import, do not
+  redefine
+- Text on an accent fill must be `var(--accent-ink)`; `--accent` is dark
 - No shadcn/ui components currently active (plain Tailwind components throughout)
 - TopNav receives subtitle prop for page name; landing page has no TopNav
 - Custom Tailwind tokens: primary, secondary, tertiary, surface, on-surface, surface-container-low/high/highest/lowest, outline-variant, etc.
