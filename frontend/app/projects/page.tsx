@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import TopNav from '@/components/TopNav'
 import ProjectCard, { type ProjectCardProps } from '@/components/ProjectCard'
 import ProjectDeepDive from '@/components/ProjectDeepDive'
+import FeaturedProject from '@/components/FeaturedProject'
 import { PROJECT_DETAILS } from '@/lib/project-details'
 
 // ── Standalone case-study routes ──────────────────────────────────────────────
@@ -18,160 +19,244 @@ import { PROJECT_DETAILS } from '@/lib/project-details'
  */
 const STANDALONE_ROUTES = new Set(['deallens', 'peai-chat-assistant', 'peai-book-ml-model-matrix'])
 
-// ── Filter definitions ────────────────────────────────────────────────────────
+// ── Tier 1: featured work ─────────────────────────────────────────────────────
 
-const FILTERS = [
-  { label: 'All Projects',  value: 'all' },
-  { label: 'RAG System',    value: 'rag' },
-  { label: 'Full-Stack AI', value: 'full-stack' },
-  { label: 'Multi-Agent',   value: 'multi-agent' },
-  { label: 'AI Workflow',   value: 'workflow' },
-  { label: 'AI + Data Eng', value: 'data-eng' },
-  { label: 'Published',     value: 'published' },
+interface FeaturedEntry {
+  slug: string
+  name: string
+  descriptor: string
+  contextParagraph: string
+  statusLabel: string
+  statusDot: 'filled' | 'hollow' | 'none'
+  ctaLabel: string
+  nodes: string[]
+}
+
+const FEATURED: FeaturedEntry[] = [
+  {
+    slug: 'kb-agent',
+    name: 'KB Agent',
+    descriptor: 'Proposal Intelligence Platform',
+    contextParagraph:
+      'Proposal teams lose half a day finding what the firm has already written. The retrieval layer runs a hand built Reciprocal Rank Fusion merge, written after diagnosing a serialization bug that broke the client library’s native hybrid path, and every answer cites the documents it came from.',
+    statusLabel: 'Working prototype',
+    statusDot: 'hollow',
+    ctaLabel: 'Read the case study',
+    nodes: [
+      'SharePoint ingestion',
+      'Hybrid indexing',
+      'Custom RRF merge',
+      'MCP tool dispatch',
+      'Cited answer in Slack',
+    ],
+  },
+  {
+    slug: 'deallens',
+    name: 'DealLens',
+    descriptor: 'PE CIM Intelligence Workflow',
+    contextParagraph:
+      'First pass CIM review is manual, repetitive, and structured enough to automate. Three independently triggered workflows keep the system maintainable, and a synthetic validation set across three deal outcomes shows it generalizes without any CIM specific logic.',
+    statusLabel: 'Interactive walkthrough',
+    statusDot: 'none',
+    ctaLabel: 'Walk through the pipeline',
+    nodes: [
+      'CIM intake trigger',
+      'Structured extraction',
+      'Airtable records, 5 tables',
+      'Diligence and criteria Zaps',
+      'IC memo and Slack alert',
+    ],
+  },
 ]
 
-// ── Project data ──────────────────────────────────────────────────────────────
+// ── Tier 2: selected builds, in display order ─────────────────────────────────
 
-const PROJECTS: ProjectCardProps[] = [
+const SELECTED: ProjectCardProps[] = [
   {
-    title: 'KB Agent — Proposal Intelligence Platform',
-    category: 'Agentic RAG',
-    categoryTag: 'rag',
-    tagline: 'AI research assistant that turns dense proposal repositories into cited, decision-ready answers.',
-    stack: ['RAG', 'Hybrid Search', 'Custom RRF', 'Streamlit', 'Claude 3.5'],
-    bullets: [
-      'Reduced proposal research from hours to seconds for a live consulting team',
-      'Built hybrid dense + sparse retrieval with custom RRF merge and source-grounded responses',
-    ],
-    slug: 'kb-agent',
-    bgImage: '/images/projects/kb-agent.png',
-  },
-  {
-    title: 'RentalShield NYC',
-    category: 'Full-Stack AI',
-    categoryTag: 'full-stack',
-    tagline: 'Multimodal risk-scoring pipeline that detects fraudulent NYC rental listings from screenshots and listing data.',
-    stack: ['Next.js', 'AWS Bedrock', 'Claude 3.5', 'MCP', 'TypeScript'],
-    bullets: [
-      'Built a 7-service AI pipeline with real external integrations and production-ready error handling',
-      'Uses multimodal Claude via Bedrock to analyze listing screenshots and score scam risk with evidence',
-    ],
-    slug: 'rentalshield-nyc',
-    bgImage: '/images/projects/rentalshield-nyc.jpg',
-  },
-  {
-    title: 'AI Venture Architect',
-    category: 'Multi-Agent',
-    categoryTag: 'multi-agent',
-    tagline: 'Multi-agent system that turns a rough AI product idea into a full market, technical, and opportunity analysis.',
-    stack: ['LangGraph', 'FastAPI', 'AWS Bedrock', 'Tavily', 'SSE'],
-    bullets: [
-      'Parallel market research + architecture agents with a clarification gate for vague inputs',
-      'Deterministic opportunity scoring separate from LLM generation for reproducible results',
-    ],
-    slug: 'ai-venture-architect',
-    bgImage: '/images/projects/ai-venture-architect.jpg',
+    title: 'OSS Dependency Risk Agent',
+    category: 'AI + Data Eng',
+    tagline: 'Scores open source projects daily across seven health signals and writes actionable risk assessments.',
+    stack: ['LangGraph', 'Databricks', 'Pinecone', 'Claude Sonnet', 'Next.js'],
+    proof: 'Lakehouse pipeline (S3, PySpark, Delta Lake, dbt) feeding a five node agent over 705 repos',
+    slug: 'oss-dependency-risk-agent',
   },
   {
     title: 'PEAI Chat Assistant',
     category: 'RAG System',
-    categoryTag: 'rag',
-    tagline: 'Deployed RAG chatbot on aioperatingpartners.ai answering questions grounded in proprietary PE content.',
+    statusLabel: 'Live',
+    tagline: 'Production RAG chatbot on aioperatingpartners.ai, grounded in proprietary PE content.',
     stack: ['RAG', 'Two-Pass Routing', 'Python', 'Flask', 'Pinecone Assistant'],
-    bullets: [
-      'Live in production — two-pass retrieval enforces proprietary content priority over general knowledge',
-      "Serves real users on a published book's homepage with source-grounded, cited answers",
-    ],
+    proof: 'Two pass retrieval enforces book first sourcing with page level citations, live for real users',
     slug: 'peai-chat-assistant',
-    bgImage: '/images/projects/peai-chat-assistant.jpg',
   },
   {
-    title: 'DealLens — PE CIM Intelligence Workflow',
-    category: 'AI Workflow',
-    categoryTag: 'workflow',
-    tagline: 'Automated first-pass CIM intake pipeline that turns raw PE deal PDFs into structured deal records, IC memos, and Slack alerts — in minutes.',
-    stack: ['OpenAI', 'Zapier', 'Airtable', 'PDF.co', 'Google Docs'],
-    bullets: [
-      'Reduced first-pass CIM intake from hours of manual analyst work to a fully automated pipeline',
-      'Three-Zap separation of concerns: deal records, diligence questions, scoring, and IC memos across 7 Airtable tables',
-    ],
-    slug: 'deallens',
-    bgImage: '/images/projects/deallens.jpg',
-  },
-  {
-    title: 'PEAI Book — ML Model Matrix',
-    category: 'Published Work',
-    categoryTag: 'published',
-    tagline: 'The model selection matrix in The Private Equity AI Operating Partner, mapping business problems to ML model types.',
-    stack: ['AI Strategy', 'Framework Design', 'Published 2026'],
-    bullets: [
-      'Authored the "Types of AI Models" model selection matrix and served as a peer reviewer',
-      'Maps twelve atomic AI abilities to the model types, families and training each one requires',
-    ],
-    slug: 'peai-book-ml-model-matrix',
-    bgImage: '/images/projects/peai-book-ml-model-matrix.jpg',
-  },
-  {
-    title: 'Career Radar — Labor Market Intelligence',
+    title: 'RentalShield NYC',
     category: 'Full-Stack AI',
-    categoryTag: 'full-stack',
-    tagline: 'Full-stack app that ingests real job postings and surfaces structured intelligence on how AI is reshaping roles.',
-    stack: ['Next.js', 'Supabase', 'n8n', 'OpenAI', 'TypeScript'],
-    bullets: [
-      'Automated ingestion pipeline processing ~1,000 real postings into normalized market intelligence',
-      'AI constrained to summarize deterministic data only — rankings never come from generation',
-    ],
-    slug: 'career-radar',
-    bgImage: '/images/projects/career-radar.jpg',
+    tagline: 'Rental scam screening for Manhattan apartment seekers, with explainable risk scoring.',
+    stack: ['Next.js', 'AWS Bedrock', 'Claude 3.5', 'MCP', 'TypeScript'],
+    proof: 'Seven service pipeline: multimodal screenshot analysis, rent comparison, broker license checks',
+    slug: 'rentalshield-nyc',
   },
   {
-    title: 'OSS Dependency Risk Agent',
-    category: 'AI + Data Engineering',
-    categoryTag: 'data-eng',
-    tagline: 'Monitors 800+ open-source projects daily, scores them across 7 health signals, and uses a LangGraph agent to write actionable risk assessments.',
-    stack: ['LangGraph', 'Claude Sonnet', 'Databricks', 'Pinecone', 'Next.js'],
-    bullets: [
-      'Monitors 705 actively scored repos across 15 OSS categories with zero manual input',
-      'Full lakehouse pipeline (S3 → PySpark → Delta Lake → dbt) feeding a 5-node AI agent with tiered recommendations',
-    ],
-    slug: 'oss-dependency-risk-agent',
-    bgImage: '/images/projects/oss-dependency-risk-agent.jpg',
+    title: 'AI Venture Architect',
+    category: 'Multi-Agent',
+    tagline: 'Turns a rough AI product idea into a full market, technical, and opportunity analysis.',
+    stack: ['LangGraph', 'FastAPI', 'AWS Bedrock', 'Tavily', 'SSE'],
+    proof: 'Clarity gate, parallel analysis agents, and scoring kept deterministic and out of the model',
+    slug: 'ai-venture-architect',
+  },
+  {
+    title: 'Career Radar',
+    category: 'Full-Stack AI',
+    tagline: 'Ingests real job postings and surfaces structured intelligence on how AI is reshaping roles.',
+    stack: ['Next.js', 'Supabase', 'n8n', 'OpenAI', 'TypeScript'],
+    proof: 'About 1,000 real postings normalized automatically, with rankings never left to generation',
+    slug: 'career-radar',
+  },
+  {
+    title: 'ML Model Matrix',
+    category: 'Published Work',
+    linkLabel: 'How the framework works',
+    tagline: 'A framework mapping business problems to ML model types, published in The Private Equity AI Operating Partner.',
+    stack: ['AI Strategy', 'Framework Design', 'Published 2026'],
+    proof: 'Authored the model selection matrix (Appendix 1) and served as a peer reviewer on the book',
+    slug: 'peai-book-ml-model-matrix',
   },
 ]
 
-const ALL_SLUGS = PROJECTS.map(p => p.slug)
+const ALL_SLUGS = [...FEATURED.map((f) => f.slug), ...SELECTED.map((p) => p.slug)]
 
-// ── Card animation state ──────────────────────────────────────────────────────
+// ── Decorative constellation ──────────────────────────────────────────────────
 
-type AnimState = 'visible' | 'exiting' | 'hidden' | 'entering'
+/**
+ * Node positions in the SVG's own 360x200 coordinate space, with a per-node
+ * radius. Interest comes from size, not hue: a coloured ring here would read
+ * as a category code with no legend to decode it.
+ */
+const STAR_NODES: Array<{ x: number; y: number; r: number }> = [
+  { x: 28, y: 152, r: 3 },
+  { x: 76, y: 94, r: 4.5 },
+  { x: 138, y: 142, r: 3.5 },
+  { x: 118, y: 40, r: 4 },
+  { x: 196, y: 78, r: 5 },
+  { x: 186, y: 16, r: 3 },
+  { x: 250, y: 130, r: 4 },
+  { x: 300, y: 56, r: 3.5 },
+  { x: 332, y: 150, r: 4.5 },
+  { x: 266, y: 188, r: 3 },
+]
 
-function getWrapperStyle(state: AnimState): React.CSSProperties {
-  if (state === 'hidden') return { display: 'none' }
-  if (state === 'exiting') return {
-    opacity: 0,
-    transform: 'scale(0.93)',
-    transition: 'opacity 250ms ease, transform 250ms ease',
-  }
-  if (state === 'entering') return {
-    opacity: 0,
-    transform: 'scale(0.93)',
-    transition: 'none',
-  }
-  return {
-    opacity: 1,
-    transform: 'scale(1)',
-    transition: 'opacity 300ms ease, transform 300ms ease',
-  }
+const STAR_EDGES: Array<[number, number]> = [
+  [0, 1], [1, 3], [1, 2], [2, 4], [3, 5], [4, 5],
+  [4, 7], [2, 6], [6, 8], [6, 9], [7, 8],
+]
+
+/** Six-node reduction for laptop widths, in a 190x120 space. */
+const STAR_NODES_SM: Array<{ x: number; y: number; r: number }> = [
+  { x: 16, y: 92, r: 2.75 },
+  { x: 58, y: 44, r: 4 },
+  { x: 104, y: 86, r: 3 },
+  { x: 118, y: 22, r: 3.5 },
+  { x: 160, y: 60, r: 4.25 },
+  { x: 174, y: 106, r: 3 },
+]
+
+const STAR_EDGES_SM: Array<[number, number]> = [
+  [0, 1], [1, 3], [1, 2], [2, 4], [3, 4], [2, 5], [4, 5],
+]
+
+/**
+ * Purely decorative. Two sizes rather than one: the full figure from 1280px
+ * up, and a six-node reduction between 1024 and 1279 so a 13-inch laptop,
+ * a very common width, still gets the design element. Below 1024 there is
+ * genuinely no room beside the copy, so it is hidden.
+ *
+ * Each wrapper clips its own overflow, so an absolutely positioned child can
+ * never widen the scroll container.
+ */
+function Constellation() {
+  const shell = (w: number, h: number): React.CSSProperties => ({
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    width: w,
+    height: h,
+    overflow: 'hidden',
+    pointerEvents: 'none',
+  })
+
+  const figure = (
+    nodes: typeof STAR_NODES,
+    edges: Array<[number, number]>,
+    w: number,
+    h: number,
+  ) => (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} fill="none">
+      {edges.map(([a, b]) => (
+        <line
+          key={`${a}-${b}`}
+          x1={nodes[a].x}
+          y1={nodes[a].y}
+          x2={nodes[b].x}
+          y2={nodes[b].y}
+          stroke="rgba(var(--ink-rgb),0.16)"
+          strokeWidth="1"
+        />
+      ))}
+      {nodes.map((n, i) => (
+        <circle
+          key={i}
+          cx={n.x}
+          cy={n.y}
+          r={n.r}
+          fill="var(--panel-solid)"
+          stroke="rgba(var(--ink-rgb),0.30)"
+          strokeWidth="1.5"
+        />
+      ))}
+    </svg>
+  )
+
+  return (
+    <>
+      {/* 1280px and up */}
+      <div aria-hidden="true" className="hidden xl:block" style={shell(360, 200)}>
+        {figure(STAR_NODES, STAR_EDGES, 360, 200)}
+      </div>
+      {/* 1024px to 1279px */}
+      <div aria-hidden="true" className="hidden lg:block xl:hidden" style={shell(190, 120)}>
+        {figure(STAR_NODES_SM, STAR_EDGES_SM, 190, 120)}
+      </div>
+    </>
+  )
+}
+
+// ── Section label ─────────────────────────────────────────────────────────────
+
+function SectionLabel({ label, accent = false }: { label: string; accent?: boolean }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
+      <span
+        style={{
+          fontFamily: 'JetBrains Mono, monospace',
+          fontSize: 10,
+          letterSpacing: '0.18em',
+          textTransform: 'uppercase',
+          whiteSpace: 'nowrap',
+          color: accent ? 'var(--accent)' : 'rgba(var(--ink-rgb),0.50)',
+        }}
+      >
+        {label}
+      </span>
+      <span style={{ flex: 1, height: 1, background: 'rgba(var(--ink-rgb),0.12)' }} />
+    </div>
+  )
 }
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function ProjectsPage() {
   const router = useRouter()
-  const [activeFilter, setActiveFilter] = useState('all')
-  const [cardStates, setCardStates] = useState<Record<string, AnimState>>(
-    () => Object.fromEntries(PROJECTS.map(p => [p.slug, 'visible' as AnimState]))
-  )
 
   // Overlay state
   const [activeSlug, setActiveSlug] = useState<string | null>(null)
@@ -237,48 +322,6 @@ export default function ProjectsPage() {
     return () => window.removeEventListener('popstate', onPopState)
   }, [activeSlug])
 
-  function handleFilter(newFilter: string) {
-    if (newFilter === activeFilter) return
-    setActiveFilter(newFilter)
-
-    const toHide = PROJECTS
-      .filter(p => newFilter !== 'all' && p.categoryTag !== newFilter)
-      .filter(p => cardStates[p.slug] === 'visible')
-      .map(p => p.slug)
-
-    const toShow = PROJECTS
-      .filter(p => newFilter === 'all' || p.categoryTag === newFilter)
-      .filter(p => cardStates[p.slug] === 'hidden')
-      .map(p => p.slug)
-
-    if (toHide.length > 0) {
-      setCardStates(prev => {
-        const next = { ...prev }
-        toHide.forEach(slug => { next[slug] = 'exiting' })
-        return next
-      })
-    }
-
-    setTimeout(() => {
-      setCardStates(prev => {
-        const next = { ...prev }
-        toHide.forEach(slug => { next[slug] = 'hidden' })
-        toShow.forEach(slug => { next[slug] = 'entering' })
-        return next
-      })
-
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          setCardStates(prev => {
-            const next = { ...prev }
-            toShow.forEach(slug => { next[slug] = 'visible' })
-            return next
-          })
-        })
-      })
-    }, 280)
-  }
-
   return (
     <>
       <TopNav subtitle="Technical Projects" />
@@ -294,72 +337,54 @@ export default function ProjectsPage() {
           pointerEvents: activeSlug ? 'none' : 'auto',
         }}
       >
-        <div className="pt-24 px-10 pb-10">
+        <div className="pt-24 px-6 md:px-10 pb-10" style={{ overflowX: 'hidden' }}>
 
           {/* Page header */}
-          <header className="mb-8">
+          <header className="mb-10" style={{ position: 'relative' }}>
+            <Constellation />
             <p className="font-mono text-[9px] tracking-[0.28em] uppercase mb-3"
               style={{ color: 'rgba(var(--ink-rgb),0.62)' }}>
-              Portfolio — 2023–2025
+              Portfolio / 2023 to 2026
             </p>
-            <h2 className="text-4xl font-extrabold tracking-tight mb-2"
+            <h2 className="text-4xl font-extrabold tracking-tight mb-3"
               style={{ color: 'var(--ink)' }}>
               Technical{' '}
               <span style={{ color: 'var(--accent)' }}>Projects</span>
             </h2>
-            <p className="text-base max-w-3xl"
-              style={{ color: 'rgba(var(--ink-rgb),0.62)', lineHeight: 1.6 }}>
-              Side projects built to expand my hands-on experience with AI, data, and full-stack tools beyond my day-to-day client work — spanning RAG systems, agentic workflows, and modern AI application stacks.
+            <p className="text-base"
+              style={{ color: 'rgba(var(--ink-rgb),0.62)', lineHeight: 1.6, maxWidth: '58ch' }}>
+              Systems I designed and shipped end to end: retrieval pipelines, multi-agent workflows, and
+              production data platforms. Each one solves a real problem for a real user, not a tutorial dataset.
             </p>
           </header>
 
-          {/* Filter pills */}
-          <div className="flex gap-2 flex-wrap mb-8">
-            {FILTERS.map(f => {
-              const isActive = f.value === activeFilter
-              return (
-                <button
-                  key={f.value}
-                  onClick={() => handleFilter(f.value)}
-                  className="font-mono text-[10px] tracking-[0.12em] uppercase px-3 py-1.5 rounded-full transition-colors duration-150"
-                  style={
-                    isActive
-                      ? { background: 'var(--accent)', color: 'var(--accent-ink)', border: '1px solid var(--accent)' }
-                      : { background: 'transparent', color: 'var(--accent)', border: '1px solid rgba(var(--accent-rgb),0.24)' }
-                  }
-                  onMouseEnter={e => {
-                    if (!isActive) {
-                      const el = e.currentTarget
-                      el.style.color = 'var(--accent)'
-                      el.style.borderColor = 'rgba(var(--accent-rgb),0.5)'
-                    }
-                  }}
-                  onMouseLeave={e => {
-                    if (!isActive) {
-                      const el = e.currentTarget
-                      el.style.color = 'var(--accent)'
-                      el.style.borderColor = 'rgba(var(--accent-rgb),0.24)'
-                    }
-                  }}
-                >
-                  {f.label}
-                </button>
-              )
-            })}
+          {/* ── Tier 1 ────────────────────────────────────────────────────── */}
+          <SectionLabel label="Featured Work" accent />
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginBottom: 44 }}>
+            {FEATURED.map((f, i) => (
+              <FeaturedProject
+                key={f.slug}
+                slug={f.slug}
+                index={i}
+                name={f.name}
+                descriptor={f.descriptor}
+                contextParagraph={f.contextParagraph}
+                statusLabel={f.statusLabel}
+                statusDot={f.statusDot}
+                ctaLabel={f.ctaLabel}
+                nodes={f.nodes}
+                onOpen={openOverlay}
+              />
+            ))}
           </div>
 
-          {/* Project grid */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: 16,
-            }}
-          >
-            {PROJECTS.map(project => (
-              <div key={project.slug} style={getWrapperStyle(cardStates[project.slug])}>
-                <ProjectCard {...project} onOpen={openOverlay} />
-              </div>
+          {/* ── Tier 2 ────────────────────────────────────────────────────── */}
+          <SectionLabel label="Selected Builds" />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3" style={{ gap: 16 }}>
+            {SELECTED.map((project) => (
+              <ProjectCard key={project.slug} {...project} onOpen={openOverlay} />
             ))}
           </div>
 

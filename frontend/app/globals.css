@@ -8,6 +8,7 @@
   --bg-rgb:        221, 226, 229;
   --panel:         rgba(251, 253, 253, 0.91);  /* card/section background */
   --panel-2:       rgba(251, 253, 253, 0.60);  /* nested panel, inset */
+  --panel-3:       rgba(251, 253, 253, 0.35);  /* faintest wash: featured bands */
   --panel-solid:   #FBFDFD;                    /* opaque: SVG node fills, tooltips */
 
   /* Ink */

@@ -50,7 +50,7 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
     categoryTag: 'rag',
     tags: ['Python', 'Qdrant', 'Claude Opus', 'FastMCP', 'Slack Bolt SDK', 'MS Graph API'],
     summary:
-      'Production Slack bot that turns a SharePoint document library into a queryable proposal intelligence system — automated ingestion, hybrid dense+sparse search, and six purpose-built LLM analytical workflows for government proposal teams.',
+      'A Slack bot that turns a SharePoint document library into a queryable proposal intelligence system. Automated ingestion, hybrid dense and sparse search, and six purpose built LLM workflows for government proposal teams.',
     stats: [
       { label: 'Analytical workflows', value: '6' },
       { label: 'Search architecture', value: 'Hybrid RRF' },
@@ -137,12 +137,12 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
     },
     impact: {
       stats: [
-        { label: 'Research time', value: 'Hours → Seconds' },
+        { label: 'Unsupported claims', value: 'Flagged, not filled' },
         { label: 'Bug fix', value: 'Qdrant RRF patch' },
-        { label: 'Status', value: 'Production' },
+        { label: 'Status', value: 'Prototype' },
       ],
       takeaway:
-        'KB Agent demonstrates end-to-end production AI engineering: identifying a retrieval architecture limitation, diagnosing a client-level bug, implementing a custom fix, and delivering a tool measurably faster than the manual process it replaces.',
+        'KB Agent demonstrates end to end AI engineering: identifying a retrieval architecture limitation, diagnosing a bug in the client library, implementing a custom fix, and building a working tool on top of it.',
     },
   },
 
@@ -462,7 +462,7 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
     categoryTag: 'automation',
     tags: ['Zapier', 'OpenAI API', 'Airtable', 'PDF.co', 'Google Drive', 'Slack'],
     summary:
-      'Fully automated private equity CIM intake pipeline — PDF upload triggers structured extraction, risk flagging, diligence question generation, IC memo drafting, and Slack alerts, with a polished Airtable deal operating system as the analyst-facing review surface.',
+      'A fully automated private equity CIM intake pipeline. A PDF upload triggers structured extraction, risk flagging, diligence question generation, IC memo drafting, and a Slack alert, with an Airtable deal operating system as the analyst facing review surface.',
     stats: [
       { label: 'Automation workflows', value: '3 Zaps' },
       { label: 'Intake to IC memo', value: 'Minutes' },
@@ -769,12 +769,12 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
     title: 'PEAI Book — ML Model Matrix',
     category: 'Published Work',
     categoryTag: 'published',
-    tags: ['AI Strategy', 'Framework Design', 'Published 2024'],
+    tags: ['AI Strategy', 'Framework Design', 'Published 2026'],
     summary:
-      'Authored the AI Model Capability Matrix chapter in The Private Equity AI Operating Partner — a 12-category framework mapping atomic AI abilities to ML model types and training paradigms for finance and operations professionals.',
+      'Authored the model selection matrix in The Private Equity AI Operating Partner, published as Appendix 1, and served as a peer reviewer on the book. It maps twelve atomic AI abilities to the model types, families and training paradigms each one requires.',
     stats: [
       { label: 'Framework categories', value: '12' },
-      { label: 'Publication year', value: '2024' },
+      { label: 'Publication year', value: '2026' },
     ],
     problem: {
       heading: 'PE operators making AI decisions lack a structured model selection framework',
@@ -854,11 +854,11 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
             'Framework closes with PE-specific application guidance: using atomic ability mapping in due diligence, portfolio value creation, and AI initiative scoping.',
         },
       ],
-      stack: ['AI Strategy', 'ML Framework Design', 'Technical Writing', 'Published 2024'],
+      stack: ['AI Strategy', 'ML Framework Design', 'Technical Writing', 'Published 2026'],
     },
     impact: {
       stats: [
-        { label: 'Published', value: '2024' },
+        { label: 'Published', value: '2026' },
         { label: 'Framework depth', value: '12 categories' },
         { label: 'Audience', value: 'PE practitioners' },
       ],
