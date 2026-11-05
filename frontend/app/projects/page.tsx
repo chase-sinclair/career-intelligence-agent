@@ -13,14 +13,27 @@ import { PROJECT_DETAILS } from '@/lib/project-details'
  * Slugs that own a full page under `app/projects/<slug>/` instead of opening
  * the ProjectDeepDive overlay. A static segment takes precedence over the
  * `[slug]` catch-all in the App Router, so these pages are authoritative and
- * the catch-all never redirects them back to the overlay. Every other card
- * keeps its existing overlay behavior.
+ * the catch-all never redirects them back to the overlay.
+ *
+ * As of Session 19 this set covers every card in PROJECTS, so the overlay has
+ * no live path into it. That is deliberate, and ProjectDeepDive is kept rather
+ * than deleted: it is the fallback for any card added here before its
+ * standalone page exists, which is exactly the state each of these eight
+ * passed through. A card whose slug is missing from this set still opens a
+ * working deep dive from `lib/project-details.ts` instead of doing nothing.
+ *
+ * `lib/project-details.ts` also remains the content source of record. Each
+ * standalone page's data file is derived from its entry there.
  */
 const STANDALONE_ROUTES = new Set([
   'deallens',
   'peai-chat-assistant',
   'peai-book-ml-model-matrix',
   'kb-agent',
+  'rentalshield-nyc',
+  'ai-venture-architect',
+  'career-radar',
+  'oss-dependency-risk-agent',
 ])
 
 // ── Filter definitions ────────────────────────────────────────────────────────
