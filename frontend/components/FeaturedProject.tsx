@@ -79,14 +79,21 @@ export default function FeaturedProject({
 
   return (
     <section
+      className="md:-mx-[30px]"
       style={{
         background: 'var(--panel-3)',
         borderRadius: 14,
-        // No left inset: the band is borderless, so an inset content line reads
-        // as a mistake rather than as padding. Content now starts on the same
-        // x as the h1 and the intro paragraph. Vertical padding and the right
-        // inset are unchanged.
-        padding: '34px 36px 34px 0',
+        // Padding on all four sides, so the copy never touches the wash
+        // boundary, and the band is then pulled 30px into each gutter at md and
+        // up. That puts the content line back on the same x as the page title
+        // and the intro paragraph while keeping the wash symmetric.
+        //
+        // The offset is breakpoint-gated because the wrapper's own padding has
+        // to absorb it: px-10 (40px) at md and up leaves 10px of gutter, but
+        // px-6 (24px) below md does not. There, -30px would cross the wrapper's
+        // padding box and its overflowX: hidden would silently clip the wash,
+        // so the band sits inset with its padding intact instead.
+        padding: '34px 30px',
         display: 'flex',
         flexWrap: 'wrap',
         gap: 40,
@@ -284,7 +291,10 @@ export default function FeaturedProject({
       </div>
 
       {/* ── Right: the evidence ──────────────────────────────────────────── */}
-      <div style={{ flex: '1 1 320px', minWidth: 300 }}>
+      {/* minWidth 0 rather than a 300px floor: at 390px the band's inner width
+          is narrower than that, and a hard floor overflowed into the wrapper's
+          overflowX: hidden, clipping the stats and pipeline silently. */}
+      <div style={{ flex: '1 1 320px', minWidth: 0 }}>
         {/* Two headline stats */}
         <div style={{ display: 'flex', gap: 28, flexWrap: 'wrap', marginBottom: 20 }}>
           {stats.map((s) => (
