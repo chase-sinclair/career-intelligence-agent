@@ -67,6 +67,7 @@ Public recruiter-facing routes (in sidebar nav):
 - /projects               → Project cards grid (8 cards, filter pills, deep-dive overlay)
 - /projects/[slug]        → Redirects to /projects?open=<slug> — auto-opens overlay for that project
 - /projects/deallens      → Dedicated full-screen product demo page (8 story sections, interactive hotspots, gallery, CTA)
+- /projects/kb-agent      → Standalone case study (8 sections, CSS-drawn figures, no image assets yet)
 - /projects/peai-chat-assistant       → Standalone case study (8 sections, per-section graphics, expandable citations)
 - /projects/peai-book-ml-model-matrix → Standalone case study (7 sections, one sticky AbilityGrid in 3 modes)
 - /how-it-works           → How It Works (pipeline explanation, tech stack, product vision)
@@ -79,7 +80,7 @@ Hidden routes (functional, not in nav):
 
 ## Project Cards System
 Eight cards in `frontend/app/projects/page.tsx`:
-1. KB Agent — Proposal Intelligence Platform (rag)
+1. KB Agent — Proposal Intelligence Platform (rag) — **standalone route**
 2. RentalShield NYC (full-stack)
 3. AI Venture Architect (multi-agent)
 4. PEAI Chat Assistant (rag) — **standalone route**
@@ -94,7 +95,7 @@ Cards open the deep-dive overlay (`ProjectDeepDive`) **unless** their slug is in
 `STANDALONE_ROUTES` set at the top of `projects/page.tsx`. Those slugs own a full page under
 `app/projects/<slug>/` and the card click calls `router.push('/projects/<slug>')` instead.
 A hand-written `?open=<slug>` for a standalone slug also redirects to the real page.
-Currently: `deallens`, `peai-chat-assistant`, `peai-book-ml-model-matrix`.
+Currently: `deallens`, `peai-chat-assistant`, `peai-book-ml-model-matrix`, `kb-agent`.
 
 **Route precedence:** a static segment beats the dynamic `[slug]` catch-all in the App Router,
 so standalone pages are authoritative automatically. `[slug]/page.tsx` needs no change when
@@ -157,6 +158,26 @@ Facts fixed on this page, do not regress: role is **authored the matrix + peer r
 (never author, co-author, or chapter), year is **2026**, and the matrix strings are verbatim
 from the book (no RNNs, ARIMA, GPT or few-shot). The author-is-Chase's-father line appears
 **exactly once**, inside §2 "The background".
+
+## KB Agent Standalone Case Study
+`app/projects/kb-agent/page.tsx` + `components/kb-agent/KbAgentPage.tsx`, data in
+`lib/kb-agent-data.ts`. Built to the PEAI Chat page's pattern: eight sections, per-section
+figures, **no sticky mechanic**, CSS scoped under `.kb-agent`.
+
+**Content is preliminary and visuals are not finalized.** Every fact on the page is carried
+over from the `kb-agent` entry in `lib/project-details.ts`; nothing new was invented. Two slots
+are deliberately open:
+- The hero uses a **CSS placeholder frame**, not `next/image`, so the page ships with zero image
+  assets. It holds a 16:10 box, so dropping a real capture in will not reflow the section.
+- `project-details.ts` says "six analytical workflows" but names only three, so §7 presents the
+  six documented **capabilities** instead of claiming a full enumeration of the workflows.
+
+Every figure is drawn in CSS (ingestion card, two-leg merge diagram, capability drawer), which
+is why the page needs no assets to look finished.
+
+Known inconsistency, not resolved: project card #01 lists `Streamlit` and `Claude 3.5` in its
+stack, while `project-details.ts` and this page use Slack Bolt / FastMCP and `Claude Opus`.
+Confirm which is right before the page goes public.
 
 ## LangGraph Workflows (4 agents)
 1. Ingestion Agent — file intake → text extraction (+ YAML front matter parsing for .md) → chunking → embedding → indexing
@@ -327,3 +348,21 @@ Completed: both PEAI standalone case study pages, built from design handoffs and
   `*.zip` are gitignored; they hold unpublished book scans and must never be committed.
 
 Next: public/private route separation (Phase 16). Deliberately deferred, not forgotten.
+
+### Session 19 — 2026-11-05 (cloud session)
+Completed: KB Agent promoted from the deep-dive overlay to a standalone case study page,
+themed to match the two PEAI pages.
+
+- Analyzed the shared visual system across `peai-chat-assistant` and `peai-book-ml-model-matrix`
+  and rebuilt KB Agent on it: same shell, same `Eyebrow`/`Heading2`/`Divider` atoms, same figure
+  shell, chip, panel and `.fx` card geometry, same one-shot reveal contract, same token set.
+- Followed the PEAI **Chat** page specifically (no sticky mechanic), since both are RAG systems
+  and the Book page's sticky grid solves a problem KB Agent does not have.
+- `kb-agent` added to `STANDALONE_ROUTES`. Both routing paths in `projects/page.tsx` are generic
+  over that set, so no other change was needed; verified card click, `?open=kb-agent` and the
+  direct URL all land on the page, and that an overlay project still opens the overlay.
+- Verified against a production build: typecheck clean, build clean (page prerenders static),
+  no console errors, and no horizontal overflow at 390 / 520 / 620 / 760 / 860 / 980 / 1060 /
+  1280 / 1440 / 1920.
+- Content is preliminary pending real visuals and the workflow names. See the KB Agent section
+  above for the two open slots and the card stack inconsistency.

@@ -16,7 +16,12 @@ import { PROJECT_DETAILS } from '@/lib/project-details'
  * the catch-all never redirects them back to the overlay. Every other card
  * keeps its existing overlay behavior.
  */
-const STANDALONE_ROUTES = new Set(['deallens', 'peai-chat-assistant', 'peai-book-ml-model-matrix'])
+const STANDALONE_ROUTES = new Set([
+  'deallens',
+  'peai-chat-assistant',
+  'peai-book-ml-model-matrix',
+  'kb-agent',
+])
 
 // ── Filter definitions ────────────────────────────────────────────────────────
 

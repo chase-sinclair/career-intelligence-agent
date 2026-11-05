@@ -10,6 +10,7 @@ Next.js App Router, TypeScript, Tailwind CSS
 - /projects          → Project cards grid (8 cards)
 - /projects/[slug]   → Redirects to /projects?open=<slug>, which opens the ProjectDeepDive overlay
 - /projects/deallens → Standalone DealLens product demo (full-screen)
+- /projects/kb-agent → Standalone case study (8 sections, no sticky, CSS-drawn figures)
 - /projects/peai-chat-assistant       → Standalone case study (8 sections, no sticky mechanic)
 - /projects/peai-book-ml-model-matrix → Standalone case study (7 sections, sticky AbilityGrid)
 - /how-it-works      → How It Works (static page: pipeline explanation, tech stack, product vision)
