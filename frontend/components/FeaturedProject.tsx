@@ -40,8 +40,13 @@ export interface FeaturedProjectProps {
   /** Page-specific framing paragraph, below the shared summary. */
   contextParagraph: string
   statusLabel: string
-  /** Filled dot for a shipped thing, hollow for a prototype. */
-  statusFilled: boolean
+  /**
+   * Dots on this page mean deployment status and nothing else: filled for
+   * live, hollow for a prototype. A chip that says something other than
+   * deployment status, such as how to read the page, takes 'none' rather
+   * than borrowing a dot that already means something.
+   */
+  statusDot: 'filled' | 'hollow' | 'none'
   ctaLabel: string
   nodes: PipelineNode[]
   onOpen?: (slug: string) => void
@@ -59,7 +64,7 @@ export default function FeaturedProject({
   descriptor,
   contextParagraph,
   statusLabel,
-  statusFilled,
+  statusDot,
   ctaLabel,
   nodes,
   onOpen,
@@ -80,7 +85,11 @@ export default function FeaturedProject({
       style={{
         background: 'var(--panel-3)',
         borderRadius: 14,
-        padding: '34px 36px',
+        // No left inset: the band is borderless, so an inset content line reads
+        // as a mistake rather than as padding. Content now starts on the same
+        // x as the h1 and the intro paragraph. Vertical padding and the right
+        // inset are unchanged.
+        padding: '34px 36px 34px 0',
         display: 'flex',
         flexWrap: 'wrap',
         gap: 40,
@@ -130,17 +139,19 @@ export default function FeaturedProject({
               whiteSpace: 'nowrap',
             }}
           >
-            <span
-              aria-hidden="true"
-              style={{
-                width: 7,
-                height: 7,
-                borderRadius: '50%',
-                background: statusFilled ? 'var(--accent)' : 'var(--panel-solid)',
-                border: statusFilled ? 'none' : '1.5px solid rgba(var(--ink-rgb),0.38)',
-                flexShrink: 0,
-              }}
-            />
+            {statusDot !== 'none' && (
+              <span
+                aria-hidden="true"
+                style={{
+                  width: 7,
+                  height: 7,
+                  borderRadius: '50%',
+                  background: statusDot === 'filled' ? 'var(--accent)' : 'var(--panel-solid)',
+                  border: statusDot === 'filled' ? 'none' : '1.5px solid rgba(var(--ink-rgb),0.38)',
+                  flexShrink: 0,
+                }}
+              />
+            )}
             {statusLabel}
           </span>
         </div>

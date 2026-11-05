@@ -27,7 +27,7 @@ interface FeaturedEntry {
   descriptor: string
   contextParagraph: string
   statusLabel: string
-  statusFilled: boolean
+  statusDot: 'filled' | 'hollow' | 'none'
   ctaLabel: string
   nodes: PipelineNode[]
 }
@@ -40,7 +40,7 @@ const FEATURED: FeaturedEntry[] = [
     contextParagraph:
       'Proposal teams lose half a day finding what the firm has already written. The retrieval layer runs a hand built Reciprocal Rank Fusion merge, written after diagnosing a serialization bug that broke the client library’s native hybrid path, and every answer cites the documents it came from.',
     statusLabel: 'Working prototype',
-    statusFilled: false,
+    statusDot: 'hollow',
     ctaLabel: 'Read the case study',
     nodes: [
       { label: 'SharePoint ingestion', color: 'var(--sk-data)' },
@@ -57,7 +57,7 @@ const FEATURED: FeaturedEntry[] = [
     contextParagraph:
       'First pass CIM review is manual, repetitive, and structured enough to automate. Three independently triggered workflows keep the system maintainable, and a synthetic validation set across three deal outcomes shows it generalizes without any CIM specific logic.',
     statusLabel: 'Interactive walkthrough',
-    statusFilled: true,
+    statusDot: 'none',
     ctaLabel: 'Walk through the pipeline',
     nodes: [
       { label: 'CIM intake trigger', color: 'var(--sk-data)' },
@@ -107,7 +107,6 @@ const SELECTED: ProjectCardProps[] = [
   },
   {
     title: 'Career Radar',
-    descriptor: 'Labor Market Intelligence',
     category: 'Full-Stack AI',
     tagline: 'Ingests real job postings and surfaces structured intelligence on how AI is reshaping roles.',
     stack: ['Next.js', 'Supabase', 'n8n', 'OpenAI', 'TypeScript'],
@@ -116,7 +115,6 @@ const SELECTED: ProjectCardProps[] = [
   },
   {
     title: 'ML Model Matrix',
-    descriptor: 'The Private Equity AI Operating Partner',
     category: 'Published Work',
     variant: 'publication',
     linkLabel: 'How the framework works',
@@ -225,15 +223,7 @@ function Constellation() {
 
 // ── Section label ─────────────────────────────────────────────────────────────
 
-function SectionLabel({
-  label,
-  caption,
-  accent = false,
-}: {
-  label: string
-  caption?: string
-  accent?: boolean
-}) {
+function SectionLabel({ label, accent = false }: { label: string; accent?: boolean }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
       <span
@@ -249,19 +239,6 @@ function SectionLabel({
         {label}
       </span>
       <span style={{ flex: 1, height: 1, background: 'rgba(var(--ink-rgb),0.12)' }} />
-      {caption && (
-        <span
-          style={{
-            fontFamily: 'JetBrains Mono, monospace',
-            fontSize: 10,
-            letterSpacing: '0.12em',
-            whiteSpace: 'nowrap',
-            color: 'rgba(var(--ink-rgb),0.40)',
-          }}
-        >
-          {caption}
-        </span>
-      )}
     </div>
   )
 }
@@ -372,7 +349,7 @@ export default function ProjectsPage() {
           </header>
 
           {/* ── Tier 1 ────────────────────────────────────────────────────── */}
-          <SectionLabel label="Featured Work" caption="Two deep dives" accent />
+          <SectionLabel label="Featured Work" accent />
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginBottom: 44 }}>
             {FEATURED.map((f, i) => (
@@ -384,7 +361,7 @@ export default function ProjectsPage() {
                 descriptor={f.descriptor}
                 contextParagraph={f.contextParagraph}
                 statusLabel={f.statusLabel}
-                statusFilled={f.statusFilled}
+                statusDot={f.statusDot}
                 ctaLabel={f.ctaLabel}
                 nodes={f.nodes}
                 onOpen={openOverlay}

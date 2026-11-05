@@ -14,8 +14,6 @@ import { useRouter } from 'next/navigation'
  */
 export interface ProjectCardProps {
   title: string
-  /** Second line under the name, in place of an em dash title join. */
-  descriptor?: string
   category: string
   tagline: string
   stack: string[]
@@ -39,7 +37,6 @@ const MAX_CHIPS = 3
 
 export default function ProjectCard({
   title,
-  descriptor,
   category,
   tagline,
   stack,
@@ -153,7 +150,7 @@ export default function ProjectCard({
           )}
         </div>
 
-        {/* Name and descriptor */}
+        {/* Name */}
         <div>
           <h3
             style={{
@@ -167,11 +164,6 @@ export default function ProjectCard({
           >
             {title}
           </h3>
-          {descriptor && (
-            <p style={{ fontSize: 12.5, lineHeight: 1.4, color: 'rgba(var(--ink-rgb),0.52)', margin: '3px 0 0' }}>
-              {descriptor}
-            </p>
-          )}
         </div>
 
         {/* Tagline */}
