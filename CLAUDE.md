@@ -174,7 +174,7 @@ from the book (no RNNs, ARIMA, GPT or few-shot). The author-is-Chase's-father li
 - [x] Phase 6–10: IA rework, persistent public profile, Demo Lab, session-based eval, job agent, project deep dives
 - [x] Phase 11: Knowledge base population, RAG hardening, conversation history
 - [x] Phase 12: Product identity pivot — public nav trimmed; job/admin pages hidden; "How It Works" added; landing page rebuilt
-- [x] Phase 13: Project cards overhaul — 3D tilt/parallax cards, bgImage support, deep-dive overlay system (all 6 projects), DealLens card, sidebar flicker fix
+- [x] Phase 13: Project cards overhaul — deep-dive overlay system (all 6 projects), DealLens card, sidebar flicker fix. The 3D tilt and bgImage support added here were both removed later; see Phase 17
 - [x] Phase 14: DealLens product demo page — dedicated /projects/deallens with 8 story sections, interactive hotspots, scroll progress, gallery
 - [x] Phase 15: PEAI standalone case study pages (Chat + Book), shared typography atoms
 - [ ] Phase 16: Public/private route separation (gate /admin, /top-fit-jobs, /job-preferences)
@@ -280,6 +280,8 @@ Completed: Knowledge base population, RAG pipeline hardening, conversation histo
 ### Session 14 — 2026-05-03
 Completed: Project cards overhaul, deep-dive overlay system, DealLens card, sidebar fix.
 - `ProjectCard.tsx` rebuilt with 3D tilt/parallax on hover, `bgImage` prop for background images
+  (both since removed: the tilt was simplified to a plain hover lift in a later session, and
+  `bgImage` was deleted in the Phase 17 /projects redesign. Do not expect either in the code)
 - `ProjectDeepDive.tsx` created — overlay slides up over the project grid, animated reveal, prev/next navigation, all 6 projects populated in `lib/project-details.ts`
 - DealLens added as project card #05 (PEAI Book moved to #06)
 - `AI Automation` filter added to projects page
