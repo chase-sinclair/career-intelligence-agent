@@ -50,7 +50,7 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
     categoryTag: 'rag',
     tags: ['Python', 'Qdrant', 'Claude Opus', 'FastMCP', 'Slack Bolt SDK', 'MS Graph API'],
     summary:
-      'A Slack bot that turns a SharePoint document library into a queryable proposal intelligence system. Automated ingestion, hybrid dense and sparse search, and six purpose built LLM workflows for government proposal teams.',
+      'A Slack bot that turns a watched folder tree, local or OneDrive, into a queryable proposal intelligence system. Automated ingestion, hybrid dense and sparse retrieval, and six purpose built workflows for government proposal teams: ask, agent, score, gaps, draft, and compare.',
     stats: [
       { label: 'Analytical workflows', value: '6' },
       { label: 'Search architecture', value: 'Hybrid RRF' },
@@ -65,12 +65,12 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
     },
     solution: {
       heading: 'Six analytical workflows over a hybrid-indexed document library',
-      body: 'KB Agent ingests a SharePoint document library via the Microsoft Graph API, indexes every document using Qdrant hybrid search (dense vectors + BM25-style sparse), and exposes six Claude-powered analytical workflows through a Slack bot interface. The retrieval layer uses a manually implemented Reciprocal Rank Fusion merge after diagnosing a Qdrant client v1.17.1 serialization bug that broke the native hybrid search path.',
+      body: 'KB Agent ingests a watched folder tree (a local directory via watchdog, or a OneDrive folder polled through the Microsoft Graph API), indexes every document using Qdrant hybrid search (dense vectors + BM25-style sparse), and exposes six Claude-powered analytical workflows through a Slack bot interface. The retrieval layer runs the standard Reciprocal Rank Fusion merge (k=60) in application code, written after diagnosing a Qdrant client v1.17.1 serialization bug that broke the server-side Prefetch/Fusion.RRF path.',
       features: [
         {
           title: 'Hybrid Dense + Sparse Retrieval',
           description:
-            'Manual RRF implementation merging dense semantic vectors with BM25-style sparse vectors — built after diagnosing a serialization bug in Qdrant client v1.17.1 that broke the native hybrid path.',
+            'Application-level Reciprocal Rank Fusion at k=60, merging dense semantic vectors with BM25-style sparse vectors — written after diagnosing a serialization bug in Qdrant client v1.17.1 that broke the server-side fusion path. Any failure in the hybrid path falls back to a dense-only query.',
         },
         {
           title: 'Proposal Narrative Drafting',
@@ -100,13 +100,13 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
       ],
     },
     architecture: {
-      heading: 'From SharePoint to grounded answer in one pipeline',
+      heading: 'From folder tree to grounded answer in one pipeline',
       steps: [
         {
           number: '01',
-          title: 'SharePoint Ingestion',
+          title: 'Folder Tree Ingestion',
           description:
-            'Microsoft Graph API polling fetches new and changed files from SharePoint. Files are quarantined by error type on failure; SHA-256 hashing prevents redundant re-processing of unchanged documents.',
+            'Two interchangeable watchers feed the same pipeline: watchdog for a local directory, or Microsoft Graph polling for a OneDrive folder. Files are quarantined by error type on failure; SHA-256 hashing prevents redundant re-processing of unchanged documents.',
         },
         {
           number: '02',
