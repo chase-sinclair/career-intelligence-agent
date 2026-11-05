@@ -769,12 +769,12 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
     title: 'PEAI Book — ML Model Matrix',
     category: 'Published Work',
     categoryTag: 'published',
-    tags: ['AI Strategy', 'Framework Design', 'Published 2024'],
+    tags: ['AI Strategy', 'Framework Design', 'Published 2026'],
     summary:
       'Authored the model selection matrix in The Private Equity AI Operating Partner, published as Appendix 1, and served as a peer reviewer on the book. It maps twelve atomic AI abilities to the model types, families and training paradigms each one requires.',
     stats: [
       { label: 'Framework categories', value: '12' },
-      { label: 'Publication year', value: '2024' },
+      { label: 'Publication year', value: '2026' },
     ],
     problem: {
       heading: 'PE operators making AI decisions lack a structured model selection framework',
@@ -854,11 +854,11 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
             'Framework closes with PE-specific application guidance: using atomic ability mapping in due diligence, portfolio value creation, and AI initiative scoping.',
         },
       ],
-      stack: ['AI Strategy', 'ML Framework Design', 'Technical Writing', 'Published 2024'],
+      stack: ['AI Strategy', 'ML Framework Design', 'Technical Writing', 'Published 2026'],
     },
     impact: {
       stats: [
-        { label: 'Published', value: '2024' },
+        { label: 'Published', value: '2026' },
         { label: 'Framework depth', value: '12 categories' },
         { label: 'Audience', value: 'PE practitioners' },
       ],

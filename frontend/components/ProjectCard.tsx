@@ -22,9 +22,11 @@ export interface ProjectCardProps {
   slug: string
   /** Small chip in the meta row, e.g. "Live". */
   statusLabel?: string
-  /** `publication` tints the card and swaps the repo icon for a text link. */
-  variant?: 'default' | 'publication'
-  /** Text link shown instead of the GitHub icon (publications have no repo). */
+  /**
+   * Text link shown in place of the GitHub icon, for work with no repo.
+   * Its presence is what swaps the two; there is no separate variant, and
+   * the card's surface is identical either way.
+   */
   linkLabel?: string
   onOpen?: (slug: string) => void
 }
@@ -43,7 +45,6 @@ export default function ProjectCard({
   proof,
   slug,
   statusLabel,
-  variant = 'default',
   linkLabel,
   onOpen,
 }: ProjectCardProps) {
@@ -51,13 +52,8 @@ export default function ProjectCard({
   const [linkHovered, setLinkHovered] = useState(false)
   const router = useRouter()
 
-  const isPublication = variant === 'publication'
   const visibleChips = stack.slice(0, MAX_CHIPS)
   const overflowCount = stack.length - visibleChips.length
-
-  const restingBorder = isPublication
-    ? 'rgba(var(--accent-rgb),0.22)'
-    : 'rgba(var(--ink-rgb),0.10)'
 
   return (
     <div
@@ -73,8 +69,8 @@ export default function ProjectCard({
           flexDirection: 'column',
           gap: 12,
           padding: '18px 18px 20px',
-          background: isPublication ? 'rgba(var(--accent-rgb),0.07)' : 'var(--panel)',
-          border: `0.5px solid ${isHovered ? 'rgba(var(--accent-rgb),0.30)' : restingBorder}`,
+          background: 'var(--panel)',
+          border: `0.5px solid ${isHovered ? 'rgba(var(--accent-rgb),0.30)' : 'rgba(var(--ink-rgb),0.10)'}`,
           borderRadius: 12,
           transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
           boxShadow: isHovered ? '0 16px 40px rgba(var(--ink-rgb),0.16)' : 'none',
@@ -123,7 +119,7 @@ export default function ProjectCard({
             )}
           </div>
 
-          {!isPublication && (
+          {!linkLabel && (
             <a
               href="#"
               aria-label={`${title} source`}
@@ -176,7 +172,7 @@ export default function ProjectCard({
           <div
             style={{
               height: 1,
-              background: isPublication ? 'rgba(var(--accent-rgb),0.18)' : 'rgba(var(--ink-rgb),0.10)',
+              background: 'rgba(var(--ink-rgb),0.10)',
             }}
           />
           <p
@@ -199,7 +195,7 @@ export default function ProjectCard({
           </p>
 
           {/* Chips, capped, or the publication text link */}
-          {isPublication && linkLabel ? (
+          {linkLabel ? (
             <span
               style={{
                 display: 'inline-flex',

@@ -17,13 +17,6 @@ import { PROJECT_DETAILS } from '@/lib/project-details'
  * apart. Only the page-specific framing is passed in.
  */
 
-/** One step in the "How it runs" panel. */
-export interface PipelineNode {
-  label: string
-  /** A --sk-* token for the ring border. Decorative texture, not a code. */
-  color: string
-}
-
 export interface FeaturedProjectProps {
   slug: string
   /** Zero-based position, rendered as "01", "02". */
@@ -48,7 +41,11 @@ export interface FeaturedProjectProps {
    */
   statusDot: 'filled' | 'hollow' | 'none'
   ctaLabel: string
-  nodes: PipelineNode[]
+  /**
+   * Step labels, in order. The last one is the pipeline's output and is the
+   * only node that carries colour.
+   */
+  nodes: string[]
   onOpen?: (slug: string) => void
 }
 
@@ -334,10 +331,10 @@ export default function FeaturedProject({
             How it runs
           </div>
 
-          {nodes.map((node, i) => {
+          {nodes.map((label, i) => {
             const isLast = i === nodes.length - 1
             return (
-              <div key={node.label}>
+              <div key={label}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
                   <span
                     aria-hidden="true"
@@ -347,7 +344,10 @@ export default function FeaturedProject({
                       borderRadius: '50%',
                       flexShrink: 0,
                       background: isLast ? 'var(--accent)' : 'var(--panel-solid)',
-                      border: isLast ? 'none' : `1.5px solid ${node.color}`,
+                      // Monochrome: a hue here would read as a code with no
+                      // legend. Only the final node, the pipeline's output,
+                      // is coloured, because there the colour means something.
+                      border: isLast ? 'none' : '1.5px solid rgba(var(--ink-rgb),0.30)',
                     }}
                   />
                   <span
@@ -358,7 +358,7 @@ export default function FeaturedProject({
                       fontWeight: isLast ? 600 : 400,
                     }}
                   >
-                    {node.label}
+                    {label}
                   </span>
                 </div>
                 {!isLast && (

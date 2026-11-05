@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import TopNav from '@/components/TopNav'
 import ProjectCard, { type ProjectCardProps } from '@/components/ProjectCard'
 import ProjectDeepDive from '@/components/ProjectDeepDive'
-import FeaturedProject, { type PipelineNode } from '@/components/FeaturedProject'
+import FeaturedProject from '@/components/FeaturedProject'
 import { PROJECT_DETAILS } from '@/lib/project-details'
 
 // ── Standalone case-study routes ──────────────────────────────────────────────
@@ -29,7 +29,7 @@ interface FeaturedEntry {
   statusLabel: string
   statusDot: 'filled' | 'hollow' | 'none'
   ctaLabel: string
-  nodes: PipelineNode[]
+  nodes: string[]
 }
 
 const FEATURED: FeaturedEntry[] = [
@@ -43,11 +43,11 @@ const FEATURED: FeaturedEntry[] = [
     statusDot: 'hollow',
     ctaLabel: 'Read the case study',
     nodes: [
-      { label: 'SharePoint ingestion', color: 'var(--sk-data)' },
-      { label: 'Hybrid indexing', color: 'var(--sk-ai)' },
-      { label: 'Custom RRF merge', color: 'var(--sk-ai)' },
-      { label: 'MCP tool dispatch', color: 'var(--sk-platform)' },
-      { label: 'Cited answer in Slack', color: 'var(--accent)' },
+      'SharePoint ingestion',
+      'Hybrid indexing',
+      'Custom RRF merge',
+      'MCP tool dispatch',
+      'Cited answer in Slack',
     ],
   },
   {
@@ -60,11 +60,11 @@ const FEATURED: FeaturedEntry[] = [
     statusDot: 'none',
     ctaLabel: 'Walk through the pipeline',
     nodes: [
-      { label: 'CIM intake trigger', color: 'var(--sk-data)' },
-      { label: 'Structured extraction', color: 'var(--sk-ai)' },
-      { label: 'Airtable records, 5 tables', color: 'var(--sk-viz)' },
-      { label: 'Diligence and criteria Zaps', color: 'var(--sk-auto)' },
-      { label: 'IC memo and Slack alert', color: 'var(--accent)' },
+      'CIM intake trigger',
+      'Structured extraction',
+      'Airtable records, 5 tables',
+      'Diligence and criteria Zaps',
+      'IC memo and Slack alert',
     ],
   },
 ]
@@ -116,7 +116,6 @@ const SELECTED: ProjectCardProps[] = [
   {
     title: 'ML Model Matrix',
     category: 'Published Work',
-    variant: 'publication',
     linkLabel: 'How the framework works',
     tagline: 'A framework mapping business problems to ML model types, published in The Private Equity AI Operating Partner.',
     stack: ['AI Strategy', 'Framework Design', 'Published 2026'],
@@ -129,18 +128,22 @@ const ALL_SLUGS = [...FEATURED.map((f) => f.slug), ...SELECTED.map((p) => p.slug
 
 // ── Decorative constellation ──────────────────────────────────────────────────
 
-/** Node positions in the SVG's own 360x200 coordinate space. */
-const STAR_NODES: Array<{ x: number; y: number; c: string }> = [
-  { x: 28, y: 152, c: 'var(--sk-data)' },
-  { x: 76, y: 94, c: 'var(--sk-ai)' },
-  { x: 138, y: 142, c: 'var(--sk-auto)' },
-  { x: 118, y: 40, c: 'var(--sk-viz)' },
-  { x: 196, y: 78, c: 'var(--sk-platform)' },
-  { x: 186, y: 16, c: 'var(--sk-ai)' },
-  { x: 250, y: 130, c: 'var(--sk-lead)' },
-  { x: 300, y: 56, c: 'var(--sk-data)' },
-  { x: 332, y: 150, c: 'var(--sk-viz)' },
-  { x: 266, y: 188, c: 'var(--sk-platform)' },
+/**
+ * Node positions in the SVG's own 360x200 coordinate space, with a per-node
+ * radius. Interest comes from size, not hue: a coloured ring here would read
+ * as a category code with no legend to decode it.
+ */
+const STAR_NODES: Array<{ x: number; y: number; r: number }> = [
+  { x: 28, y: 152, r: 3 },
+  { x: 76, y: 94, r: 4.5 },
+  { x: 138, y: 142, r: 3.5 },
+  { x: 118, y: 40, r: 4 },
+  { x: 196, y: 78, r: 5 },
+  { x: 186, y: 16, r: 3 },
+  { x: 250, y: 130, r: 4 },
+  { x: 300, y: 56, r: 3.5 },
+  { x: 332, y: 150, r: 4.5 },
+  { x: 266, y: 188, r: 3 },
 ]
 
 const STAR_EDGES: Array<[number, number]> = [
@@ -149,13 +152,13 @@ const STAR_EDGES: Array<[number, number]> = [
 ]
 
 /** Six-node reduction for laptop widths, in a 190x120 space. */
-const STAR_NODES_SM: Array<{ x: number; y: number; c: string }> = [
-  { x: 16, y: 92, c: 'var(--sk-data)' },
-  { x: 58, y: 44, c: 'var(--sk-ai)' },
-  { x: 104, y: 86, c: 'var(--sk-auto)' },
-  { x: 118, y: 22, c: 'var(--sk-viz)' },
-  { x: 160, y: 60, c: 'var(--sk-platform)' },
-  { x: 174, y: 106, c: 'var(--sk-lead)' },
+const STAR_NODES_SM: Array<{ x: number; y: number; r: number }> = [
+  { x: 16, y: 92, r: 2.75 },
+  { x: 58, y: 44, r: 4 },
+  { x: 104, y: 86, r: 3 },
+  { x: 118, y: 22, r: 3.5 },
+  { x: 160, y: 60, r: 4.25 },
+  { x: 174, y: 106, r: 3 },
 ]
 
 const STAR_EDGES_SM: Array<[number, number]> = [
@@ -187,7 +190,6 @@ function Constellation() {
     edges: Array<[number, number]>,
     w: number,
     h: number,
-    r: number,
   ) => (
     <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} fill="none">
       {edges.map(([a, b]) => (
@@ -202,7 +204,15 @@ function Constellation() {
         />
       ))}
       {nodes.map((n, i) => (
-        <circle key={i} cx={n.x} cy={n.y} r={r} fill="var(--panel-solid)" stroke={n.c} strokeWidth="1.5" />
+        <circle
+          key={i}
+          cx={n.x}
+          cy={n.y}
+          r={n.r}
+          fill="var(--panel-solid)"
+          stroke="rgba(var(--ink-rgb),0.30)"
+          strokeWidth="1.5"
+        />
       ))}
     </svg>
   )
@@ -211,11 +221,11 @@ function Constellation() {
     <>
       {/* 1280px and up */}
       <div aria-hidden="true" className="hidden xl:block" style={shell(360, 200)}>
-        {figure(STAR_NODES, STAR_EDGES, 360, 200, 4)}
+        {figure(STAR_NODES, STAR_EDGES, 360, 200)}
       </div>
       {/* 1024px to 1279px */}
       <div aria-hidden="true" className="hidden lg:block xl:hidden" style={shell(190, 120)}>
-        {figure(STAR_NODES_SM, STAR_EDGES_SM, 190, 120, 3.5)}
+        {figure(STAR_NODES_SM, STAR_EDGES_SM, 190, 120)}
       </div>
     </>
   )
