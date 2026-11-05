@@ -28,6 +28,13 @@ export interface FeaturedProjectProps {
   slug: string
   /** Zero-based position, rendered as "01", "02". */
   index: number
+  /**
+   * Project name on its own. Passed explicitly rather than read from
+   * PROJECT_DETAILS, whose `title` still joins name and descriptor with an em
+   * dash; rendering that here would both break the no-em-dash rule and repeat
+   * the descriptor line directly beneath it.
+   */
+  name: string
   /** Second line under the project name, in place of an em dash title join. */
   descriptor: string
   /** Page-specific framing paragraph, below the shared summary. */
@@ -48,6 +55,7 @@ const MONO = 'JetBrains Mono, monospace'
 export default function FeaturedProject({
   slug,
   index,
+  name,
   descriptor,
   contextParagraph,
   statusLabel,
@@ -148,7 +156,7 @@ export default function FeaturedProject({
             margin: 0,
           }}
         >
-          {detail.title}
+          {name}
         </h2>
         <p
           style={{

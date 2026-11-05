@@ -17,12 +17,6 @@ export interface ProjectCardProps {
   /** Second line under the name, in place of an em dash title join. */
   descriptor?: string
   category: string
-  /**
-   * Only still read by the page's category filter, which is removed in the
-   * next commit along with this field. The card itself no longer colors by
-   * category.
-   */
-  categoryTag?: string
   tagline: string
   stack: string[]
   /** One line of evidence. Was a two-item bullet list. */
