@@ -150,51 +150,76 @@ const STAR_EDGES: Array<[number, number]> = [
   [4, 7], [2, 6], [6, 8], [6, 9], [7, 8],
 ]
 
+/** Six-node reduction for laptop widths, in a 190x120 space. */
+const STAR_NODES_SM: Array<{ x: number; y: number; c: string }> = [
+  { x: 16, y: 92, c: 'var(--sk-data)' },
+  { x: 58, y: 44, c: 'var(--sk-ai)' },
+  { x: 104, y: 86, c: 'var(--sk-auto)' },
+  { x: 118, y: 22, c: 'var(--sk-viz)' },
+  { x: 160, y: 60, c: 'var(--sk-platform)' },
+  { x: 174, y: 106, c: 'var(--sk-lead)' },
+]
+
+const STAR_EDGES_SM: Array<[number, number]> = [
+  [0, 1], [1, 3], [1, 2], [2, 4], [3, 4], [2, 5], [4, 5],
+]
+
 /**
- * Purely decorative. Hidden below 1280px so it can never collide with the
- * heading or the intro copy, and the wrapper clips its own overflow so an
- * absolutely positioned child cannot widen the document.
+ * Purely decorative. Two sizes rather than one: the full figure from 1280px
+ * up, and a six-node reduction between 1024 and 1279 so a 13-inch laptop,
+ * a very common width, still gets the design element. Below 1024 there is
+ * genuinely no room beside the copy, so it is hidden.
+ *
+ * Each wrapper clips its own overflow, so an absolutely positioned child can
+ * never widen the scroll container.
  */
 function Constellation() {
+  const shell = (w: number, h: number): React.CSSProperties => ({
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    width: w,
+    height: h,
+    overflow: 'hidden',
+    pointerEvents: 'none',
+  })
+
+  const figure = (
+    nodes: typeof STAR_NODES,
+    edges: Array<[number, number]>,
+    w: number,
+    h: number,
+    r: number,
+  ) => (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} fill="none">
+      {edges.map(([a, b]) => (
+        <line
+          key={`${a}-${b}`}
+          x1={nodes[a].x}
+          y1={nodes[a].y}
+          x2={nodes[b].x}
+          y2={nodes[b].y}
+          stroke="rgba(var(--ink-rgb),0.16)"
+          strokeWidth="1"
+        />
+      ))}
+      {nodes.map((n, i) => (
+        <circle key={i} cx={n.x} cy={n.y} r={r} fill="var(--panel-solid)" stroke={n.c} strokeWidth="1.5" />
+      ))}
+    </svg>
+  )
+
   return (
-    <div
-      aria-hidden="true"
-      className="hidden xl:block"
-      style={{
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        width: 360,
-        height: 200,
-        overflow: 'hidden',
-        pointerEvents: 'none',
-      }}
-    >
-      <svg width="360" height="200" viewBox="0 0 360 200" fill="none">
-        {STAR_EDGES.map(([a, b]) => (
-          <line
-            key={`${a}-${b}`}
-            x1={STAR_NODES[a].x}
-            y1={STAR_NODES[a].y}
-            x2={STAR_NODES[b].x}
-            y2={STAR_NODES[b].y}
-            stroke="rgba(var(--ink-rgb),0.16)"
-            strokeWidth="1"
-          />
-        ))}
-        {STAR_NODES.map((n, i) => (
-          <circle
-            key={i}
-            cx={n.x}
-            cy={n.y}
-            r="4"
-            fill="var(--panel-solid)"
-            stroke={n.c}
-            strokeWidth="1.5"
-          />
-        ))}
-      </svg>
-    </div>
+    <>
+      {/* 1280px and up */}
+      <div aria-hidden="true" className="hidden xl:block" style={shell(360, 200)}>
+        {figure(STAR_NODES, STAR_EDGES, 360, 200, 4)}
+      </div>
+      {/* 1024px to 1279px */}
+      <div aria-hidden="true" className="hidden lg:block xl:hidden" style={shell(190, 120)}>
+        {figure(STAR_NODES_SM, STAR_EDGES_SM, 190, 120, 3.5)}
+      </div>
+    </>
   )
 }
 
