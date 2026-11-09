@@ -199,7 +199,8 @@ All five follow the same eight-section arc: hero, what I built, the problem, the
 the system, the hard part, in practice, close. **No sticky mechanic on any of them**, following
 the PEAI Chat precedent rather than the Book's.
 
-**Content is preliminary across all five and no visuals are finalized.** Every fact is carried
+**Content is preliminary across all five and no visuals are finalized.** That is a blocker on
+Phase 16 and on any public deploy; see "Current Phase". Every fact is carried
 over from that project's entry in `lib/project-details.ts`; nothing is invented. Each hero uses
 a CSS placeholder frame rather than `next/image`, and every figure is drawn in CSS, so the five
 pages ship with **zero new image assets** and hold their aspect ratios for later captures.
@@ -232,7 +233,10 @@ Open items, deliberately not resolved:
 - [x] Phase 13: Project cards overhaul — deep-dive overlay system (all 6 projects), DealLens card, sidebar flicker fix. The 3D tilt and bgImage support added here were both removed later; see Phase 17
 - [x] Phase 14: DealLens product demo page — dedicated /projects/deallens with 8 story sections, interactive hotspots, scroll progress, gallery
 - [x] Phase 15: PEAI standalone case study pages (Chat + Book), shared typography atoms
-- [ ] Phase 16: Public/private route separation (gate /admin, /top-fit-jobs, /job-preferences)
+- [ ] Phase 16: Public/private route separation (gate /admin, /top-fit-jobs, /job-preferences).
+      **Also blocks on the content pass for the five shared-chrome case studies** (see
+      "Current Phase") — they are themed but preliminary, and the first public deploy must
+      not ship placeholder heroes
 
 ## Current Phase
 The /projects redesign (two tiers, no filters) and all eight standalone case study pages are in.
@@ -243,6 +247,12 @@ Next on these pages: the five shared-chrome case studies (KB Agent, RentalShield
 Architect, Career Radar, OSS Dependency Risk Agent) carry the PEAI theme but their content and
 visuals are preliminary by design, pending per-page design layouts. See the open items under
 "Standalone Case Study Pages".
+
+**That is a deploy blocker, not a nice-to-have.** All five are reachable from the /projects
+cards, and each shows a CSS placeholder frame where a screenshot belongs. Landing them on main
+was safe only because nothing is deployed. Do not wire up a public host until either their
+content pass is done, or their slugs are pulled back out of `STANDALONE_ROUTES` so those cards
+fall back to the finished `ProjectDeepDive` content.
 
 Open: **public/private route separation** — `/admin`, `/top-fit-jobs` and `/job-preferences`
 are hidden from nav but still reachable by URL, and `/admin` can trigger ingestion. This
