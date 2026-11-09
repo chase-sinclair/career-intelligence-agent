@@ -7,8 +7,8 @@ Next.js App Router, TypeScript, Tailwind CSS
 - /                  → Landing page (hero + 4 recruiter-facing entry cards)
 - /about             → Architect Profile (structured resume view: skills, timeline, education)
 - /knowledge-base    → Ask About Chase (RAG chat, right panel with evidence check + answer quality + source evidence)
-- /projects          → Project cards grid (8 cards)
-- /projects/[slug]   → Redirects to /projects?open=<slug>, which opens the ProjectDeepDive overlay
+- /projects          → Two-tier index: 2 featured bands + 6 selected cards, no filters
+- /projects/[slug]   → Catch-all for slugs with no standalone page; redirects to /projects?open=<slug>
 - /projects/deallens → Standalone DealLens product demo (full-screen)
 - /projects/kb-agent → Standalone case study (shared case-study chrome)
 - /projects/rentalshield-nyc          → Standalone case study (shared case-study chrome)
@@ -64,6 +64,9 @@ of `app/projects/page.tsx`, in which case the click routes to a real page under
 `app/projects/<slug>/`. A static segment takes precedence over the `[slug]` catch-all, so those
 pages are authoritative without touching `[slug]`. To add one: create the directory, add the
 slug to the set, done.
+
+All eight slugs are currently in the set, so the overlay has no live path into it. It is kept as
+the fallback for a card added before its page exists.
 
 ## Conventions
 - All interactive pages use 'use client'

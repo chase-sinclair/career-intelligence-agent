@@ -64,8 +64,8 @@ Public recruiter-facing routes (in sidebar nav):
 - /                       → Landing page (ConstellationCanvas hero, 6 entry cards, no sidebar)
 - /about                  → Architect Profile (structured resume view)
 - /knowledge-base         → Ask About Chase (RAG chat + right panel: evidence check + answer quality + sources)
-- /projects               → Project cards grid (8 cards, filter pills, deep-dive overlay)
-- /projects/[slug]        → Redirects to /projects?open=<slug> — auto-opens overlay for that project
+- /projects               → Two-tier project index: 2 featured bands + 6 selected cards, no filters
+- /projects/[slug]        → Catch-all for slugs with no standalone page; redirects to /projects?open=<slug>
 - /projects/deallens      → Dedicated full-screen product demo page (8 story sections, interactive hotspots, gallery, CTA)
 - /projects/kb-agent      → Standalone case study (shared case-study chrome)
 - /projects/rentalshield-nyc          → Standalone case study (shared case-study chrome)
@@ -82,18 +82,23 @@ Hidden routes (functional, not in nav):
 - /top-fit-jobs           → Ranked jobs with fit scoring and shortlist
 - /admin                  → Demo Lab (upload, rebuild, regenerate)
 
-## Project Cards System
-Eight cards in `frontend/app/projects/page.tsx`:
-1. KB Agent — Proposal Intelligence Platform (rag) — **standalone route**
-2. RentalShield NYC (full-stack) — **standalone route**
-3. AI Venture Architect (multi-agent) — **standalone route**
-4. PEAI Chat Assistant (rag) — **standalone route**
-5. DealLens — PE CIM Intelligence Workflow (workflow) — **standalone route**
-6. PEAI Book — ML Model Matrix (published) — **standalone route**
-7. Career Radar — Labor Market Intelligence (full-stack) — **standalone route**
-8. OSS Dependency Risk Agent (data-eng) — **standalone route**
+## Project Index System
+`frontend/app/projects/page.tsx` holds two tiers, both in display order. Every slug in both
+tiers has a standalone page.
 
-Each card has a `bgImage` prop pointing to `frontend/public/images/projects/<slug>.(png|jpg)`.
+`FEATURED` — rendered by `components/FeaturedProject.tsx` (context paragraph, status dot, node list):
+1. KB Agent — Proposal Intelligence Platform
+2. DealLens — PE CIM Intelligence Workflow
+
+`SELECTED` — rendered by `components/ProjectCard.tsx`:
+3. OSS Dependency Risk Agent
+4. PEAI Chat Assistant
+5. RentalShield NYC
+6. AI Venture Architect
+7. Career Radar
+8. PEAI Book — ML Model Matrix
+
+There are no filter pills and no `bgImage` prop; both were removed in the Phase 17 redesign.
 
 Cards open the deep-dive overlay (`ProjectDeepDive`) **unless** their slug is in the
 `STANDALONE_ROUTES` set at the top of `projects/page.tsx`. Those slugs own a full page under
@@ -200,16 +205,13 @@ a CSS placeholder frame rather than `next/image`, and every figure is drawn in C
 pages ship with **zero new image assets** and hold their aspect ratios for later captures.
 
 Open items, deliberately not resolved:
-- `project-details.ts` says KB Agent has "six analytical workflows" but names only three, so
-  that page shows six documented capabilities instead of a full enumeration.
-- Project card #01 lists `Streamlit` and `Claude 3.5`; `project-details.ts` and the page use
-  Slack Bolt / FastMCP and `Claude Opus`. Confirm which is right before going public.
+- `project-details.ts` now names all six KB Agent workflows (ask, agent, score, gaps, draft,
+  compare). §7 of that page still shows six documented capabilities, which are not the same six.
+  Reconcile in the content pass.
 - The OSS source gives both "800+ repos monitored" and "705 scored daily". Both appear on that
   page where each belongs rather than being reconciled into one number.
 - Signal-weight bars on the RentalShield and OSS pages are illustrative; the sources state the
   scores are weighted but not the weights. Both figures say so on the page.
-- `career-radar.jpg` and `oss-dependency-risk-agent.jpg` are referenced as card `bgImage` but
-  are not in `public/images/projects/`. Pre-existing, unrelated to these pages.
 
 ## LangGraph Workflows (4 agents)
 1. Ingestion Agent — file intake → text extraction (+ YAML front matter parsing for .md) → chunking → embedding → indexing
@@ -233,9 +235,14 @@ Open items, deliberately not resolved:
 - [ ] Phase 16: Public/private route separation (gate /admin, /top-fit-jobs, /job-preferences)
 
 ## Current Phase
-Phase 15 complete and merged to main. Both PEAI case study pages are live, DealLens image
-assets are placed, and the knowledge base docs for both PEAI projects have been rewritten and
-re-indexed.
+The /projects redesign (two tiers, no filters) and all eight standalone case study pages are in.
+Every project slug now owns a real page; the ProjectDeepDive overlay has no live path into it and
+is kept only as the fallback for a card added before its page exists.
+
+Next on these pages: the five shared-chrome case studies (KB Agent, RentalShield, AI Venture
+Architect, Career Radar, OSS Dependency Risk Agent) carry the PEAI theme but their content and
+visuals are preliminary by design, pending per-page design layouts. See the open items under
+"Standalone Case Study Pages".
 
 Open: **public/private route separation** — `/admin`, `/top-fit-jobs` and `/job-preferences`
 are hidden from nav but still reachable by URL, and `/admin` can trigger ingestion. This
@@ -406,6 +413,22 @@ standalone case study pages, themed to the two PEAI pages, plus a shared chrome 
   will happily serve an old bundle and make a correct change look broken. Kill it and confirm
   the port is free before trusting a browser check.
 
-Note on `origin/main`: it sits at `600daa4`, behind the PEAI merge commits that are already in
-this branch's history. Diff against the branch point, not `main`, when checking what a session
-changed.
+### Session 20 — 2026-11-09
+Integrated the unmerged Session 19 cloud branch (`claude/zen-ride-e0gis0`) on top of the Phase 17
+/projects redesign. The two did not actually conflict: Session 19's only change to
+`projects/page.tsx` was widening `STANDALONE_ROUTES`, and the redesign left that block untouched,
+so git merged it without a single conflict and both routing paths stayed generic over the set.
+The overlay survives as the documented fallback.
+
+What did need fixing was content, not routing. Session 19 derived its page copy from the
+`project-details.ts` that existed at its branch point, so the KB Agent page carried facts the
+redesign had since corrected. Resynced on that page and its data file:
+- source is a **watched folder tree, local via watchdog or OneDrive via Microsoft Graph**, not a
+  SharePoint document library
+- status is a **working prototype**, not in production, and the hero figure no longer claims a
+  live team
+- the RRF merge is the **standard formula at k=60 run in application code**, not a custom or
+  hand written one, and the path it replaced is the **server side fusion path**
+
+The other four Session 19 pages needed no content change: their numbers (705 repos, ~1,000
+postings, seven services, seven views) already agree with the redesigned cards.

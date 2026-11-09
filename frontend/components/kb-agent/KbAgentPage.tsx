@@ -106,23 +106,24 @@ export default function KbAgentPage() {
               Half a day of proposal research, answered in the thread
             </h1>
             <p className="lede">
-              A Slack bot that turns a SharePoint document library into a queryable proposal intelligence system. Ask
+              A Slack bot that turns a watched folder tree, local or OneDrive, into a queryable proposal intelligence
+              system. Ask
               what the team has done before, in plain English, and get an answer drawn from the actual library. The hard
               part was never the bot. It was making retrieval trustworthy enough that a bid decision could rest on it.
             </p>
             <Chips
               items={[
                 { label: 'Hybrid retrieval', accent: true },
-                { label: 'Custom RRF merge', accent: true },
+                { label: 'RRF merge in app code', accent: true },
                 { label: 'Six workflows' },
-                { label: 'In production' },
+                { label: 'Working prototype' },
               ]}
             />
           </div>
           <HeroPlaceholder
             label={HERO_PLACEHOLDER.label}
             note={HERO_PLACEHOLDER.note}
-            caption="Running for a live proposal team"
+            caption="An answer thread, as the team would see it"
           />
         </div>
       </header>
@@ -134,7 +135,7 @@ export default function KbAgentPage() {
         <Eyebrow>The contribution</Eyebrow>
         <Heading2 className="mb-6 max-w-[16ch]">What I built</Heading2>
         <TwoUp
-          work="I built the whole path from document library to cited answer: Microsoft Graph ingestion with typed quarantine and SHA-256 change detection, hybrid dense and sparse indexing in Qdrant, a hand written Reciprocal Rank Fusion merge, a FastMCP server exposing each analytical workflow as a named tool, and the Slack Bolt interface a proposal team actually talks to."
+          work="I built the whole path from document library to cited answer: watched folder ingestion through watchdog or Microsoft Graph, with typed quarantine and SHA-256 change detection, hybrid dense and sparse indexing in Qdrant, a Reciprocal Rank Fusion merge at k=60 run in application code, a FastMCP server exposing each analytical workflow as a named tool, and the Slack Bolt interface a proposal team actually talks to."
           demonstrates="A vector database gives you storage and similarity search. Ranking two retrieval legs against each other, surviving a broken client library, and keeping an answer honest about what the library does not contain are left to you. I did not wire up a chatbot. I found where its retrieval failed, diagnosed the cause down to a client version, and replaced the broken path with one I could reason about."
         />
       </section>
@@ -148,7 +149,7 @@ export default function KbAgentPage() {
         <p className="body">
           Government proposal teams work to brutal deadlines. A request for proposal lands with two weeks on the clock,
           and the opening question never changes: what have we done before that is relevant to this? Answering it means
-          searching SharePoint folders by hand, pinging subject matter experts, and reassembling fragments of prior
+          searching shared folders by hand, pinging subject matter experts, and reassembling fragments of prior
           proposals. That routinely costs half a day.
         </p>
         <p className="body mb-[30px]">
@@ -181,9 +182,10 @@ export default function KbAgentPage() {
         <div className="split" ref={ingestRef}>
           <div>
             <p className="body">
-              A live SharePoint library is not a clean corpus. Files are checked out and locked, some are corrupt, and
-              the network drops mid fetch. Microsoft Graph polling pulls new and changed files, and anything that fails
-              is quarantined by error type rather than taking the run down with it.
+              A live document library is not a clean corpus. Files are checked out and locked, some are corrupt, and
+              the network drops mid fetch. Two interchangeable watchers feed the same pipeline, watchdog on a local
+              directory or Microsoft Graph polling a OneDrive folder, and anything that fails is quarantined by error
+              type rather than taking the run down with it.
             </p>
             <p className="body mb-0">
               Re-ingestion is cheap because it is content addressed. A SHA-256 hash per file means an unchanged document
@@ -268,7 +270,7 @@ export default function KbAgentPage() {
               <div className="nd pri">
                 <p className="k">Reciprocal Rank Fusion</p>
                 <p className="v">Score by rank position in each leg, then merge into one list.</p>
-                <p className="f">custom implementation, not the client&rsquo;s native hybrid path</p>
+                <p className="f">application code, not the client&rsquo;s server side fusion path</p>
               </div>
               <div className="stem" />
               <div className="nd">
@@ -293,7 +295,8 @@ export default function KbAgentPage() {
         <p className="body mb-[30px]">
           Qdrant supports hybrid search natively, so the first build used it. Retrieval quality was wrong in a way that
           did not look like a bug: results came back, they were plausible, and they were worse than the dense leg alone.
-          The cause was a serialization bug in Qdrant client v1.17.1 that broke the native hybrid path. Nothing raised.
+          The cause was a serialization bug in Qdrant client v1.17.1 that broke the server side fusion path. Nothing
+          raised.
           The fix was to stop trusting that path, retrieve each leg separately, and fuse the ranks in application code I
           could inspect.
         </p>
@@ -301,7 +304,7 @@ export default function KbAgentPage() {
           cards={[
             {
               problem:
-                'A library path that failed quietly. The native hybrid query returned results rather than an error, so the only symptom was retrieval that underperformed the simpler approach it was supposed to beat.',
+                'A library path that failed quietly. The server side hybrid query returned results rather than an error, so the only symptom was retrieval that underperformed the simpler approach it was supposed to beat.',
               fix: 'Two explicit retrieval calls and a Reciprocal Rank Fusion merge written in application code. Slower to write, inspectable at every step, and pinned to a client version whose behavior is known.',
             },
             {

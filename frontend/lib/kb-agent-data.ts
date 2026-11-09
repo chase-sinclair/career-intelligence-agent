@@ -8,10 +8,11 @@
  *  1. No visuals are finalized. The hero and §4 use CSS-drawn placeholder
  *     frames rather than `next/image`, so the page builds and ships with no
  *     image assets at all. See `HERO_PLACEHOLDER`.
- *  2. The source describes "six Claude-powered analytical workflows" but names
- *     only three of them. Rather than invent the other three, §7 presents the
- *     six documented capabilities. Swap in the real workflow names when they
- *     are confirmed.
+ *  2. The six analytical workflows are now named in `project-details.ts`:
+ *     ask, agent, score, gaps, draft, and compare. §7 still presents six
+ *     documented capabilities rather than those six workflows, because the
+ *     mapping between the two is not one to one. Reconcile them in the
+ *     content pass.
  */
 
 /** Hero figure slot. Replace with a real screenshot once one exists. */
@@ -22,7 +23,7 @@ export const HERO_PLACEHOLDER = {
 
 /** §4 ingestion metadata rows, revealed one at a time. */
 export const INGESTION_META: ReadonlyArray<readonly [string, string]> = [
-  ['source', 'SharePoint document library'],
+  ['source', 'watched folder tree, local or OneDrive'],
   ['change key', 'SHA-256 content hash'],
   ['vectors', 'dense + BM25-style sparse'],
   ['on failure', 'typed quarantine'],
@@ -35,7 +36,7 @@ export const QUARANTINE_CATEGORIES: ReadonlyArray<string> = [
   'TRANSIENT_ERROR',
 ]
 
-/** §5 retrieval legs merged by the custom RRF implementation. */
+/** §5 retrieval legs merged by the application-level RRF pass. */
 export const RETRIEVAL_LEGS: ReadonlyArray<{
   name: string
   kind: string
@@ -72,7 +73,7 @@ export const CAPABILITIES: ReadonlyArray<{
     id: 'retrieval',
     short: 'Hybrid retrieval',
     title: 'Hybrid dense + sparse retrieval',
-    body: 'A manual Reciprocal Rank Fusion implementation merging dense semantic vectors with BM25-style sparse vectors, built after diagnosing a serialization bug in Qdrant client v1.17.1 that broke the native hybrid path.',
+    body: 'Application-level Reciprocal Rank Fusion at k=60, merging dense semantic vectors with BM25-style sparse vectors, written after diagnosing a serialization bug in Qdrant client v1.17.1 that broke the server-side fusion path. Any failure in the hybrid path falls back to a dense-only query.',
     output: 'One ranked result set from two retrieval legs',
   },
   {
@@ -114,9 +115,9 @@ export const CAPABILITIES: ReadonlyArray<{
 
 /** §5 pipeline stages, condensed from the five architecture steps. */
 export const PIPELINE: ReadonlyArray<{ k: string; v: string }> = [
-  { k: 'Ingest', v: 'Microsoft Graph API polls SharePoint for new and changed files.' },
+  { k: 'Ingest', v: 'watchdog watches a local directory, or Microsoft Graph polls a OneDrive folder.' },
   { k: 'Index', v: 'Chunk, embed, and index dense and sparse vectors in Qdrant.' },
-  { k: 'Merge', v: 'Retrieve both legs separately, then merge with a custom RRF formula.' },
+  { k: 'Merge', v: 'Retrieve both legs separately, then merge with RRF at k=60 in app code.' },
   { k: 'Dispatch', v: 'A FastMCP server exposes each workflow as a named tool.' },
   { k: 'Generate', v: 'Claude Opus answers from retrieved chunks only, flagging gaps.' },
 ]

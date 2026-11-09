@@ -12,7 +12,7 @@ import KbAgentPage from '@/components/kb-agent/KbAgentPage'
 export const metadata: Metadata = {
   title: 'KB Agent — Proposal Intelligence Platform | Chase Sinclair',
   description:
-    'A production Slack bot that turns a SharePoint document library into a queryable proposal intelligence system. Hybrid dense and sparse retrieval, a hand written Reciprocal Rank Fusion merge, and six analytical workflows for government proposal teams.',
+    'A Slack bot that turns a watched folder tree, local or OneDrive, into a queryable proposal intelligence system. Hybrid dense and sparse retrieval, a Reciprocal Rank Fusion merge at k=60 run in application code, and six analytical workflows for government proposal teams.',
 }
 
 export default function Page() {
