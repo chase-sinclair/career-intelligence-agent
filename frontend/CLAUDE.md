@@ -10,6 +10,11 @@ Next.js App Router, TypeScript, Tailwind CSS
 - /projects          → Project cards grid (8 cards)
 - /projects/[slug]   → Redirects to /projects?open=<slug>, which opens the ProjectDeepDive overlay
 - /projects/deallens → Standalone DealLens product demo (full-screen)
+- /projects/kb-agent → Standalone case study (shared case-study chrome)
+- /projects/rentalshield-nyc          → Standalone case study (shared case-study chrome)
+- /projects/ai-venture-architect      → Standalone case study (shared case-study chrome)
+- /projects/career-radar              → Standalone case study (shared case-study chrome)
+- /projects/oss-dependency-risk-agent → Standalone case study (shared case-study chrome)
 - /projects/peai-chat-assistant       → Standalone case study (8 sections, no sticky mechanic)
 - /projects/peai-book-ml-model-matrix → Standalone case study (7 sections, sticky AbilityGrid)
 - /how-it-works      → How It Works (static page: pipeline explanation, tech stack, product vision)
@@ -65,6 +70,11 @@ slug to the set, done.
 - Tailwind for most styling. Long-form editorial pages (how-it-works, the PEAI case studies)
   use `<style jsx global>` scoped under a page-root class for what Tailwind cannot express
   (keyframes, nth-child stagger, media queries), never globals.css
+- The five shared-chrome case studies are the exception: they import
+  `components/case-study/chrome.tsx`, which emits one `.case-study`-scoped sheet through a
+  plain `<style>` tag because it is composed from a constant plus each page's `extraCss`.
+  Build a new case study on that module, not by copying a page. DealLens and the two PEAI
+  pages predate it and are not to be migrated unless asked
 - `Eyebrow`, `Heading2`, `Divider` come from `components/shared/typography.tsx` — import, do not
   redefine
 - Text on an accent fill must be `var(--accent-ink)`; `--accent` is dark

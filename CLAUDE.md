@@ -67,6 +67,11 @@ Public recruiter-facing routes (in sidebar nav):
 - /projects               → Project cards grid (8 cards, filter pills, deep-dive overlay)
 - /projects/[slug]        → Redirects to /projects?open=<slug> — auto-opens overlay for that project
 - /projects/deallens      → Dedicated full-screen product demo page (8 story sections, interactive hotspots, gallery, CTA)
+- /projects/kb-agent      → Standalone case study (shared case-study chrome)
+- /projects/rentalshield-nyc          → Standalone case study (shared case-study chrome)
+- /projects/ai-venture-architect      → Standalone case study (shared case-study chrome)
+- /projects/career-radar              → Standalone case study (shared case-study chrome)
+- /projects/oss-dependency-risk-agent → Standalone case study (shared case-study chrome)
 - /projects/peai-chat-assistant       → Standalone case study (8 sections, per-section graphics, expandable citations)
 - /projects/peai-book-ml-model-matrix → Standalone case study (7 sections, one sticky AbilityGrid in 3 modes)
 - /how-it-works           → How It Works (pipeline explanation, tech stack, product vision)
@@ -79,14 +84,14 @@ Hidden routes (functional, not in nav):
 
 ## Project Cards System
 Eight cards in `frontend/app/projects/page.tsx`:
-1. KB Agent — Proposal Intelligence Platform (rag)
-2. RentalShield NYC (full-stack)
-3. AI Venture Architect (multi-agent)
+1. KB Agent — Proposal Intelligence Platform (rag) — **standalone route**
+2. RentalShield NYC (full-stack) — **standalone route**
+3. AI Venture Architect (multi-agent) — **standalone route**
 4. PEAI Chat Assistant (rag) — **standalone route**
 5. DealLens — PE CIM Intelligence Workflow (workflow) — **standalone route**
 6. PEAI Book — ML Model Matrix (published) — **standalone route**
-7. Career Radar — Labor Market Intelligence (full-stack)
-8. OSS Dependency Risk Agent (data-eng)
+7. Career Radar — Labor Market Intelligence (full-stack) — **standalone route**
+8. OSS Dependency Risk Agent (data-eng) — **standalone route**
 
 Each card has a `bgImage` prop pointing to `frontend/public/images/projects/<slug>.(png|jpg)`.
 
@@ -94,7 +99,10 @@ Cards open the deep-dive overlay (`ProjectDeepDive`) **unless** their slug is in
 `STANDALONE_ROUTES` set at the top of `projects/page.tsx`. Those slugs own a full page under
 `app/projects/<slug>/` and the card click calls `router.push('/projects/<slug>')` instead.
 A hand-written `?open=<slug>` for a standalone slug also redirects to the real page.
-Currently: `deallens`, `peai-chat-assistant`, `peai-book-ml-model-matrix`.
+Currently **all eight** cards: `deallens`, `peai-chat-assistant`, `peai-book-ml-model-matrix`,
+`kb-agent`, `rentalshield-nyc`, `ai-venture-architect`, `career-radar`,
+`oss-dependency-risk-agent`. The overlay therefore has no live path into it; see the note on
+`STANDALONE_ROUTES` in `projects/page.tsx` for why `ProjectDeepDive` is kept anyway.
 
 **Route precedence:** a static segment beats the dynamic `[slug]` catch-all in the App Router,
 so standalone pages are authoritative automatically. `[slug]/page.tsx` needs no change when
@@ -157,6 +165,51 @@ Facts fixed on this page, do not regress: role is **authored the matrix + peer r
 (never author, co-author, or chapter), year is **2026**, and the matrix strings are verbatim
 from the book (no RNNs, ARIMA, GPT or few-shot). The author-is-Chase's-father line appears
 **exactly once**, inside §2 "The background".
+
+## Standalone Case Study Pages (the shared family)
+Five pages share one chrome: KB Agent, RentalShield NYC, AI Venture Architect, Career Radar and
+OSS Dependency Risk Agent. DealLens and the two PEAI pages predate it and keep their own
+self-contained implementations. **Do not migrate them** without being asked; they were signed
+off as they are.
+
+`components/case-study/chrome.tsx` holds the whole system:
+- **Shell**: `CaseStudyShell` (TopNav, the measured content column, back link, stylesheet).
+- **Atoms**: `Figure`, `Chips`, `HeroPlaceholder`, `TwoUp`, `ContrastPair`, `ProblemFixCards`,
+  `PipelineList`, `CapabilityPicker`, `CloseStrip`, `Glyph`.
+- **Hooks**: `useOnceInView`, `useTimeline`, `reveal`.
+- **Stylesheet**: one `CASE_STUDY_CSS` constant, every rule prefixed `.case-study`.
+
+Two things here differ from the older pages on purpose:
+- The sheet is emitted through a **plain `<style>` tag**, not `<style jsx global>`. It is
+  composed at runtime from a module constant plus each page's `extraCss`, and styled-jsx is
+  built around statically analyzable template literals. Scoping is unchanged.
+- The scope class is shared (`.case-study`) rather than per page. It is only ever applied by
+  pages in this family, so it still cannot reach any other route. Verified: the three older
+  pages render with no `.case-study` element present.
+
+Each page keeps **one bespoke figure** in its own `extraCss`, scoped under its own page class
+(`.kb-agent`, `.rentalshield`, `.venture`, `.radar`, `.ossrisk`).
+
+All five follow the same eight-section arc: hero, what I built, the problem, the foundation,
+the system, the hard part, in practice, close. **No sticky mechanic on any of them**, following
+the PEAI Chat precedent rather than the Book's.
+
+**Content is preliminary across all five and no visuals are finalized.** Every fact is carried
+over from that project's entry in `lib/project-details.ts`; nothing is invented. Each hero uses
+a CSS placeholder frame rather than `next/image`, and every figure is drawn in CSS, so the five
+pages ship with **zero new image assets** and hold their aspect ratios for later captures.
+
+Open items, deliberately not resolved:
+- `project-details.ts` says KB Agent has "six analytical workflows" but names only three, so
+  that page shows six documented capabilities instead of a full enumeration.
+- Project card #01 lists `Streamlit` and `Claude 3.5`; `project-details.ts` and the page use
+  Slack Bolt / FastMCP and `Claude Opus`. Confirm which is right before going public.
+- The OSS source gives both "800+ repos monitored" and "705 scored daily". Both appear on that
+  page where each belongs rather than being reconciled into one number.
+- Signal-weight bars on the RentalShield and OSS pages are illustrative; the sources state the
+  scores are weighted but not the weights. Both figures say so on the page.
+- `career-radar.jpg` and `oss-dependency-risk-agent.jpg` are referenced as card `bgImage` but
+  are not in `public/images/projects/`. Pre-existing, unrelated to these pages.
 
 ## LangGraph Workflows (4 agents)
 1. Ingestion Agent — file intake → text extraction (+ YAML front matter parsing for .md) → chunking → embedding → indexing
@@ -329,3 +382,30 @@ Completed: both PEAI standalone case study pages, built from design handoffs and
   `*.zip` are gitignored; they hold unpublished book scans and must never be committed.
 
 Next: public/private route separation (Phase 16). Deliberately deferred, not forgotten.
+
+### Session 19 — 2026-11-05 (cloud session)
+Completed: the five remaining project cards moved from the ProjectDeepDive overlay onto
+standalone case study pages, themed to the two PEAI pages, plus a shared chrome module.
+
+- Analyzed the PEAI Chat and Book pages and pulled the common system out into
+  `components/case-study/chrome.tsx`. See the section above for what it holds and the two
+  deliberate differences from the older pages.
+- Built five pages on it: KB Agent, RentalShield NYC, AI Venture Architect, Career Radar and
+  OSS Dependency Risk Agent. KB Agent was built standalone first, then migrated onto the shared
+  chrome, which took it from 10.8 kB to 5.7 kB.
+- **DealLens, PEAI Chat and PEAI Book were explicitly left alone** at the user's request.
+  Confirmed by diff against the session's starting commit: none of their files were touched,
+  and none of them renders a `.case-study` element.
+- All eight slugs are now in `STANDALONE_ROUTES`. Both routing paths in `projects/page.tsx` are
+  generic over the set, so no other change was needed.
+- Verified against production builds: typecheck clean, build clean, all five prerender static,
+  no console errors, no horizontal overflow at 390 / 520 / 620 / 760 / 860 / 980 / 1060 / 1280 /
+  1440 / 1920, and all eight slugs resolve correctly by card click, `?open=<slug>` and direct
+  URL.
+- Worth knowing for next time: `next start` holds the build it booted with, so a stale server
+  will happily serve an old bundle and make a correct change look broken. Kill it and confirm
+  the port is free before trusting a browser check.
+
+Note on `origin/main`: it sits at `600daa4`, behind the PEAI merge commits that are already in
+this branch's history. Diff against the branch point, not `main`, when checking what a session
+changed.
