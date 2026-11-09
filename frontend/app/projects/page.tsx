@@ -14,10 +14,28 @@ import { PROJECT_DETAILS } from '@/lib/project-details'
  * Slugs that own a full page under `app/projects/<slug>/` instead of opening
  * the ProjectDeepDive overlay. A static segment takes precedence over the
  * `[slug]` catch-all in the App Router, so these pages are authoritative and
- * the catch-all never redirects them back to the overlay. Every other card
- * keeps its existing overlay behavior.
+ * the catch-all never redirects them back to the overlay.
+ *
+ * As of Session 19 this set covers every card in PROJECTS, so the overlay has
+ * no live path into it. That is deliberate, and ProjectDeepDive is kept rather
+ * than deleted: it is the fallback for any card added here before its
+ * standalone page exists, which is exactly the state each of these eight
+ * passed through. A card whose slug is missing from this set still opens a
+ * working deep dive from `lib/project-details.ts` instead of doing nothing.
+ *
+ * `lib/project-details.ts` also remains the content source of record. Each
+ * standalone page's data file is derived from its entry there.
  */
-const STANDALONE_ROUTES = new Set(['deallens', 'peai-chat-assistant', 'peai-book-ml-model-matrix'])
+const STANDALONE_ROUTES = new Set([
+  'deallens',
+  'peai-chat-assistant',
+  'peai-book-ml-model-matrix',
+  'kb-agent',
+  'rentalshield-nyc',
+  'ai-venture-architect',
+  'career-radar',
+  'oss-dependency-risk-agent',
+])
 
 // ── Tier 1: featured work ─────────────────────────────────────────────────────
 
@@ -38,14 +56,14 @@ const FEATURED: FeaturedEntry[] = [
     name: 'KB Agent',
     descriptor: 'Proposal Intelligence Platform',
     contextParagraph:
-      'Proposal teams lose half a day finding what the firm has already written. The retrieval layer runs a hand built Reciprocal Rank Fusion merge, written after diagnosing a serialization bug that broke the client library’s native hybrid path, and every answer cites the documents it came from.',
+      'Proposal teams lose half a day finding what the firm has already written. Retrieval merges a dense vector query and a BM25 style sparse query with Reciprocal Rank Fusion at k=60, implemented in application code after a serialization bug in the vector database client broke its server side fusion path. Drafting is the workflow that earns the architecture: it marks every requirement the corpus cannot support [EVIDENCE MISSING] inline rather than writing around the gap.',
     statusLabel: 'Working prototype',
     statusDot: 'hollow',
     ctaLabel: 'Read the case study',
     nodes: [
-      'SharePoint ingestion',
+      'Folder tree ingestion',
       'Hybrid indexing',
-      'Custom RRF merge',
+      'RRF merge in app code',
       'MCP tool dispatch',
       'Cited answer in Slack',
     ],
@@ -130,20 +148,26 @@ const ALL_SLUGS = [...FEATURED.map((f) => f.slug), ...SELECTED.map((p) => p.slug
 
 /**
  * Node positions in the SVG's own 360x200 coordinate space, with a per-node
- * radius. Interest comes from size, not hue: a coloured ring here would read
- * as a category code with no legend to decode it.
+ * radius and ink alpha. Interest comes from size and weight, not hue: a
+ * coloured node here would read as a category code with no legend to decode it.
+ *
+ * `halo` marks the nodes that carry a soft accent wash, matching the breathing
+ * halo ConstellationCanvas puts on roughly a fifth of its nodes. Static and
+ * decorative, so it is not a code either.
  */
-const STAR_NODES: Array<{ x: number; y: number; r: number }> = [
-  { x: 28, y: 152, r: 3 },
-  { x: 76, y: 94, r: 4.5 },
-  { x: 138, y: 142, r: 3.5 },
-  { x: 118, y: 40, r: 4 },
-  { x: 196, y: 78, r: 5 },
-  { x: 186, y: 16, r: 3 },
-  { x: 250, y: 130, r: 4 },
-  { x: 300, y: 56, r: 3.5 },
-  { x: 332, y: 150, r: 4.5 },
-  { x: 266, y: 188, r: 3 },
+type StarNode = { x: number; y: number; r: number; a: number; halo?: boolean }
+
+const STAR_NODES: StarNode[] = [
+  { x: 28, y: 152, r: 3, a: 0.36 },
+  { x: 76, y: 94, r: 4.5, a: 0.54, halo: true },
+  { x: 138, y: 142, r: 3.5, a: 0.42 },
+  { x: 118, y: 40, r: 4, a: 0.46 },
+  { x: 196, y: 78, r: 5, a: 0.62, halo: true },
+  { x: 186, y: 16, r: 3, a: 0.34 },
+  { x: 250, y: 130, r: 4, a: 0.48 },
+  { x: 300, y: 56, r: 3.5, a: 0.40 },
+  { x: 332, y: 150, r: 4.5, a: 0.52 },
+  { x: 266, y: 188, r: 3, a: 0.36 },
 ]
 
 const STAR_EDGES: Array<[number, number]> = [
@@ -152,13 +176,13 @@ const STAR_EDGES: Array<[number, number]> = [
 ]
 
 /** Six-node reduction for laptop widths, in a 190x120 space. */
-const STAR_NODES_SM: Array<{ x: number; y: number; r: number }> = [
-  { x: 16, y: 92, r: 2.75 },
-  { x: 58, y: 44, r: 4 },
-  { x: 104, y: 86, r: 3 },
-  { x: 118, y: 22, r: 3.5 },
-  { x: 160, y: 60, r: 4.25 },
-  { x: 174, y: 106, r: 3 },
+const STAR_NODES_SM: StarNode[] = [
+  { x: 16, y: 92, r: 2.75, a: 0.36 },
+  { x: 58, y: 44, r: 4, a: 0.54, halo: true },
+  { x: 104, y: 86, r: 3, a: 0.42 },
+  { x: 118, y: 22, r: 3.5, a: 0.44 },
+  { x: 160, y: 60, r: 4.25, a: 0.58 },
+  { x: 174, y: 106, r: 3, a: 0.38 },
 ]
 
 const STAR_EDGES_SM: Array<[number, number]> = [
@@ -173,6 +197,13 @@ const STAR_EDGES_SM: Array<[number, number]> = [
  *
  * Each wrapper clips its own overflow, so an absolutely positioned child can
  * never widen the scroll container.
+ *
+ * Node and edge treatment deliberately mirrors ConstellationCanvas, the
+ * animated backdrop on /, /about and /knowledge-base, so the site has one
+ * visual language for constellations: filled ink nodes at varying weight
+ * rather than hollow rings, edges at the canvas's resting opacity, and a soft
+ * accent halo on a minority of nodes. This figure stays static because it is a
+ * mark in the header corner, not a backdrop.
  */
 function Constellation() {
   const shell = (w: number, h: number): React.CSSProperties => ({
@@ -186,7 +217,7 @@ function Constellation() {
   })
 
   const figure = (
-    nodes: typeof STAR_NODES,
+    nodes: StarNode[],
     edges: Array<[number, number]>,
     w: number,
     h: number,
@@ -199,20 +230,24 @@ function Constellation() {
           y1={nodes[a].y}
           x2={nodes[b].x}
           y2={nodes[b].y}
-          stroke="rgba(var(--ink-rgb),0.16)"
-          strokeWidth="1"
+          stroke="rgba(var(--ink-rgb),0.26)"
+          strokeWidth="0.75"
         />
       ))}
+      {/* Halos first, so every node sits on top of its own wash. */}
+      {nodes.map((n, i) =>
+        n.halo ? (
+          <circle
+            key={`halo-${i}`}
+            cx={n.x}
+            cy={n.y}
+            r={n.r + 5}
+            fill="rgba(var(--accent-rgb),0.075)"
+          />
+        ) : null,
+      )}
       {nodes.map((n, i) => (
-        <circle
-          key={i}
-          cx={n.x}
-          cy={n.y}
-          r={n.r}
-          fill="var(--panel-solid)"
-          stroke="rgba(var(--ink-rgb),0.30)"
-          strokeWidth="1.5"
-        />
+        <circle key={i} cx={n.x} cy={n.y} r={n.r} fill={`rgba(var(--ink-rgb),${n.a})`} />
       ))}
     </svg>
   )

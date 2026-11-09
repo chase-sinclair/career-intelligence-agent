@@ -64,9 +64,14 @@ Public recruiter-facing routes (in sidebar nav):
 - /                       → Landing page (ConstellationCanvas hero, 6 entry cards, no sidebar)
 - /about                  → Architect Profile (structured resume view)
 - /knowledge-base         → Ask About Chase (RAG chat + right panel: evidence check + answer quality + sources)
-- /projects               → Project cards grid (8 cards, filter pills, deep-dive overlay)
-- /projects/[slug]        → Redirects to /projects?open=<slug> — auto-opens overlay for that project
+- /projects               → Two-tier project index: 2 featured bands + 6 selected cards, no filters
+- /projects/[slug]        → Catch-all for slugs with no standalone page; redirects to /projects?open=<slug>
 - /projects/deallens      → Dedicated full-screen product demo page (8 story sections, interactive hotspots, gallery, CTA)
+- /projects/kb-agent      → Standalone case study (shared case-study chrome)
+- /projects/rentalshield-nyc          → Standalone case study (shared case-study chrome)
+- /projects/ai-venture-architect      → Standalone case study (shared case-study chrome)
+- /projects/career-radar              → Standalone case study (shared case-study chrome)
+- /projects/oss-dependency-risk-agent → Standalone case study (shared case-study chrome)
 - /projects/peai-chat-assistant       → Standalone case study (8 sections, per-section graphics, expandable citations)
 - /projects/peai-book-ml-model-matrix → Standalone case study (7 sections, one sticky AbilityGrid in 3 modes)
 - /how-it-works           → How It Works (pipeline explanation, tech stack, product vision)
@@ -77,24 +82,32 @@ Hidden routes (functional, not in nav):
 - /top-fit-jobs           → Ranked jobs with fit scoring and shortlist
 - /admin                  → Demo Lab (upload, rebuild, regenerate)
 
-## Project Cards System
-Eight cards in `frontend/app/projects/page.tsx`:
-1. KB Agent — Proposal Intelligence Platform (rag)
-2. RentalShield NYC (full-stack)
-3. AI Venture Architect (multi-agent)
-4. PEAI Chat Assistant (rag) — **standalone route**
-5. DealLens — PE CIM Intelligence Workflow (workflow) — **standalone route**
-6. PEAI Book — ML Model Matrix (published) — **standalone route**
-7. Career Radar — Labor Market Intelligence (full-stack)
-8. OSS Dependency Risk Agent (data-eng)
+## Project Index System
+`frontend/app/projects/page.tsx` holds two tiers, both in display order. Every slug in both
+tiers has a standalone page.
 
-Each card has a `bgImage` prop pointing to `frontend/public/images/projects/<slug>.(png|jpg)`.
+`FEATURED` — rendered by `components/FeaturedProject.tsx` (context paragraph, status dot, node list):
+1. KB Agent — Proposal Intelligence Platform
+2. DealLens — PE CIM Intelligence Workflow
+
+`SELECTED` — rendered by `components/ProjectCard.tsx`:
+3. OSS Dependency Risk Agent
+4. PEAI Chat Assistant
+5. RentalShield NYC
+6. AI Venture Architect
+7. Career Radar
+8. PEAI Book — ML Model Matrix
+
+There are no filter pills and no `bgImage` prop; both were removed in the Phase 17 redesign.
 
 Cards open the deep-dive overlay (`ProjectDeepDive`) **unless** their slug is in the
 `STANDALONE_ROUTES` set at the top of `projects/page.tsx`. Those slugs own a full page under
 `app/projects/<slug>/` and the card click calls `router.push('/projects/<slug>')` instead.
 A hand-written `?open=<slug>` for a standalone slug also redirects to the real page.
-Currently: `deallens`, `peai-chat-assistant`, `peai-book-ml-model-matrix`.
+Currently **all eight** cards: `deallens`, `peai-chat-assistant`, `peai-book-ml-model-matrix`,
+`kb-agent`, `rentalshield-nyc`, `ai-venture-architect`, `career-radar`,
+`oss-dependency-risk-agent`. The overlay therefore has no live path into it; see the note on
+`STANDALONE_ROUTES` in `projects/page.tsx` for why `ProjectDeepDive` is kept anyway.
 
 **Route precedence:** a static segment beats the dynamic `[slug]` catch-all in the App Router,
 so standalone pages are authoritative automatically. `[slug]/page.tsx` needs no change when
@@ -158,6 +171,49 @@ Facts fixed on this page, do not regress: role is **authored the matrix + peer r
 from the book (no RNNs, ARIMA, GPT or few-shot). The author-is-Chase's-father line appears
 **exactly once**, inside §2 "The background".
 
+## Standalone Case Study Pages (the shared family)
+Five pages share one chrome: KB Agent, RentalShield NYC, AI Venture Architect, Career Radar and
+OSS Dependency Risk Agent. DealLens and the two PEAI pages predate it and keep their own
+self-contained implementations. **Do not migrate them** without being asked; they were signed
+off as they are.
+
+`components/case-study/chrome.tsx` holds the whole system:
+- **Shell**: `CaseStudyShell` (TopNav, the measured content column, back link, stylesheet).
+- **Atoms**: `Figure`, `Chips`, `HeroPlaceholder`, `TwoUp`, `ContrastPair`, `ProblemFixCards`,
+  `PipelineList`, `CapabilityPicker`, `CloseStrip`, `Glyph`.
+- **Hooks**: `useOnceInView`, `useTimeline`, `reveal`.
+- **Stylesheet**: one `CASE_STUDY_CSS` constant, every rule prefixed `.case-study`.
+
+Two things here differ from the older pages on purpose:
+- The sheet is emitted through a **plain `<style>` tag**, not `<style jsx global>`. It is
+  composed at runtime from a module constant plus each page's `extraCss`, and styled-jsx is
+  built around statically analyzable template literals. Scoping is unchanged.
+- The scope class is shared (`.case-study`) rather than per page. It is only ever applied by
+  pages in this family, so it still cannot reach any other route. Verified: the three older
+  pages render with no `.case-study` element present.
+
+Each page keeps **one bespoke figure** in its own `extraCss`, scoped under its own page class
+(`.kb-agent`, `.rentalshield`, `.venture`, `.radar`, `.ossrisk`).
+
+All five follow the same eight-section arc: hero, what I built, the problem, the foundation,
+the system, the hard part, in practice, close. **No sticky mechanic on any of them**, following
+the PEAI Chat precedent rather than the Book's.
+
+**Content is preliminary across all five and no visuals are finalized.** That is a blocker on
+Phase 16 and on any public deploy; see "Current Phase". Every fact is carried
+over from that project's entry in `lib/project-details.ts`; nothing is invented. Each hero uses
+a CSS placeholder frame rather than `next/image`, and every figure is drawn in CSS, so the five
+pages ship with **zero new image assets** and hold their aspect ratios for later captures.
+
+Open items, deliberately not resolved:
+- `project-details.ts` now names all six KB Agent workflows (ask, agent, score, gaps, draft,
+  compare). §7 of that page still shows six documented capabilities, which are not the same six.
+  Reconcile in the content pass.
+- The OSS source gives both "800+ repos monitored" and "705 scored daily". Both appear on that
+  page where each belongs rather than being reconciled into one number.
+- Signal-weight bars on the RentalShield and OSS pages are illustrative; the sources state the
+  scores are weighted but not the weights. Both figures say so on the page.
+
 ## LangGraph Workflows (4 agents)
 1. Ingestion Agent — file intake → text extraction (+ YAML front matter parsing for .md) → chunking → embedding → indexing
 2. Profile Synthesis Agent — build candidate_profile.json and site_content.json from source materials
@@ -177,12 +233,26 @@ from the book (no RNNs, ARIMA, GPT or few-shot). The author-is-Chase's-father li
 - [x] Phase 13: Project cards overhaul — deep-dive overlay system (all 6 projects), DealLens card, sidebar flicker fix. The 3D tilt and bgImage support added here were both removed later; see Phase 17
 - [x] Phase 14: DealLens product demo page — dedicated /projects/deallens with 8 story sections, interactive hotspots, scroll progress, gallery
 - [x] Phase 15: PEAI standalone case study pages (Chat + Book), shared typography atoms
-- [ ] Phase 16: Public/private route separation (gate /admin, /top-fit-jobs, /job-preferences)
+- [ ] Phase 16: Public/private route separation (gate /admin, /top-fit-jobs, /job-preferences).
+      **Also blocks on the content pass for the five shared-chrome case studies** (see
+      "Current Phase") — they are themed but preliminary, and the first public deploy must
+      not ship placeholder heroes
 
 ## Current Phase
-Phase 15 complete and merged to main. Both PEAI case study pages are live, DealLens image
-assets are placed, and the knowledge base docs for both PEAI projects have been rewritten and
-re-indexed.
+The /projects redesign (two tiers, no filters) and all eight standalone case study pages are in.
+Every project slug now owns a real page; the ProjectDeepDive overlay has no live path into it and
+is kept only as the fallback for a card added before its page exists.
+
+Next on these pages: the five shared-chrome case studies (KB Agent, RentalShield, AI Venture
+Architect, Career Radar, OSS Dependency Risk Agent) carry the PEAI theme but their content and
+visuals are preliminary by design, pending per-page design layouts. See the open items under
+"Standalone Case Study Pages".
+
+**That is a deploy blocker, not a nice-to-have.** All five are reachable from the /projects
+cards, and each shows a CSS placeholder frame where a screenshot belongs. Landing them on main
+was safe only because nothing is deployed. Do not wire up a public host until either their
+content pass is done, or their slugs are pulled back out of `STANDALONE_ROUTES` so those cards
+fall back to the finished `ProjectDeepDive` content.
 
 Open: **public/private route separation** — `/admin`, `/top-fit-jobs` and `/job-preferences`
 are hidden from nav but still reachable by URL, and `/admin` can trigger ingestion. This
@@ -329,3 +399,46 @@ Completed: both PEAI standalone case study pages, built from design handoffs and
   `*.zip` are gitignored; they hold unpublished book scans and must never be committed.
 
 Next: public/private route separation (Phase 16). Deliberately deferred, not forgotten.
+
+### Session 19 — 2026-11-05 (cloud session)
+Completed: the five remaining project cards moved from the ProjectDeepDive overlay onto
+standalone case study pages, themed to the two PEAI pages, plus a shared chrome module.
+
+- Analyzed the PEAI Chat and Book pages and pulled the common system out into
+  `components/case-study/chrome.tsx`. See the section above for what it holds and the two
+  deliberate differences from the older pages.
+- Built five pages on it: KB Agent, RentalShield NYC, AI Venture Architect, Career Radar and
+  OSS Dependency Risk Agent. KB Agent was built standalone first, then migrated onto the shared
+  chrome, which took it from 10.8 kB to 5.7 kB.
+- **DealLens, PEAI Chat and PEAI Book were explicitly left alone** at the user's request.
+  Confirmed by diff against the session's starting commit: none of their files were touched,
+  and none of them renders a `.case-study` element.
+- All eight slugs are now in `STANDALONE_ROUTES`. Both routing paths in `projects/page.tsx` are
+  generic over the set, so no other change was needed.
+- Verified against production builds: typecheck clean, build clean, all five prerender static,
+  no console errors, no horizontal overflow at 390 / 520 / 620 / 760 / 860 / 980 / 1060 / 1280 /
+  1440 / 1920, and all eight slugs resolve correctly by card click, `?open=<slug>` and direct
+  URL.
+- Worth knowing for next time: `next start` holds the build it booted with, so a stale server
+  will happily serve an old bundle and make a correct change look broken. Kill it and confirm
+  the port is free before trusting a browser check.
+
+### Session 20 — 2026-11-09
+Integrated the unmerged Session 19 cloud branch (`claude/zen-ride-e0gis0`) on top of the Phase 17
+/projects redesign. The two did not actually conflict: Session 19's only change to
+`projects/page.tsx` was widening `STANDALONE_ROUTES`, and the redesign left that block untouched,
+so git merged it without a single conflict and both routing paths stayed generic over the set.
+The overlay survives as the documented fallback.
+
+What did need fixing was content, not routing. Session 19 derived its page copy from the
+`project-details.ts` that existed at its branch point, so the KB Agent page carried facts the
+redesign had since corrected. Resynced on that page and its data file:
+- source is a **watched folder tree, local via watchdog or OneDrive via Microsoft Graph**, not a
+  SharePoint document library
+- status is a **working prototype**, not in production, and the hero figure no longer claims a
+  live team
+- the RRF merge is the **standard formula at k=60 run in application code**, not a custom or
+  hand written one, and the path it replaced is the **server side fusion path**
+
+The other four Session 19 pages needed no content change: their numbers (705 repos, ~1,000
+postings, seven services, seven views) already agree with the redesigned cards.

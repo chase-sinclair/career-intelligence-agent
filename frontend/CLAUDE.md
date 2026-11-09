@@ -7,9 +7,14 @@ Next.js App Router, TypeScript, Tailwind CSS
 - /                  → Landing page (hero + 4 recruiter-facing entry cards)
 - /about             → Architect Profile (structured resume view: skills, timeline, education)
 - /knowledge-base    → Ask About Chase (RAG chat, right panel with evidence check + answer quality + source evidence)
-- /projects          → Project cards grid (8 cards)
-- /projects/[slug]   → Redirects to /projects?open=<slug>, which opens the ProjectDeepDive overlay
+- /projects          → Two-tier index: 2 featured bands + 6 selected cards, no filters
+- /projects/[slug]   → Catch-all for slugs with no standalone page; redirects to /projects?open=<slug>
 - /projects/deallens → Standalone DealLens product demo (full-screen)
+- /projects/kb-agent → Standalone case study (shared case-study chrome)
+- /projects/rentalshield-nyc          → Standalone case study (shared case-study chrome)
+- /projects/ai-venture-architect      → Standalone case study (shared case-study chrome)
+- /projects/career-radar              → Standalone case study (shared case-study chrome)
+- /projects/oss-dependency-risk-agent → Standalone case study (shared case-study chrome)
 - /projects/peai-chat-assistant       → Standalone case study (8 sections, no sticky mechanic)
 - /projects/peai-book-ml-model-matrix → Standalone case study (7 sections, sticky AbilityGrid)
 - /how-it-works      → How It Works (static page: pipeline explanation, tech stack, product vision)
@@ -60,11 +65,19 @@ of `app/projects/page.tsx`, in which case the click routes to a real page under
 pages are authoritative without touching `[slug]`. To add one: create the directory, add the
 slug to the set, done.
 
+All eight slugs are currently in the set, so the overlay has no live path into it. It is kept as
+the fallback for a card added before its page exists.
+
 ## Conventions
 - All interactive pages use 'use client'
 - Tailwind for most styling. Long-form editorial pages (how-it-works, the PEAI case studies)
   use `<style jsx global>` scoped under a page-root class for what Tailwind cannot express
   (keyframes, nth-child stagger, media queries), never globals.css
+- The five shared-chrome case studies are the exception: they import
+  `components/case-study/chrome.tsx`, which emits one `.case-study`-scoped sheet through a
+  plain `<style>` tag because it is composed from a constant plus each page's `extraCss`.
+  Build a new case study on that module, not by copying a page. DealLens and the two PEAI
+  pages predate it and are not to be migrated unless asked
 - `Eyebrow`, `Heading2`, `Divider` come from `components/shared/typography.tsx` — import, do not
   redefine
 - Text on an accent fill must be `var(--accent-ink)`; `--accent` is dark
