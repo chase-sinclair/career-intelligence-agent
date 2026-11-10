@@ -48,12 +48,12 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
     title: 'KB Agent — Proposal Intelligence Platform',
     category: 'Agentic RAG',
     categoryTag: 'rag',
-    tags: ['Python', 'Qdrant', 'Claude Opus', 'FastMCP', 'Slack Bolt SDK', 'MS Graph API'],
+    tags: ['Python', 'Claude', 'Qdrant', 'FastMCP', 'Slack', 'OneDrive', 'Notion'],
     summary:
-      'A Slack bot that turns a watched folder tree, local or OneDrive, into a queryable proposal intelligence system. Automated ingestion, hybrid dense and sparse retrieval, and six purpose built workflows for government proposal teams: ask, agent, score, gaps, draft, and compare.',
+      'Built independently from firsthand experience supporting federal bids, KB Agent turns a changing library of proposal documents into an AI assistant inside Slack. Instead of hunting through folders, teams can investigate prior work, compare claims against evidence, identify missing information, and draft source-grounded responses—all using documents they already maintain.',
     stats: [
-      { label: 'Analytical workflows', value: '6' },
-      { label: 'Search architecture', value: 'Hybrid RRF' },
+      { label: 'Core AI workflows', value: '6' },
+      { label: 'Dense + Sparse · Custom RRF', value: 'Hybrid Search' },
     ],
     problem: {
       heading: 'Proposal research takes hours that teams do not have',
@@ -460,12 +460,12 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
     title: 'DealLens — PE CIM Intelligence Workflow',
     category: 'AI Automation',
     categoryTag: 'automation',
-    tags: ['Zapier', 'OpenAI API', 'Airtable', 'PDF.co', 'Google Drive', 'Slack'],
+    tags: ['Zapier', 'OpenAI API', 'Airtable', 'PDF.co', 'Google Drive', 'Google Docs', 'Slack'],
     summary:
-      'A fully automated private equity CIM intake pipeline. A PDF upload triggers structured extraction, risk flagging, diligence question generation, IC memo drafting, and a Slack alert, with an Airtable deal operating system as the analyst facing review surface.',
+      'Before a private equity firm can evaluate an acquisition, analysts have to organize financials, identify risks, and prepare an initial review from lengthy company-sale documents. I built DealLens to automate that groundwork. Drop a confidential information memorandum (CIM) into Google Drive, and the workflow assembles a connected Airtable deal record with extracted financials, an initial fit assessment, flagged risks, seller follow-up questions, and a draft investment memo—all ready for analyst review.',
     stats: [
-      { label: 'Automation workflows', value: '3 Zaps' },
-      { label: 'Intake to IC memo', value: 'Minutes' },
+      { label: 'Independent automations', value: '3' },
+      { label: 'Structured extraction · Scoring', value: 'Schema-Driven AI' },
     ],
     problem: {
       heading: 'First-pass CIM review is manual, repetitive, and structured enough to automate',

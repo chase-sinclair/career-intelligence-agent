@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import TopNav from '@/components/TopNav'
+import ConstellationCanvas from '@/components/ConstellationCanvas'
 import ProjectCard, { type ProjectCardProps } from '@/components/ProjectCard'
 import ProjectDeepDive from '@/components/ProjectDeepDive'
 import FeaturedProject from '@/components/FeaturedProject'
@@ -46,7 +47,6 @@ interface FeaturedEntry {
   contextParagraph: string
   statusLabel: string
   statusDot: 'filled' | 'hollow' | 'none'
-  ctaLabel: string
   nodes: string[]
 }
 
@@ -54,35 +54,33 @@ const FEATURED: FeaturedEntry[] = [
   {
     slug: 'kb-agent',
     name: 'KB Agent',
-    descriptor: 'Proposal Intelligence Platform',
+    descriptor: 'Slack-Native Proposal Intelligence',
     contextParagraph:
-      'Proposal teams lose half a day finding what the firm has already written. Retrieval merges a dense vector query and a BM25 style sparse query with Reciprocal Rank Fusion at k=60, implemented in application code after a serialization bug in the vector database client broke its server side fusion path. Drafting is the workflow that earns the architecture: it marks every requirement the corpus cannot support [EVIDENCE MISSING] inline rather than writing around the gap.',
+      'Local and OneDrive watchers keep the knowledge base indexed as files change. Hybrid dense and sparse retrieval with custom RRF powers Claude’s MCP-enabled analysis, while version tracking explains document revisions. Unsupported claims are flagged with [EVIDENCE MISSING], and unresolved issues can become assigned Notion tasks after human review.',
     statusLabel: 'Working prototype',
     statusDot: 'hollow',
-    ctaLabel: 'Read the case study',
     nodes: [
-      'Folder tree ingestion',
-      'Hybrid indexing',
-      'RRF merge in app code',
-      'MCP tool dispatch',
-      'Cited answer in Slack',
+      'Watch shared folders',
+      'Index document changes',
+      'Retrieve and fuse evidence',
+      'Claude investigates with MCP',
+      'Slack insights · Notion handoff',
     ],
   },
   {
     slug: 'deallens',
     name: 'DealLens',
-    descriptor: 'PE CIM Intelligence Workflow',
+    descriptor: 'Automated Private Equity Deal Screening',
     contextParagraph:
-      'First pass CIM review is manual, repetitive, and structured enough to automate. Three independently triggered workflows keep the system maintainable, and a synthetic validation set across three deal outcomes shows it generalizes without any CIM specific logic.',
-    statusLabel: 'Interactive walkthrough',
-    statusDot: 'none',
-    ctaLabel: 'Walk through the pipeline',
+      'PDF.co extracts document text, while an OpenAI large language model (LLM) uses a defined JSON schema to structure financials, score the opportunity, and flag missing information. Three independently triggered Zapier workflows populate seven linked Airtable tables, generate Google Docs memos and Slack alerts, and create diligence questions and investment criteria. Two custom Airtable interfaces support portfolio-level comparison and individual deal review.',
+    statusLabel: 'Working prototype',
+    statusDot: 'hollow',
     nodes: [
-      'CIM intake trigger',
-      'Structured extraction',
-      'Airtable records, 5 tables',
-      'Diligence and criteria Zaps',
-      'IC memo and Slack alert',
+      'Upload a company-sale PDF to Google Drive',
+      'Extract text and structure deal information with AI',
+      'Create the connected Airtable deal record',
+      'Draft an investment memo and send a Slack alert',
+      'Generate tailored questions and investment criteria',
     ],
   },
 ]
@@ -144,127 +142,132 @@ const SELECTED: ProjectCardProps[] = [
 
 const ALL_SLUGS = [...FEATURED.map((f) => f.slug), ...SELECTED.map((p) => p.slug)]
 
-// ── Decorative constellation ──────────────────────────────────────────────────
+// ── Page stylesheet ───────────────────────────────────────────────────────────
 
 /**
- * Node positions in the SVG's own 360x200 coordinate space, with a per-node
- * radius and ink alpha. Interest comes from size and weight, not hue: a
- * coloured node here would read as a category code with no legend to decode it.
+ * Scoped under `.projects-index`, the page wrapper, so none of it can reach
+ * another route. Everything here is something an inline style cannot express:
+ * the stretched-link `::after`, `:hover` / `:focus-within` surfaces, and the
+ * two breakpoints.
  *
- * `halo` marks the nodes that carry a soft accent wash, matching the breathing
- * halo ConstellationCanvas puts on roughly a fifth of its nodes. Static and
- * decorative, so it is not a code either.
+ * The card and band surfaces (background, border, shadow, transform) live here
+ * rather than inline for a specific reason: an inline declaration beats a
+ * stylesheet rule at any specificity, so a base value set inline would make
+ * its own `:hover` rule dead. Layout and typography stay inline.
  */
-type StarNode = { x: number; y: number; r: number; a: number; halo?: boolean }
-
-const STAR_NODES: StarNode[] = [
-  { x: 28, y: 152, r: 3, a: 0.36 },
-  { x: 76, y: 94, r: 4.5, a: 0.54, halo: true },
-  { x: 138, y: 142, r: 3.5, a: 0.42 },
-  { x: 118, y: 40, r: 4, a: 0.46 },
-  { x: 196, y: 78, r: 5, a: 0.62, halo: true },
-  { x: 186, y: 16, r: 3, a: 0.34 },
-  { x: 250, y: 130, r: 4, a: 0.48 },
-  { x: 300, y: 56, r: 3.5, a: 0.40 },
-  { x: 332, y: 150, r: 4.5, a: 0.52 },
-  { x: 266, y: 188, r: 3, a: 0.36 },
-]
-
-const STAR_EDGES: Array<[number, number]> = [
-  [0, 1], [1, 3], [1, 2], [2, 4], [3, 5], [4, 5],
-  [4, 7], [2, 6], [6, 8], [6, 9], [7, 8],
-]
-
-/** Six-node reduction for laptop widths, in a 190x120 space. */
-const STAR_NODES_SM: StarNode[] = [
-  { x: 16, y: 92, r: 2.75, a: 0.36 },
-  { x: 58, y: 44, r: 4, a: 0.54, halo: true },
-  { x: 104, y: 86, r: 3, a: 0.42 },
-  { x: 118, y: 22, r: 3.5, a: 0.44 },
-  { x: 160, y: 60, r: 4.25, a: 0.58 },
-  { x: 174, y: 106, r: 3, a: 0.38 },
-]
-
-const STAR_EDGES_SM: Array<[number, number]> = [
-  [0, 1], [1, 3], [1, 2], [2, 4], [3, 4], [2, 5], [4, 5],
-]
-
-/**
- * Purely decorative. Two sizes rather than one: the full figure from 1280px
- * up, and a six-node reduction between 1024 and 1279 so a 13-inch laptop,
- * a very common width, still gets the design element. Below 1024 there is
- * genuinely no room beside the copy, so it is hidden.
- *
- * Each wrapper clips its own overflow, so an absolutely positioned child can
- * never widen the scroll container.
- *
- * Node and edge treatment deliberately mirrors ConstellationCanvas, the
- * animated backdrop on /, /about and /knowledge-base, so the site has one
- * visual language for constellations: filled ink nodes at varying weight
- * rather than hollow rings, edges at the canvas's resting opacity, and a soft
- * accent halo on a minority of nodes. This figure stays static because it is a
- * mark in the header corner, not a backdrop.
- */
-function Constellation() {
-  const shell = (w: number, h: number): React.CSSProperties => ({
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    width: w,
-    height: h,
-    overflow: 'hidden',
-    pointerEvents: 'none',
-  })
-
-  const figure = (
-    nodes: StarNode[],
-    edges: Array<[number, number]>,
-    w: number,
-    h: number,
-  ) => (
-    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} fill="none">
-      {edges.map(([a, b]) => (
-        <line
-          key={`${a}-${b}`}
-          x1={nodes[a].x}
-          y1={nodes[a].y}
-          x2={nodes[b].x}
-          y2={nodes[b].y}
-          stroke="rgba(var(--ink-rgb),0.26)"
-          strokeWidth="0.75"
-        />
-      ))}
-      {/* Halos first, so every node sits on top of its own wash. */}
-      {nodes.map((n, i) =>
-        n.halo ? (
-          <circle
-            key={`halo-${i}`}
-            cx={n.x}
-            cy={n.y}
-            r={n.r + 5}
-            fill="rgba(var(--accent-rgb),0.075)"
-          />
-        ) : null,
-      )}
-      {nodes.map((n, i) => (
-        <circle key={i} cx={n.x} cy={n.y} r={n.r} fill={`rgba(var(--ink-rgb),${n.a})`} />
-      ))}
-    </svg>
-  )
-
-  return (
-    <>
-      {/* 1280px and up */}
-      <div aria-hidden="true" className="hidden xl:block" style={shell(360, 200)}>
-        {figure(STAR_NODES, STAR_EDGES, 360, 200)}
-      </div>
-      {/* 1024px to 1279px */}
-      <div aria-hidden="true" className="hidden lg:block xl:hidden" style={shell(190, 120)}>
-        {figure(STAR_NODES_SM, STAR_EDGES_SM, 190, 120)}
-      </div>
-    </>
-  )
+const PAGE_CSS = `
+/* Container. Here rather than inline so the narrow-viewport padding
+   reduction can actually override it. */
+.projects-index {
+  padding: 88px 28px 40px;
+  max-width: 1320px;
+  margin: 0 auto;
+  overflow-x: hidden;
 }
+@media (max-width: 767px) {
+  .projects-index { padding-left: 20px; padding-right: 20px; }
+}
+
+/* Stretched link: one real anchor per project, its ::after covering the whole
+   band or card. Keyboard, middle click and ⌘-click all work, and there is no
+   nested anchor, so the Source link beside it stays valid and clickable. */
+.projects-index .pj-stretch { color: inherit; text-decoration: none; }
+.projects-index .pj-stretch:hover { color: inherit; }
+.projects-index .pj-stretch:focus { outline: none; }
+.projects-index .pj-stretch::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+/* Above the overlay, so they keep their own click target. */
+.projects-index .pj-band-actions,
+.projects-index .pj-gh { position: relative; z-index: 2; }
+
+/* The implicit column of the featured grid is an auto-sized track, whose floor is
+   the band's min-content width. The stats row is nowrap, so at phone widths
+   that floor exceeds the container and the track grows past it, pushing the
+   band's right edge under the wrapper's overflow clip. An explicit
+   minmax(0, 1fr) track holds the band to the container at every width; above
+   about 465px it resolves identically to the auto track. */
+.projects-index .pj-featured-stack { grid-template-columns: minmax(0, 1fr); }
+
+/* ── Tier 1 band ─────────────────────────────────────────────────────────── */
+.projects-index .pj-band {
+  position: relative;
+  background: var(--panel-3);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+.projects-index .pj-band:hover {
+  background: rgba(251, 253, 253, 0.62);
+  box-shadow: 0 10px 30px rgba(var(--ink-rgb), 0.07);
+}
+.projects-index .pj-band:focus-within {
+  outline: 2px solid rgba(var(--accent-rgb), 0.55);
+  outline-offset: 3px;
+}
+.projects-index .pj-src {
+  color: rgba(var(--ink-rgb), 0.50);
+  transition: color 0.18s ease;
+}
+.projects-index .pj-src:hover { color: var(--accent); }
+
+/* Equal-height bands, and the right column's nudge off the band edge. Gated
+   at 1100px: below it the columns stack, where equal rows pad the shorter band
+   and an auto left margin would push the stacked column off the left edge. */
+@media (min-width: 1100px) {
+  .projects-index .pj-featured-stack { grid-auto-rows: 1fr; }
+  .projects-index .pj-band { height: 100%; }
+  .projects-index .pj-band-left { display: flex; flex-direction: column; }
+  .projects-index .pj-band-actions { margin-top: auto; }
+  .projects-index .pj-band-right {
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: 14px;
+  }
+}
+
+/* The two stats stay side by side and never wrap to a second row, which is
+   the point of the row. Below 480px the pair physically does not fit: at
+   390px the band's content box is 266px and the row's min-content is 363px,
+   so "Schema-Driven AI" lost 48px off its right edge to the wrapper's clip.
+   Phones stack the stats instead; every width where both fit is unchanged. */
+.projects-index .pj-stat-row { flex-wrap: nowrap; }
+@media (max-width: 479px) {
+  .projects-index .pj-stat-row { flex-wrap: wrap; }
+}
+
+/* ── Tier 2 card ─────────────────────────────────────────────────────────── */
+.projects-index .pj-card {
+  position: relative;
+  background: var(--panel);
+  border: 0.5px solid rgba(var(--ink-rgb), 0.10);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+.projects-index .pj-card:hover,
+.projects-index .pj-card:focus-within {
+  border-color: rgba(var(--accent-rgb), 0.30);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(var(--ink-rgb), 0.16);
+}
+.projects-index .pj-card:focus-within {
+  outline: 2px solid rgba(var(--accent-rgb), 0.55);
+  outline-offset: 3px;
+}
+.projects-index .pj-gh {
+  color: rgba(var(--ink-rgb), 0.45);
+  transition: color 0.18s ease;
+}
+.projects-index .pj-gh:hover { color: var(--accent); }
+.projects-index .pj-arrow { transition: transform 0.18s ease; }
+.projects-index .pj-card:hover .pj-arrow,
+.projects-index .pj-card:focus-within .pj-arrow { transform: translateX(3px); }
+`
 
 // ── Section label ─────────────────────────────────────────────────────────────
 
@@ -359,11 +362,23 @@ export default function ProjectsPage() {
 
   return (
     <>
+      {/* Live field behind the page, in the Architect Profile configuration.
+          `sqrtDensity` is this page's only departure from /about: the two
+          stacked bands leave far less open ground than /about's grid, and
+          linear scaling by open area reads as empty here. */}
+      <ConstellationCanvas
+        className="fixed inset-0 w-full h-full"
+        enhanced
+        quietZoneSelector="[data-quiet-zone]"
+        maskSelector="[data-constellation-mask]"
+        densityScale={2.3}
+        sqrtDensity
+      />
       <TopNav subtitle="Technical Projects" />
 
       {/* Background content — dims and scales when overlay opens */}
       <main
-        className="pl-5 h-screen overflow-y-auto custom-scrollbar"
+        className="pl-5 h-screen overflow-y-auto custom-scrollbar relative z-10"
         style={{
           transform: isAnimatingIn ? 'scale(0.97)' : 'scale(1)',
           opacity: isAnimatingIn ? 0.4 : 1,
@@ -372,11 +387,10 @@ export default function ProjectsPage() {
           pointerEvents: activeSlug ? 'none' : 'auto',
         }}
       >
-        <div className="pt-24 px-6 md:px-10 pb-10" style={{ overflowX: 'hidden' }}>
+        <div className="projects-index">
 
           {/* Page header */}
-          <header className="mb-10" style={{ position: 'relative' }}>
-            <Constellation />
+          <header className="mb-10" data-quiet-zone>
             <p className="font-mono text-[9px] tracking-[0.28em] uppercase mb-3"
               style={{ color: 'rgba(var(--ink-rgb),0.62)' }}>
               Portfolio / 2023 to 2026
@@ -396,7 +410,7 @@ export default function ProjectsPage() {
           {/* ── Tier 1 ────────────────────────────────────────────────────── */}
           <SectionLabel label="Featured Work" accent />
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginBottom: 44 }}>
+          <div className="pj-featured-stack" style={{ display: 'grid', gap: 20, marginBottom: 44 }}>
             {FEATURED.map((f, i) => (
               <FeaturedProject
                 key={f.slug}
@@ -407,7 +421,6 @@ export default function ProjectsPage() {
                 contextParagraph={f.contextParagraph}
                 statusLabel={f.statusLabel}
                 statusDot={f.statusDot}
-                ctaLabel={f.ctaLabel}
                 nodes={f.nodes}
                 onOpen={openOverlay}
               />
@@ -436,6 +449,11 @@ export default function ProjectsPage() {
           onNavigate={handleNavigate}
         />
       )}
+
+      {/* A plain <style> rather than styled-jsx: the sheet is a module
+          constant, and styled-jsx only accepts a statically analyzable
+          template literal in place. Same approach as /about. */}
+      <style dangerouslySetInnerHTML={{ __html: PAGE_CSS }} />
     </>
   )
 }

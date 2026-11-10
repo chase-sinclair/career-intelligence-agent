@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { PROJECT_DETAILS } from '@/lib/project-details'
 
@@ -15,6 +15,12 @@ import { PROJECT_DETAILS } from '@/lib/project-details'
  * Long-form content (summary, stats, tags) is pulled from PROJECT_DETAILS by
  * slug rather than duplicated here, so the band and the deep dive cannot drift
  * apart. Only the page-specific framing is passed in.
+ *
+ * The band's surface, hover, focus ring and the >=1100px layout rules live in
+ * the `.projects-index` sheet in `app/projects/page.tsx`, under the `pj-band*`
+ * class names used below. They need pseudo-classes and media queries, which an
+ * inline style cannot express, and an inline base value would override its own
+ * hover rule.
  */
 
 export interface FeaturedProjectProps {
@@ -40,10 +46,10 @@ export interface FeaturedProjectProps {
    * than borrowing a dot that already means something.
    */
   statusDot: 'filled' | 'hollow' | 'none'
-  ctaLabel: string
   /**
-   * Step labels, in order. The last one is the pipeline's output and is the
-   * only node that carries colour.
+   * Step labels, in order. The last one is the pipeline's endpoint and keeps a
+   * bolder label, but it carries no standing colour: every dot, including that
+   * one, fills only when the cycle reaches it.
    */
   nodes: string[]
   onOpen?: (slug: string) => void
@@ -54,6 +60,13 @@ const GH_PATH =
 
 const MONO = 'JetBrains Mono, monospace'
 
+// "How it runs" cycle: one step per STEP_MS, hold on the complete pipeline,
+// clear, pause, repeat.
+const STEP_MS = 620
+const HOLD_MS = 1600
+const CLEAR_MS = 420
+const START_MS = 300
+
 export default function FeaturedProject({
   slug,
   index,
@@ -62,48 +75,100 @@ export default function FeaturedProject({
   contextParagraph,
   statusLabel,
   statusDot,
-  ctaLabel,
   nodes,
   onOpen,
 }: FeaturedProjectProps) {
   const router = useRouter()
-  const [ctaHovered, setCtaHovered] = useState(false)
-  const [ghHovered, setGhHovered] = useState(false)
+
+  const total = nodes.length
+  const runsRef = useRef<HTMLDivElement>(null)
+  /** How many leading steps are currently marked complete. */
+  const [doneCount, setDoneCount] = useState(0)
+
+  useEffect(() => {
+    const panel = runsRef.current
+    if (!panel) return
+
+    // Reduced motion: show the finished pipeline and never cycle.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setDoneCount(total)
+      return
+    }
+
+    let timer: ReturnType<typeof setTimeout> | undefined
+    let i = 0
+    let running = false
+
+    const tick = () => {
+      if (i < total) {
+        i += 1
+        setDoneCount(i)
+        timer = setTimeout(tick, i === total ? HOLD_MS : STEP_MS)
+      } else {
+        i = 0
+        setDoneCount(0)
+        timer = setTimeout(tick, CLEAR_MS)
+      }
+    }
+
+    const play = () => {
+      if (running) return
+      running = true
+      timer = setTimeout(tick, START_MS)
+    }
+    // Leaves `i` where it is, so scrolling back resumes rather than restarts.
+    const pause = () => {
+      running = false
+      clearTimeout(timer)
+    }
+
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => (e.isIntersecting ? play() : pause())),
+      { threshold: 0.3 },
+    )
+    io.observe(panel)
+
+    return () => {
+      io.disconnect()
+      clearTimeout(timer)
+    }
+  }, [total])
 
   const detail = PROJECT_DETAILS[slug]
   if (!detail) return null
 
   const stats = detail.stats.slice(0, 2)
 
-  const open = () => (onOpen ? onOpen(slug) : router.push(`/projects/${slug}`))
+  /**
+   * The whole band is a link, so modified clicks have to reach the browser:
+   * only a plain left click is intercepted for client-side routing. Everything
+   * else (new tab, new window, download) falls through to the real href.
+   */
+  const handleClick = (e: React.MouseEvent) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return
+    e.preventDefault()
+    if (onOpen) onOpen(slug)
+    else router.push(`/projects/${slug}`)
+  }
 
   return (
     <section
-      className="md:-mx-[30px]"
+      className="pj-band"
       style={{
-        background: 'var(--panel-3)',
-        borderRadius: 14,
-        // Padding on all four sides, so the copy never touches the wash
-        // boundary, and the band is then pulled 30px into each gutter at md and
-        // up. That puts the content line back on the same x as the page title
-        // and the intro paragraph while keeping the wash symmetric.
-        //
-        // The offset is breakpoint-gated because the wrapper's own padding has
-        // to absorb it: px-10 (40px) at md and up leaves 10px of gutter, but
-        // px-6 (24px) below md does not. There, -30px would cross the wrapper's
-        // padding box and its overflowX: hidden would silently clip the wash,
-        // so the band sits inset with its padding intact instead.
-        padding: '34px 30px',
+        padding: '28px 30px',
         display: 'flex',
         flexWrap: 'wrap',
-        gap: 40,
+        gap: 36,
         alignItems: 'flex-start',
       }}
     >
       {/* ── Left: the argument ───────────────────────────────────────────── */}
-      <div style={{ flex: '999 1 540px', minWidth: 0 }}>
+      {/* Masked per inner block rather than on the <section>: the band is a
+          0.35-alpha wash, not an opaque panel, so masking the whole thing
+          would tile the canvas and leave the field nothing to draw in. */}
+      <div className="pj-band-left" style={{ flex: '1 1 620px', minWidth: 0 }} data-constellation-mask>
         {/* Meta row */}
-        <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 10, marginBottom: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 10, marginBottom: 14 }}>
           <span
             style={{
               fontFamily: MONO,
@@ -160,7 +225,7 @@ export default function FeaturedProject({
           </span>
         </div>
 
-        {/* Name and descriptor */}
+        {/* Name and descriptor. The name carries the band's only anchor. */}
         <h2
           style={{
             fontSize: 32,
@@ -171,14 +236,16 @@ export default function FeaturedProject({
             margin: 0,
           }}
         >
-          {name}
+          <a className="pj-stretch" href={`/projects/${slug}`} onClick={handleClick}>
+            {name}
+          </a>
         </h2>
         <p
           style={{
             fontSize: 16,
             lineHeight: 1.5,
             color: 'rgba(var(--ink-rgb),0.58)',
-            margin: '6px 0 20px',
+            margin: '5px 0 16px',
           }}
         >
           {descriptor}
@@ -188,10 +255,10 @@ export default function FeaturedProject({
         <p
           style={{
             fontSize: 15.5,
-            lineHeight: 1.65,
+            lineHeight: 1.6,
             color: 'rgba(var(--ink-rgb),0.76)',
-            maxWidth: '62ch',
-            margin: '0 0 14px',
+            maxWidth: '92ch',
+            margin: '0 0 10px',
           }}
         >
           {detail.summary}
@@ -199,17 +266,17 @@ export default function FeaturedProject({
         <p
           style={{
             fontSize: 14.5,
-            lineHeight: 1.65,
+            lineHeight: 1.6,
             color: 'rgba(var(--ink-rgb),0.60)',
-            maxWidth: '62ch',
-            margin: '0 0 20px',
+            maxWidth: '92ch',
+            margin: '0 0 16px',
           }}
         >
           {contextParagraph}
         </p>
 
         {/* Tech chips */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 22 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 18 }}>
           {detail.tags.map((t) => (
             <span
               key={t}
@@ -229,46 +296,19 @@ export default function FeaturedProject({
           ))}
         </div>
 
-        {/* CTA + source */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' }}>
-          <button
-            type="button"
-            onClick={open}
-            onMouseEnter={() => setCtaHovered(true)}
-            onMouseLeave={() => setCtaHovered(false)}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-              background: 'none',
-              border: 'none',
-              padding: 0,
-              cursor: 'pointer',
-              fontSize: 14,
-              fontWeight: 600,
-              color: 'var(--accent)',
-              borderBottom: '1px solid rgba(var(--accent-rgb),0.45)',
-              paddingBottom: 2,
-              transition: 'gap 0.18s ease',
-            }}
-          >
-            {ctaLabel}
-            <span
-              aria-hidden="true"
-              style={{ transform: ctaHovered ? 'translateX(3px)' : 'none', transition: 'transform 0.18s ease' }}
-            >
-              &#8594;
-            </span>
-          </button>
-
+        {/* Source link. Sits above the stretched overlay, and at >=1100px this
+            row is what absorbs the shorter band's slack. */}
+        <div
+          className="pj-band-actions"
+          style={{ display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' }}
+        >
           <a
+            className="pj-src"
             href="#"
             onClick={(e) => {
               e.preventDefault()
               e.stopPropagation()
             }}
-            onMouseEnter={() => setGhHovered(true)}
-            onMouseLeave={() => setGhHovered(false)}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -278,8 +318,6 @@ export default function FeaturedProject({
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
               textDecoration: 'none',
-              color: ghHovered ? 'var(--accent)' : 'rgba(var(--ink-rgb),0.50)',
-              transition: 'color 0.18s ease',
             }}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -294,11 +332,12 @@ export default function FeaturedProject({
       {/* minWidth 0 rather than a 300px floor: at 390px the band's inner width
           is narrower than that, and a hard floor overflowed into the wrapper's
           overflowX: hidden, clipping the stats and pipeline silently. */}
-      <div style={{ flex: '1 1 320px', minWidth: 0 }}>
-        {/* Two headline stats */}
-        <div style={{ display: 'flex', gap: 28, flexWrap: 'wrap', marginBottom: 20 }}>
+      <div className="pj-band-right" style={{ flex: '1 1 380px', minWidth: 0 }}>
+        {/* Two headline stats, side by side at every width the pair fits in.
+            Below 480px they stack: see the pj-stat-row rule in the page sheet. */}
+        <div className="pj-stat-row" style={{ display: 'flex', gap: 28, marginBottom: 20 }} data-constellation-mask>
           {stats.map((s) => (
-            <div key={s.label} style={{ minWidth: 0 }}>
+            <div key={s.label} style={{ flex: '1 1 auto', minWidth: 0 }}>
               <div
                 style={{
                   fontSize: 28,
@@ -306,6 +345,7 @@ export default function FeaturedProject({
                   lineHeight: 1.1,
                   letterSpacing: '-0.02em',
                   color: 'var(--accent)',
+                  whiteSpace: 'nowrap',
                 }}
               >
                 {s.value}
@@ -314,10 +354,12 @@ export default function FeaturedProject({
                 style={{
                   fontFamily: MONO,
                   fontSize: 9.5,
+                  lineHeight: 1.5,
                   letterSpacing: '0.14em',
                   textTransform: 'uppercase',
                   color: 'rgba(var(--ink-rgb),0.48)',
                   marginTop: 6,
+                  textWrap: 'pretty',
                 }}
               >
                 {s.label}
@@ -327,7 +369,11 @@ export default function FeaturedProject({
         </div>
 
         {/* How it runs */}
-        <div style={{ background: 'var(--panel)', borderRadius: 12, padding: '16px 18px' }}>
+        <div
+          ref={runsRef}
+          style={{ background: 'var(--panel)', borderRadius: 12, padding: '16px 18px' }}
+          data-constellation-mask
+        >
           <div
             style={{
               fontFamily: MONO,
@@ -342,30 +388,58 @@ export default function FeaturedProject({
           </div>
 
           {nodes.map((label, i) => {
-            const isLast = i === nodes.length - 1
+            const isLast = i === total - 1
+            const done = i < doneCount
             return (
               <div key={label}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
                   <span
                     aria-hidden="true"
                     style={{
-                      width: 9,
-                      height: 9,
+                      position: 'relative',
+                      width: 16,
+                      height: 16,
                       borderRadius: '50%',
                       flexShrink: 0,
-                      background: isLast ? 'var(--accent)' : 'var(--panel-solid)',
-                      // Monochrome: a hue here would read as a code with no
-                      // legend. Only the final node, the pipeline's output,
-                      // is coloured, because there the colour means something.
-                      border: isLast ? 'none' : '1.5px solid rgba(var(--ink-rgb),0.30)',
+                      // Monochrome until the cycle reaches this step. A hue on
+                      // a resting dot would read as a code with no legend; the
+                      // only colour here means "the run has got this far".
+                      background: done ? 'var(--accent)' : 'var(--panel-solid)',
+                      border: `1.5px solid ${done ? 'var(--accent)' : 'rgba(var(--ink-rgb),0.30)'}`,
+                      transition: 'background 0.25s ease, border-color 0.25s ease',
                     }}
-                  />
+                  >
+                    <svg
+                      width="9"
+                      height="9"
+                      viewBox="0 0 12 12"
+                      fill="none"
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        margin: 'auto',
+                        opacity: done ? 1 : 0,
+                        transform: done ? 'scale(1)' : 'scale(0.6)',
+                        transition:
+                          'opacity 0.22s ease, transform 0.22s cubic-bezier(.34,1.56,.64,1)',
+                      }}
+                    >
+                      <path
+                        d="M2.5 6.4 4.8 8.7 9.5 3.6"
+                        stroke="var(--accent-ink)"
+                        strokeWidth="1.9"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </span>
                   <span
                     style={{
                       fontSize: 12.5,
                       lineHeight: 1.4,
-                      color: isLast ? 'var(--ink)' : 'rgba(var(--ink-rgb),0.68)',
+                      color: done ? 'var(--ink)' : 'rgba(var(--ink-rgb),0.68)',
                       fontWeight: isLast ? 600 : 400,
+                      transition: 'color 0.25s ease',
                     }}
                   >
                     {label}
@@ -376,8 +450,8 @@ export default function FeaturedProject({
                     aria-hidden="true"
                     style={{
                       width: 1,
-                      height: 12,
-                      marginLeft: 4,
+                      height: 10,
+                      marginLeft: 7.5,
                       background: 'rgba(var(--ink-rgb),0.16)',
                     }}
                   />

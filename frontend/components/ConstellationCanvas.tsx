@@ -94,6 +94,17 @@ interface ConstellationCanvasProps {
    * gutters got roomier. 1 everywhere unless a route opts in.
    */
   densityScale?: number
+  /**
+   * Scale the node count by the square root of the open fraction instead of
+   * the fraction itself. Opt-in, and off everywhere but /projects.
+   *
+   * Linear scaling holds density constant per open pixel, which is right for a
+   * grid of cards that leaves wide, even gutters. /projects leaves roughly a
+   * sixth of the canvas open, in narrow margins around two full-width bands,
+   * and at that fraction a linearly scaled count reads as empty. The square
+   * root keeps the perceived density of those margins comparable to /about's.
+   */
+  sqrtDensity?: boolean
 }
 
 export default function ConstellationCanvas({
@@ -102,6 +113,7 @@ export default function ConstellationCanvas({
   quietZoneSelector,
   maskSelector,
   densityScale = 1,
+  sqrtDensity = false,
 }: ConstellationCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const mouseRef = useRef({ x: -9999, y: -9999 })
@@ -275,7 +287,8 @@ export default function ConstellationCanvas({
         }
         openFraction = total ? open / total : 1
       }
-      const count = Math.max(8, Math.round(NODE_COUNT * densityScale * openFraction))
+      const openScale = sqrtDensity ? Math.sqrt(openFraction) : openFraction
+      const count = Math.max(8, Math.round(NODE_COUNT * densityScale * openScale))
       nodesRef.current = Array.from({ length: count }, () => {
         const p = mask.length ? openPoint(w, h) : biasedPoint(w, h)
         return {
@@ -516,14 +529,11 @@ export default function ConstellationCanvas({
     function start() {
       cancelAnimationFrame(rafRef.current)
       staticPending = false
-      if (reduceMotion) {
-        // Paint synchronously rather than waiting on rAF — a reduced-motion
-        // page opened in a background tab would otherwise stay blank until it
-        // is focused, since rAF does not fire while hidden.
-        draw()
-      } else {
-        rafRef.current = requestAnimationFrame(draw)
-      }
+      // Paint synchronously rather than waiting on rAF — a page opened in a
+      // background tab or a hidden iframe would otherwise stay blank until it
+      // is focused, since rAF does not fire while hidden. draw() schedules its
+      // own next frame whenever motion is allowed, so this covers both paths.
+      draw()
     }
 
     const handleMotionChange = () => {
@@ -531,6 +541,11 @@ export default function ConstellationCanvas({
       start()
     }
     motionQuery.addEventListener('change', handleMotionChange)
+
+    // A tab backgrounded before its first frame lands comes back with a blank
+    // canvas and nothing scheduled. Restart the loop when it becomes visible.
+    const handleVisibility = () => { if (!document.hidden) start() }
+    document.addEventListener('visibilitychange', handleVisibility)
 
     init()
     start()
@@ -541,10 +556,11 @@ export default function ConstellationCanvas({
       window.removeEventListener('resize', handleResize)
       window.removeEventListener('scroll', handleScroll, { capture: true } as EventListenerOptions)
       motionQuery.removeEventListener('change', handleMotionChange)
+      document.removeEventListener('visibilitychange', handleVisibility)
       ro?.disconnect()
       settleTimers.forEach(clearTimeout)
     }
-  }, [enhanced, quietZoneSelector])
+  }, [enhanced, quietZoneSelector, sqrtDensity])
 
   return (
     <canvas
