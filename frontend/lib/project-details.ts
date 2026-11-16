@@ -866,6 +866,66 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
         "The ML Model Matrix demonstrates the ability to translate complex ML concepts into structured, decision-ready frameworks for non-technical stakeholders — a skill as valuable in enterprise AI strategy as technical engineering. Available in The Private Equity AI Operating Partner at aioperatingpartners.ai/peai-book.",
     },
   },
+  // Figures from the Lab's committed record. See lib/eval-lab-data.ts for the
+  // wording rules (no "human-graded" claim, usage-priced costs only).
+  'ai-evaluation-lab': {
+    slug: 'ai-evaluation-lab',
+    title: 'AI Evaluation Lab — Five Controlled AI Experiments',
+    category: 'Evaluation Research',
+    categoryTag: 'evaluation',
+    tags: ['Python', 'DuckDB', 'Docker', 'pytest', 'Paired Evaluation'],
+    summary:
+      'Five controlled experiments that each test one AI addition against a version without it, on the same cases: business context for a finance SQL assistant, catalog size for a tool-calling agent, an AI fact-checker for a support assistant, AI-led recovery after a failed action, and AI review of organization-name matches.',
+    stats: [
+      { label: 'AI additions that paid for themselves', value: '1 of 5' },
+      { label: 'Retries across every live run', value: '0' },
+    ],
+    problem: {
+      heading: 'Teams add AI layers without measuring whether they help',
+      body: [
+        'More context, more tools, a second model to check the first: each addition sounds safer or smarter, and each one adds cost and latency. Whether it improves the business outcome is usually assumed rather than measured.',
+        'An output that is well formed is not necessarily correct. A valid tool call can request the opposite action, and SQL that runs can still count the wrong transactions.',
+      ],
+    },
+    solution: {
+      heading: 'One question per experiment, graded on the same cases',
+      body: 'Each experiment compares a baseline with one or more alternatives on an identical workload, reports every result against the full denominator, and records cost and latency next to correctness. Grading is done by code wherever the answer allows it.',
+      features: [
+        {
+          title: 'Paired comparisons',
+          description: 'Every condition runs on the same cases, so gains and losses can be read case by case rather than as averages.',
+        },
+        {
+          title: 'Sandboxed SQL grading',
+          description: 'Submitted SQL runs in an offline, read-only DuckDB container and must return the expected result on two separate data snapshots.',
+        },
+        {
+          title: 'Run-once protocol',
+          description: 'Requests are frozen and approved with a spending cap, sent once with no retries, sealed, and audited offline before any interpretation.',
+        },
+      ],
+    },
+    architecture: {
+      heading: 'From frozen request set to audited result',
+      steps: [
+        { number: '01', title: 'Freeze', description: 'The exact requests are locked and fingerprinted before anything is sent.' },
+        { number: '02', title: 'Approve', description: 'The frozen set is signed off with a hard spending cap.' },
+        { number: '03', title: 'Run once', description: 'One pass with no retries, stopping on anything unexpected.' },
+        { number: '04', title: 'Seal', description: 'Response receipts are sealed so they cannot change afterward.' },
+        { number: '05', title: 'Audit', description: 'Results are graded offline and checked against the sealed receipts.' },
+      ],
+      stack: ['Python', 'DuckDB', 'Docker', 'SQLGlot', 'pytest', 'GitHub Actions'],
+    },
+    impact: {
+      stats: [
+        { label: 'Extra layer paid off', value: '1 of 5' },
+        { label: 'Retries allowed', value: '0' },
+        { label: 'Live runs audited', value: 'All' },
+      ],
+      takeaway:
+        'Curated business context took a finance SQL assistant from 1 to 18 correct answers out of 36. Larger tool catalogs and an AI fact-checker added cost without adding accuracy.',
+    },
+  },
 }
 
 export function getProjectDetail(slug: string): ProjectDetail | null {

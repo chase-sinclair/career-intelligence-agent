@@ -6,8 +6,9 @@ import TopNav from '@/components/TopNav'
 import ConstellationCanvas from '@/components/ConstellationCanvas'
 import ProjectCard, { type ProjectCardProps } from '@/components/ProjectCard'
 import ProjectDeepDive from '@/components/ProjectDeepDive'
-import FeaturedProject from '@/components/FeaturedProject'
+import FeaturedProject, { type FeaturedChart } from '@/components/FeaturedProject'
 import { PROJECT_DETAILS } from '@/lib/project-details'
+import { EXPERIMENTS } from '@/lib/eval-lab-data'
 
 // ── Standalone case-study routes ──────────────────────────────────────────────
 
@@ -36,6 +37,7 @@ const STANDALONE_ROUTES = new Set([
   'ai-venture-architect',
   'career-radar',
   'oss-dependency-risk-agent',
+  'ai-evaluation-lab',
 ])
 
 // ── Tier 1: featured work ─────────────────────────────────────────────────────
@@ -48,6 +50,8 @@ interface FeaturedEntry {
   statusLabel: string
   statusDot: 'filled' | 'hollow' | 'none'
   nodes: string[]
+  /** Replaces the "How it runs" pipeline with a result chart. */
+  chart?: FeaturedChart
 }
 
 const FEATURED: FeaturedEntry[] = [
@@ -82,6 +86,24 @@ const FEATURED: FeaturedEntry[] = [
       'Draft an investment memo and send a Slack alert',
       'Generate tailored questions and investment criteria',
     ],
+  },
+  {
+    slug: 'ai-evaluation-lab',
+    name: 'AI Evaluation Lab',
+    descriptor: 'Five Controlled AI Experiments',
+    contextParagraph:
+      'Curated business context took a finance SQL assistant from 1 to 18 correct answers out of 36. Larger tool catalogs and an AI fact-checker added cost without adding accuracy, and written rules matched AI-led recovery on every case. Every live run was frozen, approved with a spending cap, sent once and audited.',
+    statusLabel: 'Complete',
+    statusDot: 'none',
+    nodes: [],
+    // A research project's evidence is its result, not its pipeline: show the
+    // strongest experiment, from the same data the case study draws.
+    chart: {
+      title: 'Finance SQL assistant',
+      measure: EXPERIMENTS[0].measure,
+      bars: EXPERIMENTS[0].bars,
+      note: 'Same 36 questions, same model. Only the context changed.',
+    },
   },
 ]
 
@@ -422,6 +444,7 @@ export default function ProjectsPage() {
                 statusLabel={f.statusLabel}
                 statusDot={f.statusDot}
                 nodes={f.nodes}
+                chart={f.chart}
                 onOpen={openOverlay}
               />
             ))}

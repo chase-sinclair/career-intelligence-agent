@@ -261,6 +261,18 @@ export default function KnowledgeBasePage() {
     return () => { aliveRef.current = false }
   }, [])
 
+  // `?q=` prefills the composer, so a case study can link straight to a
+  // question. It never sends on its own: a link should not spend a model call
+  // or put words in a visitor's mouth, so the visitor still presses send.
+  // Read from window rather than useSearchParams, which would force this
+  // statically rendered page into a Suspense boundary.
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search).get('q')?.trim()
+    if (!q) return
+    setInput(q.slice(0, 300))
+    inputRef.current?.focus()
+  }, [])
+
   // Unmount the intro canvas once the hero move has finished
   useEffect(() => {
     if (!started) return

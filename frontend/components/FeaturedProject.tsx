@@ -52,7 +52,21 @@ export interface FeaturedProjectProps {
    * one, fills only when the cycle reaches it.
    */
   nodes: string[]
+  /**
+   * A result chart in place of the "How it runs" pipeline, for a project
+   * whose evidence is a measured outcome rather than a workflow. The bars
+   * grow once, the first time the panel scrolls into view.
+   */
+  chart?: FeaturedChart
   onOpen?: (slug: string) => void
+}
+
+export interface FeaturedChart {
+  title: string
+  /** What the bars measure, e.g. "Correct answers out of 36". */
+  measure: string
+  bars: ReadonlyArray<{ label: string; value: number; max: number; readout: string; best?: boolean }>
+  note?: string
 }
 
 const GH_PATH =
@@ -76,6 +90,7 @@ export default function FeaturedProject({
   statusLabel,
   statusDot,
   nodes,
+  chart,
   onOpen,
 }: FeaturedProjectProps) {
   const router = useRouter()
@@ -84,10 +99,33 @@ export default function FeaturedProject({
   const runsRef = useRef<HTMLDivElement>(null)
   /** How many leading steps are currently marked complete. */
   const [doneCount, setDoneCount] = useState(0)
+  /** Chart bars have grown. Fires once and never resets. */
+  const [grown, setGrown] = useState(false)
+  const chartRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const panel = chartRef.current
+    if (!panel || !chart) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setGrown(true)
+      return
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setGrown(true)
+          io.disconnect()
+        }
+      },
+      { threshold: 0.4 },
+    )
+    io.observe(panel)
+    return () => io.disconnect()
+  }, [chart])
 
   useEffect(() => {
     const panel = runsRef.current
-    if (!panel) return
+    if (!panel || chart) return
 
     // Reduced motion: show the finished pipeline and never cycle.
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -132,7 +170,7 @@ export default function FeaturedProject({
       io.disconnect()
       clearTimeout(timer)
     }
-  }, [total])
+  }, [total, chart])
 
   const detail = PROJECT_DETAILS[slug]
   if (!detail) return null
@@ -368,7 +406,108 @@ export default function FeaturedProject({
           ))}
         </div>
 
+        {/* Result chart, for projects whose evidence is an outcome */}
+        {chart && (
+          <figure
+            ref={chartRef}
+            style={{ background: 'var(--panel)', borderRadius: 12, padding: '16px 18px', margin: 0 }}
+            data-constellation-mask
+          >
+            <figcaption>
+              <div
+                style={{
+                  fontFamily: MONO,
+                  fontSize: 9,
+                  letterSpacing: '0.16em',
+                  textTransform: 'uppercase',
+                  color: 'rgba(var(--ink-rgb),0.42)',
+                  marginBottom: 6,
+                }}
+              >
+                {chart.measure}
+              </div>
+              <div style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--ink)', marginBottom: 14 }}>
+                {chart.title}
+              </div>
+            </figcaption>
+            {/* Label and score share a line, with the bar full width beneath, so
+                the bar keeps its length at phone widths. */}
+            {chart.bars.map((b, i) => (
+              <div
+                key={b.label}
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'minmax(0, 1fr) auto',
+                  alignItems: 'baseline',
+                  columnGap: 10,
+                  rowGap: 5,
+                  marginBottom: i === chart.bars.length - 1 ? 0 : 11,
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: 12.5,
+                    lineHeight: 1.3,
+                    color: b.best ? 'var(--ink)' : 'rgba(var(--ink-rgb),0.66)',
+                    fontWeight: b.best ? 600 : 400,
+                  }}
+                >
+                  {b.label}
+                </span>
+                <span
+                  style={{
+                    fontFamily: MONO,
+                    fontSize: 11,
+                    textAlign: 'right',
+                    color: b.best ? 'var(--accent)' : 'rgba(var(--ink-rgb),0.72)',
+                  }}
+                >
+                  {b.readout}
+                </span>
+                <span
+                  aria-hidden="true"
+                  style={{
+                    gridColumn: '1 / -1',
+                    height: 8,
+                    borderRadius: 3,
+                    background: 'rgba(var(--ink-rgb),0.07)',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <span
+                    style={{
+                      display: 'block',
+                      height: '100%',
+                      borderRadius: 3,
+                      width: `${Math.max(2, Math.round((b.value / b.max) * 100))}%`,
+                      background: b.best ? 'var(--accent)' : 'rgba(var(--ink-rgb),0.28)',
+                      transformOrigin: 'left center',
+                      transform: grown ? 'scaleX(1)' : 'scaleX(0)',
+                      transition: `transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${i * 0.09}s`,
+                    }}
+                  />
+                </span>
+              </div>
+            ))}
+            {chart.note && (
+              <p
+                style={{
+                  fontSize: 12,
+                  lineHeight: 1.5,
+                  color: 'rgba(var(--ink-rgb),0.55)',
+                  margin: '14px 0 0',
+                  paddingTop: 12,
+                  borderTop: '0.5px solid rgba(var(--ink-rgb),0.1)',
+                }}
+              >
+                {chart.note}
+              </p>
+            )}
+          </figure>
+        )}
+
         {/* How it runs */}
+        {!chart && (
         <div
           ref={runsRef}
           style={{ background: 'var(--panel)', borderRadius: 12, padding: '16px 18px' }}
@@ -460,6 +599,7 @@ export default function FeaturedProject({
             )
           })}
         </div>
+        )}
       </div>
     </section>
   )

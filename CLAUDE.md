@@ -442,3 +442,22 @@ redesign had since corrected. Resynced on that page and its data file:
 
 The other four Session 19 pages needed no content change: their numbers (705 repos, ~1,000
 postings, seven services, seven views) already agree with the redesigned cards.
+
+### Session 21 — 2026-11-13/16
+Added the AI Evaluation Lab as a standalone case study at `/projects/ai-evaluation-lab`
+(`components/eval-lab/EvalLabPage.tsx`, all copy and figures in `lib/eval-lab-data.ts`, sourced
+from the Lab repo's `docs/portfolio/*.md`) and as the third featured band on /projects.
+- The page is a scorecard: one numbered card per experiment, finance SQL first. Each expands to
+  why, how, results chart, findings, the call, limits, and a link to that experiment's case
+  study on GitHub. The SQL card also shows the four context versions as tinted cards.
+- Headings are plain labels or specific findings by owner request ("Results", "Method").
+  Verdict pills were removed. Avoid "earns its place" anywhere on the site.
+- The /projects band can now take a `chart` in place of the "How it runs" pipeline
+  (`FeaturedProject` `chart` prop). The Lab uses it for the SQL result. Its KPIs are
+  "1 of 5" and "0 retries".
+- `/knowledge-base?q=` prefills the composer and never sends on its own. The page's
+  "Ask the site assistant" chips use it.
+- The Lab's knowledge-base doc is `backend/uploads/ai-evaluation-lab.md` (gitignored). It is
+  not ingested, because a rebuild is a paid embedding run that needs owner approval.
+- Pending owner approval: merging the Lab's Experiments 006 and 007 (model tier vs context on
+  GPT and Claude) into one study and adding it to this page.
