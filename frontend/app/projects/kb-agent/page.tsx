@@ -7,12 +7,14 @@ import KbAgentPage from '@/components/kb-agent/KbAgentPage'
  * so this page is authoritative for this slug rather than bouncing to the
  * projects overlay.
  *
- * Content is preliminary. See the header comment in `lib/kb-agent-data.ts`.
+ * Sections 01-06 and the unnumbered Project Reflection are implemented; see
+ * the header comment in `components/kb-agent/KbAgentPage.tsx`. A closing
+ * knowledge-base CTA and project navigation follow the reflection.
  */
 export const metadata: Metadata = {
-  title: 'KB Agent — Proposal Intelligence Platform | Chase Sinclair',
+  title: 'KB Agent — Slack + Notion Proposal Workflow | Chase Sinclair',
   description:
-    'A Slack bot that turns a watched folder tree, local or OneDrive, into a queryable proposal intelligence system. Hybrid dense and sparse retrieval, a Reciprocal Rank Fusion merge at k=60 run in application code, and six analytical workflows for government proposal teams.',
+    'An AI agent that keeps shared proposal documents searchable and current, investigates evidence in Slack, and turns unresolved issues into assigned Notion tasks after human review.',
 }
 
 export default function Page() {
