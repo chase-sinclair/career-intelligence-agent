@@ -459,5 +459,10 @@ from the Lab repo's `docs/portfolio/*.md`) and as the third featured band on /pr
   "Ask the site assistant" chips use it.
 - The Lab's knowledge-base doc is `backend/uploads/ai-evaluation-lab.md` (gitignored). It is
   not ingested, because a rebuild is a paid embedding run that needs owner approval.
-- Pending owner approval: merging the Lab's Experiments 006 and 007 (model tier vs context on
-  GPT and Claude) into one study and adding it to this page.
+- 2026-11-17, owner-approved: the Lab's Experiments 006 and 007 (model tier vs context, GPT and
+  Claude) appear as one study, card #2 in the scorecard, from the Lab's
+  `docs/portfolio/model-vs-context.md` and its handoff. Its chart groups bars by configuration
+  with one bar per provider (`ScoreBar.group`). The page now counts six experiments: hero
+  headline "Curated business context beat a model that costs 20 times more, on GPT and on
+  Claude", and lead stat / band KPI "6 of 6" draws. Never present the GPT and Claude columns as a
+  provider ranking, and keep the format-lenient Claude scores labelled post-hoc.

@@ -3,7 +3,7 @@
  *
  * Every figure comes from the Lab's committed record in the
  * `chase-sinclair/ai-evaluation-lab` repository: `docs/portfolio/*.md` for the
- * five case studies and `docs/portfolio/lab-summary.md` for the decisions.
+ * six case studies and `docs/portfolio/lab-summary.md` for the decisions.
  * Nothing is rounded beyond what is stated here, and nothing is invented.
  *
  * Wording rules this page holds to, because the record draws these lines:
@@ -17,6 +17,11 @@
  * - Recovery rules were written with the test inventory visible, so the tie is
  *   close to built in. The page says so.
  * - Costs are usage-priced at list rates. There are no invoices.
+ * - Model vs context (the Lab's Experiments 006 and 007, one study): the GPT and
+ *   Claude columns do not rank the providers. Settings were not calibrated
+ *   across providers and the prompts were developed on GPT. Strict scores are
+ *   the official result; the format-lenient Claude scores are post-hoc. Three
+ *   draws describe variation, so no significance language.
  */
 
 export interface ScoreBar {
@@ -29,6 +34,11 @@ export interface ScoreBar {
   readout: string
   /** The arm the decision favours. */
   best?: boolean
+  /**
+   * Heading for a run of bars, e.g. one configuration measured on two
+   * providers. A new heading starts whenever the value changes.
+   */
+  group?: string
 }
 
 /** Site tokens a version card may be tinted with. */
@@ -81,8 +91,8 @@ const caseStudy = (file: string) => `${REPO_URL}/blob/main/docs/portfolio/${file
 
 /** Hero stat strip. */
 export const AT_A_GLANCE: ReadonlyArray<{ label: string; value: string }> = [
-  { label: 'Experiments', value: '5' },
-  { label: 'Extra layer paid off', value: '1 of 5' },
+  { label: 'Experiments', value: '6' },
+  { label: 'Draws context beat a 20× model', value: '6 of 6' },
   { label: 'Retries allowed', value: '0' },
   { label: 'Live runs audited', value: 'All' },
 ]
@@ -168,6 +178,37 @@ export const EXPERIMENTS: ReadonlyArray<Experiment> = [
     caveat:
       'Synthetic data and one run per question. Both reference answers share the same accounting assumptions. Grading of the 4 clarifying questions was AI-assisted and reviewed by me, with no finance expert.',
     caseStudy: caseStudy('finops-sql'),
+  },
+  {
+    id: 'model-vs-context',
+    question: 'Should a finance SQL assistant buy a bigger model or better context?',
+    topic: 'Model vs context',
+    result:
+      'A low-cost model with curated context beat a model costing 20× more in every draw, on both GPT and Claude, for about a quarter of the cost.',
+    why: 'A team can spend its budget on a model that costs about 20 times more per token, or on analyst time writing down what its financial terms mean. The first experiment showed that context lifts a low-cost model. It did not show whether a bigger model could close the gap on its own.',
+    setup:
+      'The same 36 finance questions on a 2 × 2 grid: a cheap and an expensive model, each given the schema only or the curated definitions. Every question ran three times per version, first on GPT models, then on Claude models at identical prices as a replication with its success criteria fixed in advance. 864 requests in all, graded exactly as in the first experiment.',
+    measure: 'Mean correct out of 36, three draws',
+    bars: [
+      { group: 'Cheap model · schema', label: 'GPT', value: 3.7, max: 36, readout: '3.7' },
+      { group: 'Cheap model · schema', label: 'Claude', value: 1.3, max: 36, readout: '1.3' },
+      { group: 'Cheap model · curated', label: 'GPT', value: 15.3, max: 36, readout: '15.3', best: true },
+      { group: 'Cheap model · curated', label: 'Claude', value: 17.0, max: 36, readout: '17.0', best: true },
+      { group: 'Expensive model · schema', label: 'GPT', value: 6.7, max: 36, readout: '6.7' },
+      { group: 'Expensive model · schema', label: 'Claude', value: 8.7, max: 36, readout: '8.7' },
+      { group: 'Expensive model · curated', label: 'GPT', value: 24.0, max: 36, readout: '24.0' },
+      { group: 'Expensive model · curated', label: 'Claude', value: 18.0, max: 36, readout: '18.0' },
+    ],
+    findings: [
+      'Context beat model tier on both providers. The cheap model with context won all six draws against the expensive model without it: 15.3 against 6.7 on GPT and 17.0 against 8.7 on Claude.',
+      'It cost about a quarter as much: 29% of the expensive configuration on GPT and 23% on Claude.',
+      'On one question, every schema-only answer from the expensive model flipped the sign of a credit. The curated policy settled it in one sentence.',
+      'Once context exists, the bigger model’s value depends on the vendor: +8.7 on GPT, +1.0 on Claude. Part of the Claude gap was answers that broke the required JSON format.',
+    ],
+    call: 'Fund curated definitions first. Price a bigger model only once the context exists, and measure it on your own questions.',
+    caveat:
+      'The questions were seen in the first experiment, and the warehouse is synthetic. Settings were not calibrated across providers, so the two columns do not rank GPT against Claude. Three draws show variation, not statistical significance.',
+    caseStudy: caseStudy('model-vs-context'),
   },
   {
     id: 'rag-safeguards',
@@ -300,6 +341,7 @@ export const PROTOCOL: ReadonlyArray<{ k: string; v: string }> = [
 /** Suggested questions that open Ask About Chase with the question filled in. */
 export const ASK_PROMPTS: ReadonlyArray<string> = [
   'Why did curated context beat self-discovery in the SQL experiment?',
+  'Did a bigger model beat business context?',
   'Why did the AI fact-checker lose?',
   'How were the SQL answers graded?',
   'What would Chase test next in the evaluation lab?',

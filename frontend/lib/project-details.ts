@@ -870,20 +870,20 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
   // wording rules (no "human-graded" claim, usage-priced costs only).
   'ai-evaluation-lab': {
     slug: 'ai-evaluation-lab',
-    title: 'AI Evaluation Lab — Five Controlled AI Experiments',
+    title: 'AI Evaluation Lab — Six Controlled AI Experiments',
     category: 'Evaluation Research',
     categoryTag: 'evaluation',
     tags: ['Python', 'DuckDB', 'Docker', 'pytest', 'Paired Evaluation'],
     summary:
-      'Five controlled experiments that each test one AI addition against a version without it, on the same cases: business context for a finance SQL assistant, catalog size for a tool-calling agent, an AI fact-checker for a support assistant, AI-led recovery after a failed action, and AI review of organization-name matches.',
+      'Six controlled experiments that each test an AI addition against a version without it, on the same cases: business context for a finance SQL assistant, a bigger model against better context on GPT and Claude, catalog size for a tool-calling agent, an AI fact-checker for a support assistant, AI-led recovery after a failed action, and AI review of organization-name matches.',
     stats: [
-      { label: 'AI additions that paid for themselves', value: '1 of 5' },
+      { label: 'Draws where a cheap model with context beat a 20× pricier one', value: '6 of 6' },
       { label: 'Retries across every live run', value: '0' },
     ],
     problem: {
       heading: 'Teams add AI layers without measuring whether they help',
       body: [
-        'More context, more tools, a second model to check the first: each addition sounds safer or smarter, and each one adds cost and latency. Whether it improves the business outcome is usually assumed rather than measured.',
+        'More context, a bigger model, more tools, a second model to check the first: each addition sounds safer or smarter, and each one adds cost and latency. Whether it improves the business outcome is usually assumed rather than measured.',
         'An output that is well formed is not necessarily correct. A valid tool call can request the opposite action, and SQL that runs can still count the wrong transactions.',
       ],
     },
@@ -918,12 +918,12 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
     },
     impact: {
       stats: [
-        { label: 'Extra layer paid off', value: '1 of 5' },
+        { label: 'Draws context beat a 20× model', value: '6 of 6' },
         { label: 'Retries allowed', value: '0' },
         { label: 'Live runs audited', value: 'All' },
       ],
       takeaway:
-        'Curated business context took a finance SQL assistant from 1 to 18 correct answers out of 36. Larger tool catalogs and an AI fact-checker added cost without adding accuracy.',
+        'Curated business context took a finance SQL assistant from 1 to 18 correct answers out of 36, and a low-cost model with that context beat a model costing 20 times more in every draw on both GPT and Claude. Larger tool catalogs and an AI fact-checker added cost without adding accuracy.',
     },
   },
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, type CSSProperties } from 'react'
 import Link from 'next/link'
 import { useInView } from '@/hooks/useInView'
 import { Eyebrow, Heading2, Divider } from '@/components/shared/typography'
@@ -311,9 +311,18 @@ const EXTRA_CSS = `
 }
 .evallab .brow.best .fill { background: var(--accent); }
 .evallab .xp.open .fill { transform: scaleX(1); }
-.evallab .xp.open .brow:nth-child(3) .fill { transition-delay: 0.06s; }
-.evallab .xp.open .brow:nth-child(4) .fill { transition-delay: 0.12s; }
-.evallab .xp.open .brow:nth-child(5) .fill { transition-delay: 0.18s; }
+/* Stagger set per bar as --d, so it works for any number of rows. */
+.evallab .xp.open .fill { transition-delay: var(--d, 0s); }
+/* Group heading for bars that share a configuration (one bar per provider). */
+.evallab .bgroup {
+  display: block;
+  margin: 12px 0 6px;
+  font-size: 12px;
+  line-height: 1.3;
+  font-weight: 500;
+  color: var(--ink);
+}
+.evallab .bars .lab + div .bgroup { margin-top: 0; }
 .evallab .brow .rd {
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
@@ -495,16 +504,25 @@ function ScoreRow({
             )}
             <div className="bars">
               <span className="lab">{xp.measure}</span>
-              {xp.bars.map((b) => (
-                <div key={b.label} className={`brow${b.best ? ' best' : ''}`}>
-                  <span className="bl">{b.label}</span>
-                  <span className="track">
-                    <span
-                      className="fill"
-                      style={{ display: 'block', width: `${Math.max(2, Math.round((b.value / b.max) * 100))}%` }}
-                    />
-                  </span>
-                  <span className="rd">{b.readout}</span>
+              {xp.bars.map((b, i) => (
+                <div key={`${b.group ?? ''}-${b.label}`}>
+                  {b.group && b.group !== xp.bars[i - 1]?.group && <span className="bgroup">{b.group}</span>}
+                  <div className={`brow${b.best ? ' best' : ''}`}>
+                    <span className="bl">{b.label}</span>
+                    <span className="track">
+                      <span
+                        className="fill"
+                        style={
+                          {
+                            display: 'block',
+                            width: `${Math.max(2, Math.round((b.value / b.max) * 100))}%`,
+                            '--d': `${i * 0.05}s`,
+                          } as CSSProperties
+                        }
+                      />
+                    </span>
+                    <span className="rd">{b.readout}</span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -560,7 +578,7 @@ export default function EvalLabPage() {
     })
 
   return (
-    <CaseStudyShell subtitle="AI Evaluation Lab · Five controlled experiments" pageClass="evallab" extraCss={EXTRA_CSS}>
+    <CaseStudyShell subtitle="AI Evaluation Lab · Six controlled experiments" pageClass="evallab" extraCss={EXTRA_CSS}>
       {/* ── 1 Hero ──────────────────────────────────────────────────── */}
       <header>
         <Eyebrow>Evaluation Research</Eyebrow>
@@ -570,16 +588,17 @@ export default function EvalLabPage() {
               className="font-light tracking-[-0.04em] leading-[1.06] mb-[22px]"
               style={{ color: 'var(--ink)', fontSize: 'clamp(2.25rem, 3.2vw, 3.5rem)' }}
             >
-              In four of five experiments, the extra AI layer did not pay for itself.
+              Curated business context beat a model that costs 20 times more, on GPT and on Claude.
             </h1>
             <p className="lede">
-              Before building AI into a workflow, I test it against a version without it. Each of these five controlled
-              experiments compared one addition, such as more context, more tools or an AI fact-checker, with a baseline
-              on the same cases. <em>The one clear win was business context for a finance SQL assistant.</em>
+              Before building AI into a workflow, I test it against a version without it. These six controlled
+              experiments compare additions such as more context, a bigger model, more tools or an AI fact-checker with
+              a baseline on the same cases. <em>Business context was the clear win: it lifted a finance SQL assistant
+              from 1 to 18 correct answers out of 36, and beat a 20× pricier model on two providers.</em>
             </p>
             <Chips
               items={[
-                { label: 'Five experiments', accent: true },
+                { label: 'Six experiments', accent: true },
                 { label: 'Frozen, approved, run once', accent: true },
                 { label: 'Python' },
                 { label: 'DuckDB sandbox' },
@@ -674,7 +693,7 @@ export default function EvalLabPage() {
       <section ref={closeRef} className={reveal(closeIn)}>
         <CloseStrip
           title="Read the full case studies"
-          body="Designs, data, scoring code and the audit trail for all five experiments are in the repository."
+          body="Designs, data, scoring code and the audit trail for all six experiments are in the repository."
           cta="View on GitHub"
           href={REPO_URL}
           external

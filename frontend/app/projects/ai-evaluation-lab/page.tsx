@@ -11,7 +11,7 @@ import EvalLabPage from '@/components/eval-lab/EvalLabPage'
 export const metadata: Metadata = {
   title: 'AI Evaluation Lab | Chase Sinclair',
   description:
-    'Five controlled experiments comparing an AI addition with a version without it, from finance SQL context to AI fact-checkers. In four of five, the extra layer did not pay for itself.',
+    'Six controlled experiments comparing an AI addition with a version without it, from finance SQL context and model tier to AI fact-checkers. Curated context beat a model costing 20 times more on both GPT and Claude.',
 }
 
 export default function Page() {
