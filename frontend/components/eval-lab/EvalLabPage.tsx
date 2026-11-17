@@ -588,7 +588,7 @@ export default function EvalLabPage() {
               className="font-light tracking-[-0.04em] leading-[1.06] mb-[22px]"
               style={{ color: 'var(--ink)', fontSize: 'clamp(2.25rem, 3.2vw, 3.5rem)' }}
             >
-              Curated business context beat a model that costs 20 times more, on GPT and on Claude.
+              Six controlled experiments on when AI improves a business workflow.
             </h1>
             <p className="lede">
               Before building AI into a workflow, I test it against a version without it. These six controlled
