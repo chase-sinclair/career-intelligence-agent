@@ -1,13 +1,12 @@
 'use client'
 
-import { useState, type CSSProperties } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import Link from 'next/link'
 import { useInView } from '@/hooks/useInView'
 import { Eyebrow, Heading2, Divider } from '@/components/shared/typography'
 import {
   ARROW_PATH,
   CaseStudyShell,
-  Chips,
   CloseStrip,
   Figure,
   Glyph,
@@ -17,8 +16,8 @@ import {
 } from '@/components/case-study/chrome'
 import {
   ASK_PROMPTS,
-  AT_A_GLANCE,
   EXPERIMENTS,
+  HERO_QUESTIONS,
   LOOKS_RIGHT,
   PROTOCOL,
   REPO_URL,
@@ -26,42 +25,108 @@ import {
 } from '@/lib/eval-lab-data'
 
 /**
- * The page's own figures: the stat block, the scorecard and the three
+ * The page's own figures: the hero question deck, the scorecard and the three
  * "looks right" cards. Tokens only, scoped under `.evallab`.
  *
  * Each experiment is its own numbered card. Colours come from site tokens only.
  */
 const EXTRA_CSS = `
-.evallab .glance { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.evallab .stat {
-  border-radius: 11px;
-  padding: 14px 15px;
-  background: var(--panel-2);
-  border: 0.5px solid rgba(var(--ink-rgb), 0.1);
+/* hero question deck: one card per experiment, cycling */
+.evallab .qstack { display: grid; padding-bottom: 20px; }
+.evallab .qcard {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border-radius: 13px;
+  padding: 18px 18px 16px;
+  /* Panel tokens are translucent; layer over the page colour so stacked cards don't show through. */
+  background: linear-gradient(var(--panel), var(--panel)), var(--bg);
+  border: 0.5px solid rgba(var(--ink-rgb), 0.13);
+  box-shadow: 0 6px 18px -10px rgba(var(--ink-rgb), 0.22);
+  transform-origin: 50% 100%;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s;
 }
-.evallab .stat b {
-  display: block;
+.evallab .qcard.d0 { z-index: 4; border-color: rgba(var(--accent-rgb), 0.3); }
+.evallab .qcard.d1 { z-index: 3; transform: translateY(10px) scale(0.96); opacity: 0.7; }
+.evallab .qcard.d2 { z-index: 2; transform: translateY(20px) scale(0.92); opacity: 0.4; }
+.evallab .qcard.d3 { z-index: 1; transform: translateY(20px) scale(0.92); opacity: 0; }
+.evallab .qcard.gone { z-index: 5; transform: translateY(-16px) scale(1.02); opacity: 0; }
+.evallab .qcard:not(.d0):not(.gone) > * { visibility: hidden; }
+.evallab .qcard:not(.d0) { pointer-events: none; }
+.evallab .qtag {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
-  font-weight: 400;
+  font-size: 9.5px;
   line-height: 1.3;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(var(--ink-rgb), 0.48);
-  margin-bottom: 8px;
+  color: var(--accent);
 }
-.evallab .stat span {
-  font-size: 1.75rem;
+.evallab .qtext {
+  font-size: 1.3rem;
   font-weight: 300;
-  letter-spacing: -0.03em;
-  line-height: 1;
+  line-height: 1.32;
+  letter-spacing: -0.02em;
   color: var(--ink);
+  text-wrap: pretty;
 }
-.evallab .stat.lead {
-  background: rgba(var(--accent-rgb), 0.06);
-  border-color: rgba(var(--accent-rgb), 0.28);
+.evallab .qvs { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+.evallab .qvs span {
+  font-size: 12px;
+  line-height: 1.3;
+  padding: 5px 9px;
+  border-radius: 7px;
+  background: var(--panel-2);
+  border: 0.5px solid rgba(var(--ink-rgb), 0.12);
+  color: rgba(var(--ink-rgb), 0.75);
 }
-.evallab .stat.lead span { color: var(--accent); }
+.evallab .qvs span:last-child { border-color: rgba(var(--accent-rgb), 0.3); background: rgba(var(--accent-rgb), 0.06); }
+.evallab .qvs i {
+  font-style: normal;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(var(--ink-rgb), 0.4);
+}
+.evallab .qgo {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--accent);
+}
+.evallab .qgo:hover { text-decoration: underline; text-underline-offset: 3px; }
+.evallab .qgo:focus-visible, .evallab .qdot:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.evallab .qnav { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+.evallab .qdot {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px 0 4px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+}
+.evallab .qdot .num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: rgba(var(--ink-rgb), 0.38);
+  transition: color 0.25s;
+}
+.evallab .qdot.on .num, .evallab .qdot:hover .num { color: var(--accent); }
+.evallab .qdot .bar { position: relative; height: 2px; border-radius: 2px; overflow: hidden; background: rgba(var(--ink-rgb), 0.12); }
+.evallab .qdot .bar i { position: absolute; inset: 0; background: var(--accent); transform-origin: 0 50%; }
+.evallab .qdot .bar i.run { animation: qfill 5.5s linear forwards; }
+@keyframes qfill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.evallab .xp { scroll-margin-top: 96px; }
 
 /* scorecard: one numbered card per experiment */
 .evallab .score { display: grid; gap: 14px; }
@@ -447,7 +512,7 @@ function ScoreRow({
 }) {
   const bodyId = `xp-${xp.id}`
   return (
-    <div className={`xp${open ? ' open' : ''}${top ? ' top' : ''}`}>
+    <div id={`card-${xp.id}`} className={`xp${open ? ' open' : ''}${top ? ' top' : ''}`}>
       <button type="button" className="xp-head" aria-expanded={open} aria-controls={bodyId} onClick={onToggle}>
         <span className="xp-num" aria-hidden="true">
           {String(index + 1).padStart(2, '0')}
@@ -559,6 +624,118 @@ function ScoreRow({
   )
 }
 
+const pad = (n: number) => String(n).padStart(2, '0')
+
+/**
+ * Hero figure: the question each experiment asked, cycling as a card stack.
+ * The active dot's fill bar is the clock, so pausing (hover, focus, off
+ * screen, hidden tab) resumes where it stopped. Reduced motion: no autoplay.
+ */
+function QuestionDeck({ onOpen }: { onOpen: (id: string) => void }) {
+  const n = HERO_QUESTIONS.length
+  const [i, setI] = useState(0)
+  const [hold, setHold] = useState(false)
+  const [still, setStill] = useState(false)
+  const [seen, setSeen] = useState(true)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const sync = () => setStill(mq.matches)
+    sync()
+    mq.addEventListener('change', sync)
+    return () => mq.removeEventListener('change', sync)
+  }, [])
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    let inView = true
+    const update = () => setSeen(inView && !document.hidden)
+    const io = new IntersectionObserver(([e]) => {
+      inView = e.isIntersecting
+      update()
+    })
+    io.observe(el)
+    document.addEventListener('visibilitychange', update)
+    return () => {
+      io.disconnect()
+      document.removeEventListener('visibilitychange', update)
+    }
+  }, [])
+
+  const running = !hold && !still && seen
+  const byId = (id: string) => EXPERIMENTS.findIndex((e) => e.id === id)
+
+  return (
+    <div
+      ref={ref}
+      onMouseEnter={() => setHold(true)}
+      onMouseLeave={() => setHold(false)}
+      onFocus={() => setHold(true)}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setHold(false)
+      }}
+    >
+      <Figure name="Questions the Lab tested" category={`${pad(i + 1)} / ${pad(n)}`}>
+        <div className="qstack">
+          {HERO_QUESTIONS.map((h, k) => {
+            const d = (k - i + n) % n
+            const xi = byId(h.id)
+            return (
+              <div
+                key={h.id}
+                className={`qcard d${Math.min(d, 3)}${d === n - 1 && n > 3 ? ' gone' : ''}`}
+                aria-hidden={d !== 0}
+              >
+                <span className="qtag">
+                  Experiment {pad(xi + 1)} · {EXPERIMENTS[xi]?.topic}
+                </span>
+                <p className="qtext">{h.q}</p>
+                <div className="qvs">
+                  <span>{h.vs[0]}</span>
+                  <i>vs</i>
+                  <span>{h.vs[1]}</span>
+                </div>
+                <button type="button" className="qgo" tabIndex={d === 0 ? undefined : -1} onClick={() => onOpen(h.id)}>
+                  See what happened
+                  <Glyph d={ARROW_PATH} size={11} />
+                </button>
+              </div>
+            )
+          })}
+        </div>
+        <div className="qnav" role="group" aria-label="Choose a question">
+          {HERO_QUESTIONS.map((h, k) => (
+            <button
+              key={h.id}
+              type="button"
+              className={`qdot${k === i ? ' on' : ''}`}
+              aria-label={`Question ${k + 1}: ${h.q}`}
+              aria-current={k === i ? 'true' : undefined}
+              onClick={() => setI(k)}
+            >
+              <span className="num" aria-hidden="true">
+                {pad(k + 1)}
+              </span>
+              <span className="bar" aria-hidden="true">
+                {k === i && (
+                  <i
+                    key={i}
+                    className={still ? undefined : 'run'}
+                    style={{ animationPlayState: running ? 'running' : 'paused' }}
+                    onAnimationEnd={() => setI((i + 1) % n)}
+                  />
+                )}
+              </span>
+            </button>
+          ))}
+        </div>
+      </Figure>
+    </div>
+  )
+}
+
 export default function EvalLabPage() {
   const { ref: scoreRef, inView: scoreIn } = useInView({ threshold: 0.05 })
   const { ref: patRef, inView: patIn } = useInView({ threshold: 0.1 })
@@ -576,6 +753,14 @@ export default function EvalLabPage() {
       else next.add(id)
       return next
     })
+  // From the hero deck: open that experiment's card and bring it into view.
+  const openXp = (id: string) => {
+    setOpen((prev) => new Set(prev).add(id))
+    const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    requestAnimationFrame(() =>
+      document.getElementById(`card-${id}`)?.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' }),
+    )
+  }
 
   return (
     <CaseStudyShell subtitle="AI Evaluation Lab · Six controlled experiments" pageClass="evallab" extraCss={EXTRA_CSS}>
@@ -591,30 +776,13 @@ export default function EvalLabPage() {
               Six controlled experiments on when AI improves a business workflow.
             </h1>
             <p className="lede">
-              Before building AI into a workflow, I test it against a version without it. These six controlled
-              experiments compare additions such as more context, a bigger model, more tools or an AI fact-checker with
-              a baseline on the same cases. <em>Business context was the clear win: it lifted a finance SQL assistant
-              from 1 to 18 correct answers out of 36, and beat a 20× pricier model on two providers.</em>
+              Adding AI to a workflow is easy to justify and harder to measure. Each experiment here runs the same
+              cases with and without one change, such as more context, a larger model or an extra AI check, so any
+              difference comes from that change. One example: a finance SQL assistant answered the same 36 questions
+              with only the database layout, then again with written definitions of the business terms.
             </p>
-            <Chips
-              items={[
-                { label: 'Six experiments', accent: true },
-                { label: 'Frozen, approved, run once', accent: true },
-                { label: 'Python' },
-                { label: 'DuckDB sandbox' },
-              ]}
-            />
           </div>
-          <Figure name="At a glance" category="Lab record">
-            <div className="glance">
-              {AT_A_GLANCE.map((s, i) => (
-                <div key={s.label} className={`stat${i === 1 ? ' lead' : ''}`}>
-                  <b>{s.label}</b>
-                  <span>{s.value}</span>
-                </div>
-              ))}
-            </div>
-          </Figure>
+          <QuestionDeck onOpen={openXp} />
         </div>
       </header>
 

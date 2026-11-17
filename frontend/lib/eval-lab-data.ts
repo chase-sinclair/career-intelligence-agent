@@ -89,12 +89,33 @@ export const REPO_URL = 'https://github.com/chase-sinclair/ai-evaluation-lab'
 
 const caseStudy = (file: string) => `${REPO_URL}/blob/main/docs/portfolio/${file}.md`
 
-/** Hero stat strip. */
-export const AT_A_GLANCE: ReadonlyArray<{ label: string; value: string }> = [
-  { label: 'Experiments', value: '6' },
-  { label: 'Draws context beat a 20× model', value: '6 of 6' },
-  { label: 'Retries allowed', value: '0' },
-  { label: 'Live runs audited', value: 'All' },
+/**
+ * Hero question deck: one plain-language question per experiment, in
+ * scorecard order. Questions only, never results, so the hero favours none.
+ */
+export const HERO_QUESTIONS: ReadonlyArray<{ id: string; q: string; vs: readonly [string, string] }> = [
+  {
+    id: 'finops-sql',
+    q: 'Will an AI write better finance SQL if it knows what your terms mean?',
+    vs: ['Schema only', 'Schema + definitions'],
+  },
+  {
+    id: 'model-vs-context',
+    q: 'Can a low-cost model with curated context beat one that costs 20× more?',
+    vs: ['Pricier model', 'Cheaper model + context'],
+  },
+  {
+    id: 'rag-safeguards',
+    q: 'Will an AI fact-checker catch a support bot’s unsupported answers?',
+    vs: ['Standard answer', 'AI checker after'],
+  },
+  { id: 'tool-catalog', q: 'Does giving an agent more tools help it pick the right one?', vs: ['5 tools', '20 tools'] },
+  { id: 'recovery', q: 'When an action fails, should AI decide what happens next?', vs: ['Written rules', 'AI proposes'] },
+  {
+    id: 'entity-matching',
+    q: 'Is it worth asking AI to double-check every name match?',
+    vs: ['Rules only', 'AI on every query'],
+  },
 ]
 
 /** The scorecard, strongest result first. */
