@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
-import Link from 'next/link'
 import { useInView } from '@/hooks/useInView'
 import { Eyebrow, Heading2, Divider } from '@/components/shared/typography'
 import {
@@ -15,7 +14,7 @@ import {
   useOnceInView,
 } from '@/components/case-study/chrome'
 import {
-  ASK_PROMPTS,
+  EVIDENCE_LINKS,
   EXPERIMENTS,
   HERO_QUESTIONS,
   LOOKS_RIGHT,
@@ -102,7 +101,22 @@ const EXTRA_CSS = `
   color: var(--accent);
 }
 .evallab .qgo:hover { text-decoration: underline; text-underline-offset: 3px; }
-.evallab .qgo:focus-visible, .evallab .qdot:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.evallab .qrotation {
+  display: block;
+  margin: 0 0 10px auto;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 12px;
+}
+.evallab .qrotation:hover { text-decoration: underline; text-underline-offset: 3px; }
+.evallab .qgo:focus-visible, .evallab .qdot:focus-visible, .evallab .qrotation:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
 .evallab .qnav { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
 .evallab .qdot {
   display: flex;
@@ -123,8 +137,26 @@ const EXTRA_CSS = `
 }
 .evallab .qdot.on .num, .evallab .qdot:hover .num { color: var(--accent); }
 .evallab .qdot .bar { position: relative; height: 2px; border-radius: 2px; overflow: hidden; background: rgba(var(--ink-rgb), 0.12); }
-.evallab .qdot .bar i { position: absolute; inset: 0; background: var(--accent); transform-origin: 0 50%; }
-.evallab .qdot .bar i.run { animation: qfill 5.5s linear forwards; }
+.evallab .qdot .bar i {
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform-origin: 0 50%;
+  animation: qfill 5.5s linear forwards paused;
+}
+.evallab .qdeck[data-rotation-enabled="true"]:not(:focus-within) .qdot .bar i {
+  animation-play-state: running;
+}
+@media (hover: hover) {
+  .evallab .qdeck[data-rotation-enabled="true"]:hover .qdot .bar i {
+    animation-play-state: paused;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .evallab .qdot .bar i { animation: none; }
+  .evallab .qcard { transition: none; }
+  .evallab .qrotation { display: none; }
+}
 @keyframes qfill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 .evallab .xp { scroll-margin-top: 96px; }
 
@@ -478,9 +510,9 @@ const EXTRA_CSS = `
   background: var(--ink);
 }
 
-/* ask the knowledge base */
-.evallab .asks { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 6px; }
-.evallab .askq {
+/* links to scored evidence */
+.evallab .evidence-links { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 6px; }
+.evallab .evidence-link {
   display: inline-flex;
   align-items: center;
   gap: 9px;
@@ -493,8 +525,8 @@ const EXTRA_CSS = `
   border: 0.5px solid rgba(var(--accent-rgb), 0.28);
   transition: background 0.18s, color 0.18s, border-color 0.18s;
 }
-.evallab .askq:hover { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-.evallab .askq:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.evallab .evidence-link:hover { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.evallab .evidence-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 `
 
 function ScoreRow({
@@ -628,29 +660,20 @@ const pad = (n: number) => String(n).padStart(2, '0')
 
 /**
  * Hero figure: the question each experiment asked, cycling as a card stack.
- * The active dot's fill bar is the clock, so pausing (hover, focus, off
- * screen, hidden tab) resumes where it stopped. Reduced motion: no autoplay.
+ * The fill bar is the clock. Hover, focus and visibility pause it independently
+ * of the manual control. Reduced motion disables the clock in CSS.
  */
 function QuestionDeck({ onOpen }: { onOpen: (id: string) => void }) {
   const n = HERO_QUESTIONS.length
   const [i, setI] = useState(0)
-  const [hold, setHold] = useState(false)
-  const [still, setStill] = useState(false)
-  const [seen, setSeen] = useState(true)
+  const [paused, setPaused] = useState(false)
+  const [seen, setSeen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const sync = () => setStill(mq.matches)
-    sync()
-    mq.addEventListener('change', sync)
-    return () => mq.removeEventListener('change', sync)
-  }, [])
 
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    let inView = true
+    let inView = false
     const update = () => setSeen(inView && !document.hidden)
     const io = new IntersectionObserver(([e]) => {
       inView = e.isIntersecting
@@ -664,20 +687,14 @@ function QuestionDeck({ onOpen }: { onOpen: (id: string) => void }) {
     }
   }, [])
 
-  const running = !hold && !still && seen
   const byId = (id: string) => EXPERIMENTS.findIndex((e) => e.id === id)
 
   return (
-    <div
-      ref={ref}
-      onMouseEnter={() => setHold(true)}
-      onMouseLeave={() => setHold(false)}
-      onFocus={() => setHold(true)}
-      onBlur={(e) => {
-        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setHold(false)
-      }}
-    >
+    <div ref={ref} className="qdeck" data-rotation-enabled={seen && !paused}>
       <Figure name="Questions the Lab tested" category={`${pad(i + 1)} / ${pad(n)}`}>
+        <button type="button" className="qrotation" onClick={() => setPaused((value) => !value)}>
+          {paused ? 'Resume rotation' : 'Pause rotation'}
+        </button>
         <div className="qstack">
           {HERO_QUESTIONS.map((h, k) => {
             const d = (k - i + n) % n
@@ -720,12 +737,7 @@ function QuestionDeck({ onOpen }: { onOpen: (id: string) => void }) {
               </span>
               <span className="bar" aria-hidden="true">
                 {k === i && (
-                  <i
-                    key={i}
-                    className={still ? undefined : 'run'}
-                    style={{ animationPlayState: running ? 'running' : 'paused' }}
-                    onAnimationEnd={() => setI((i + 1) % n)}
-                  />
+                  <i onAnimationEnd={() => setI((current) => (current === k ? (k + 1) % n : current))} />
                 )}
               </span>
             </button>
@@ -841,16 +853,13 @@ export default function EvalLabPage() {
 
       {/* ── 5 Go deeper ─────────────────────────────────────────────── */}
       <section ref={askRef} className={reveal(askIn)}>
-        <Heading2 className="mb-[18px] max-w-[18ch]">Ask the site assistant</Heading2>
-        <p className="body mb-[22px]">
-          The full write-ups are long. The assistant on this site can answer questions about them, with sources.
-        </p>
-        <div className="asks">
-          {ASK_PROMPTS.map((q) => (
-            <Link key={q} className="askq" href={`/knowledge-base?q=${encodeURIComponent(q)}`}>
-              {q}
+        <Heading2 className="mb-[18px] max-w-[18ch]">Read the scored results</Heading2>
+        <div className="evidence-links">
+          {EVIDENCE_LINKS.map(({ label, href }) => (
+            <a key={href} className="evidence-link" href={href}>
+              {label}
               <Glyph d={ARROW_PATH} size={11} />
-            </Link>
+            </a>
           ))}
         </div>
       </section>

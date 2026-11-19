@@ -101,8 +101,8 @@ export const HERO_QUESTIONS: ReadonlyArray<{ id: string; q: string; vs: readonly
   },
   {
     id: 'model-vs-context',
-    q: 'Can a low-cost model with curated context beat one that costs 20× more?',
-    vs: ['Pricier model', 'Cheaper model + context'],
+    q: 'Can a budget model with curated definitions beat a premium model with schema alone?',
+    vs: ['Premium model + schema', 'Budget model + definitions'],
   },
   {
     id: 'rag-safeguards',
@@ -205,7 +205,7 @@ export const EXPERIMENTS: ReadonlyArray<Experiment> = [
     question: 'Should a finance SQL assistant buy a bigger model or better context?',
     topic: 'Model vs context',
     result:
-      'A low-cost model with curated context beat a model costing 20× more in every draw, on both GPT and Claude, for about a quarter of the cost.',
+      'The budget model with curated definitions beat the premium model with schema alone in every GPT and Claude draw at roughly a quarter of the usage cost. The premium model’s per-token rate was 20× as high.',
     why: 'A team can spend its budget on a model that costs about 20 times more per token, or on analyst time writing down what its financial terms mean. The first experiment showed that context lifts a low-cost model. It did not show whether a bigger model could close the gap on its own.',
     setup:
       'The same 36 finance questions on a 2 × 2 grid: a cheap and an expensive model, each given the schema only or the curated definitions. Every question ran three times per version, first on GPT models, then on Claude models at identical prices as a replication with its success criteria fixed in advance. 864 requests in all, graded exactly as in the first experiment.',
@@ -359,11 +359,7 @@ export const PROTOCOL: ReadonlyArray<{ k: string; v: string }> = [
   { k: 'Audit', v: 'Results were graded offline, by code wherever the answer allowed it.' },
 ]
 
-/** Suggested questions that open Ask About Chase with the question filled in. */
-export const ASK_PROMPTS: ReadonlyArray<string> = [
-  'Why did curated context beat self-discovery in the SQL experiment?',
-  'Did a bigger model beat business context?',
-  'Why did the AI fact-checker lose?',
-  'How were the SQL answers graded?',
-  'What would Chase test next in the evaluation lab?',
+export const EVIDENCE_LINKS = [
+  { label: 'Experiment 006 · GPT results', href: `${REPO_URL}/blob/main/docs/experiment06_scored_results.md` },
+  { label: 'Experiment 007 · Claude results', href: `${REPO_URL}/blob/main/docs/experiment07_scored_results.md` },
 ]

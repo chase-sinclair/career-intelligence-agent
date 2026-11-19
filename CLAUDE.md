@@ -466,3 +466,7 @@ from the Lab repo's `docs/portfolio/*.md`) and as the third featured band on /pr
   headline "Curated business context beat a model that costs 20 times more, on GPT and on
   Claude", and lead stat / band KPI "6 of 6" draws. Never present the GPT and Claude columns as a
   provider ranking, and keep the format-lenient Claude scores labelled post-hoc.
+- On November 19, the Lab deep dive began linking directly to the scored GPT and Claude write-ups while the
+  knowledge-base source awaits ingestion. The card and metadata specify the premium model's
+  schema-only condition and per-token rate. The question deck has a pause control, with independent
+  hover and keyboard-focus pauses and CSS support for reduced motion.

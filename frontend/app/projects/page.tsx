@@ -92,7 +92,7 @@ const FEATURED: FeaturedEntry[] = [
     name: 'AI Evaluation Lab',
     descriptor: 'Six Controlled AI Experiments',
     contextParagraph:
-      'Curated business context took a finance SQL assistant from 1 to 18 correct answers out of 36, and a low-cost model with that context beat a model costing 20 times more in every draw on GPT and Claude. Larger tool catalogs and an AI fact-checker added cost without adding accuracy, and written rules matched AI-led recovery on every case. Every live run was frozen, approved with a spending cap, sent once and audited.',
+      'Curated business context took a finance SQL assistant from 1 to 18 correct answers out of 36. A budget model with curated definitions beat a premium model with schema alone in every GPT and Claude draw, even though the premium model’s per-token rate was 20× as high. Larger tool catalogs and an AI fact-checker added cost without adding accuracy, and written rules matched AI-led recovery on every case. Every live run was frozen, approved with a spending cap, sent once and audited.',
     statusLabel: 'Complete',
     statusDot: 'none',
     nodes: [],
