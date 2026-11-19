@@ -17,8 +17,8 @@
  * - Recovery rules were written with the test inventory visible, so the tie is
  *   close to built in. The page says so.
  * - Costs are usage-priced at list rates. There are no invoices.
- * - Model vs context (the Lab's Experiments 006 and 007, one study): the GPT and
- *   Claude columns do not rank the providers. Settings were not calibrated
+ * - Experiment 006 (model vs context) groups the original GPT run and the
+ *   Claude replication. The columns do not rank the providers. Settings were not calibrated
  *   across providers and the prompts were developed on GPT. Strict scores are
  *   the official result; the format-lenient Claude scores are post-hoc. Three
  *   draws describe variation, so no significance language.
@@ -203,12 +203,12 @@ export const EXPERIMENTS: ReadonlyArray<Experiment> = [
   {
     id: 'model-vs-context',
     question: 'Should a finance SQL assistant buy a bigger model or better context?',
-    topic: 'Model vs context',
+    topic: 'Experiment 006 · Model vs context',
     result:
       'The budget model with curated definitions beat the premium model with schema alone in every GPT and Claude draw at roughly a quarter of the usage cost. The premium model’s per-token rate was 20× as high.',
-    why: 'A team can spend its budget on a model that costs about 20 times more per token, or on analyst time writing down what its financial terms mean. The first experiment showed that context lifts a low-cost model. It did not show whether a bigger model could close the gap on its own.',
+    why: 'A team can spend its budget on a model that costs about 20 times more per token, or on analyst time writing down what its financial terms mean. The finance SQL study showed that context lifts a low-cost model. Could a bigger model close the gap on its own?',
     setup:
-      'The same 36 finance questions on a 2 × 2 grid: a cheap and an expensive model, each given the schema only or the curated definitions. Every question ran three times per version, first on GPT models, then on Claude models at identical prices as a replication with its success criteria fixed in advance. 864 requests in all, graded exactly as in the first experiment.',
+      'The same 36 finance questions on a 2 × 2 grid: a cheap and an expensive model, each given the schema only or the curated definitions. Every question ran three times per version, first on GPT models, then on Claude models at identical prices as a replication with its success criteria fixed in advance. All 864 requests used the same grading as the finance SQL study.',
     measure: 'Mean correct out of 36, three draws',
     bars: [
       { group: 'Cheap model · schema', label: 'GPT', value: 3.7, max: 36, readout: '3.7' },
@@ -228,7 +228,7 @@ export const EXPERIMENTS: ReadonlyArray<Experiment> = [
     ],
     call: 'Fund curated definitions first. Price a bigger model only once the context exists, and measure it on your own questions.',
     caveat:
-      'The questions were seen in the first experiment, and the warehouse is synthetic. Settings were not calibrated across providers, so the two columns do not rank GPT against Claude. Three draws show variation, not statistical significance.',
+      'The questions were seen in the finance SQL study, and the warehouse is synthetic. Settings were not calibrated across providers, so the two columns do not rank GPT against Claude. Three draws show variation, not statistical significance.',
     caseStudy: caseStudy('model-vs-context'),
   },
   {
@@ -360,6 +360,6 @@ export const PROTOCOL: ReadonlyArray<{ k: string; v: string }> = [
 ]
 
 export const EVIDENCE_LINKS = [
-  { label: 'Experiment 006 · GPT results', href: `${REPO_URL}/blob/main/docs/experiment06_scored_results.md` },
-  { label: 'Experiment 007 · Claude results', href: `${REPO_URL}/blob/main/docs/experiment07_scored_results.md` },
+  { label: 'GPT results', href: `${REPO_URL}/blob/main/docs/experiment06_scored_results.md` },
+  { label: 'Claude replication results', href: `${REPO_URL}/blob/main/docs/experiment07_scored_results.md` },
 ]

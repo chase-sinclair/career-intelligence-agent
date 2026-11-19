@@ -470,3 +470,7 @@ from the Lab repo's `docs/portfolio/*.md`) and as the third featured band on /pr
   knowledge-base source awaits ingestion. The card and metadata specify the premium model's
   schema-only condition and per-token rate. The question deck has a pause control, with independent
   hover and keyboard-focus pauses and CSS support for reduced motion.
+- The portfolio now labels the combined study Experiment 006 in slot 02. Its scored-results
+  section links to the original GPT results and the Claude replication. The local source
+  document uses the same label. The production build, targeted ESLint, and Playwright
+  navigation and scorecard checks passed at 390 and 1440 px.

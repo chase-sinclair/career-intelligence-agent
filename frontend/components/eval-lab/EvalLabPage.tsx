@@ -853,7 +853,7 @@ export default function EvalLabPage() {
 
       {/* ── 5 Go deeper ─────────────────────────────────────────────── */}
       <section ref={askRef} className={reveal(askIn)}>
-        <Heading2 className="mb-[18px] max-w-[18ch]">Read the scored results</Heading2>
+        <Heading2 className="mb-[18px] max-w-[18ch]">Experiment 006 results</Heading2>
         <div className="evidence-links">
           {EVIDENCE_LINKS.map(({ label, href }) => (
             <a key={href} className="evidence-link" href={href}>
